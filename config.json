@@ -1,0 +1,11 @@
+{
+    "workng_dir": "C:\\Users\\Aldo Quintal\\Documents\\PythonPandas\\2-Workng",
+    "sandbx": "C:\\Users\\Aldo Quintal\\Documents\\PythonPandas\\3-Sandbx",
+    "reportes": ["INVNUE", "MACC", "MACP", "PROVED", "VTANUE"],
+    "db": {
+        "host": "localhost",
+        "usuario": "postgres",
+        "contrasena": "abcd1234",
+        "base_de_datos": "Simdata"
+    }
+}
