@@ -1,7 +1,12 @@
 {
     "workng_dir": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\2-Workng",
     "sandbx": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\3-Sandbx",
-    "reportes": ["INVNUE", "MACC", "MACP", "PROVED", "VTANUE"],
+    "reportes": ["INVNUE", "MACC", "MACP", "PROVED", "VTANUE", "DATPER", "REFCOM"],
+    "columnas_esperadas": {
+        "INVNUE": ["Vin", "NumeroInventario", "CostoCompra", "CostoActual", "Año", "Marca", "Modelo", "Version", "ColorPintura", "Interior", "Status", "TipoCompra", "FechaCompra", "Placas", "FechaAlta", "NuevoUsado", "Sucursal"],
+        "MACC": ["Fecha", "Cuenta", "CentroCosto",  "Descripcion",  "SaldoInicial",  "Debitos", "Creditos",  "Saldo",  "TipoCuenta", "Naturaleza", "Sucursal"],
+        "REFCOM": ["Factura", "FechaFactura", "TipoProveedor", "NumeroProveedor", "NombreProveedor", "TipoCompra", "NumeroParte", "Descripcion", "Cantidad", "CostoUnitario", "Costo", "Sucursal"]
+    },
     "db": {
         "host": "localhost",
         "usuario": "postgres",

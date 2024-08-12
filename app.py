@@ -20,6 +20,7 @@ workng_dir = config['workng_dir']
 sandbx = config['sandbx']
 reportes = config['reportes']
 db_config = config['db']
+columnas_esperadas = config.get('columnas_esperadas', {})
 
 # Función para conectar a la base de datos PostgreSQL
 def conectar_db(host, usuario, contrasena, base_de_datos):
@@ -133,6 +134,24 @@ for archivo in os.listdir(sandbx):
             os.rename(ruta_antigua, ruta_nueva)
             logging.info(f"Archivo renombrado de {archivo} a {nuevo_nombre}")
 
+# Función para guardar consultas SQL en un archivo
+def guardar_sql_dump(nombre_archivo, consultas, version_servidor):
+    encabezado = (
+        "-- PostgreSQL dump\n"
+        "--\n"
+        f"-- Host: localhost    Database: {db_config['base_de_datos']}\n"
+        "-- ------------------------------------------------------\n"
+        f"-- Server version {version_servidor}\n\n"
+    )
+    try:
+        with open(nombre_archivo, 'w', encoding='utf-8') as f:
+            f.write(encabezado)
+            for consulta in consultas:
+                f.write(consulta + '\n')
+        logging.info(f"Archivo SQL dump generado: {nombre_archivo}")
+    except Exception as e:
+        logging.error(f"Se produjo un error al guardar el archivo SQL dump: {e}")
+
 # Conectar a la base de datos
 conexion = conectar_db(db_config['host'], db_config['usuario'], db_config['contrasena'], db_config['base_de_datos'])
 
@@ -147,24 +166,6 @@ def obtener_version_servidor(conexion):
     except Error as e:
         logging.error(f"Error al obtener la versión del servidor: {e}")
         return "Desconocida"
-
-# Función para guardar consultas SQL en un archivo
-def guardar_sql_dump(nombre_archivo, consultas, version_servidor):
-    encabezado = (
-        "-- MySQL dump\n"
-        "--\n"
-        f"-- Host: localhost    Database: sim_{cliente}\n"
-        "-- ------------------------------------------------------\n"
-        f"-- Server version {version_servidor}\n\n"
-    )
-    try:
-        with open(nombre_archivo, 'w', encoding='utf-8') as f:
-            f.write(encabezado)
-            for consulta in consultas:
-                f.write(consulta + '\n')
-        logging.info(f"Archivo SQL dump generado: {nombre_archivo}")
-    except Exception as e:
-        logging.error(f"Se produjo un error al guardar el archivo SQL dump: {e}")
 
 # Obtener la versión del servidor
 version_servidor = obtener_version_servidor(conexion)
@@ -258,6 +259,17 @@ for reporte in reportes:
             if serie.str.len().max() > 255:
                 return 'TEXT'
             return 'VARCHAR(255)'
+
+    # Comparar las columnas actuales con las esperadas
+    columnas = set(df.columns)
+    columnas_esperadas_reporte = set(columnas_esperadas.get(reporte, []))
+
+    print(f'... {columnas}')
+    print(f'--- {columnas_esperadas_reporte}')
+
+    if not columnas_esperadas_reporte.intersection(columnas):
+        logging.info(f"No se genera SQL dump para {nombre_tabla}. Las columnas no coinciden con las esperadas.")
+        continue
 
     # Crear la consulta SQL para crear la tabla
     create_table_query = f"CREATE TABLE IF NOT EXISTS {nombre_tabla} (\n"
