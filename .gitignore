@@ -1,0 +1,18 @@
+# Ignorar el entorno virtual
+venv/
+
+# Archivos de compilación de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de configuración de IDE
+.vscode/
+.idea/
+
+# Archivos de caché
+*.log
+*.tmp
+
+# Ignorar el archivo de configuración
+config.json
