@@ -264,9 +264,6 @@ for reporte in reportes:
     columnas = set(df.columns)
     columnas_esperadas_reporte = set(columnas_esperadas.get(reporte, []))
 
-    print(f'... {columnas}')
-    print(f'--- {columnas_esperadas_reporte}')
-
     if not columnas_esperadas_reporte.intersection(columnas):
         logging.info(f"No se genera SQL dump para {nombre_tabla}. Las columnas no coinciden con las esperadas.")
         continue
@@ -303,6 +300,10 @@ for reporte in reportes:
     ]
     archivo_sql = os.path.join(sandbx, f"{nombre_tabla}.sql.dump")
     guardar_sql_dump(archivo_sql, consultas, version_servidor)
+    ejecutar_consulta(conexion, drop_query)
+    ejecutar_consulta(conexion, create_table_query)
+    ejecutar_consulta(conexion, insert_query)
+
 
 # Cerrar la conexión a la base de datos
 if conexion:
