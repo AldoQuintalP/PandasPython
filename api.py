@@ -12,15 +12,26 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Leer configuración desde el archivo JSON
-with open('config.json', 'r', encoding='utf-8') as config_file:
-    config = json.load(config_file)
+try:
+    with open('config.json', 'r', encoding='utf-8') as config_file:
+        config = json.load(config_file)
+except FileNotFoundError:
+    logging.error("No se encontró el archivo de configuración 'config.json'.")
+    exit()
+except json.JSONDecodeError:
+    logging.error("El archivo de configuración 'config.json' no es un JSON válido.")
+    exit()
 
 # Configuración
-workng_dir = config['workng_dir']
-sandbx = config['sandbx']
-reportes = config['reportes']
-db_config = config['db']
+workng_dir = config.get('workng_dir')
+sandbx = config.get('sandbx')
+reportes = config.get('reportes', [])
+db_config = config.get('db', {})
 columnas_esperadas = config.get('columnas_esperadas', {})
+
+if not workng_dir or not sandbx or not reportes or not db_config:
+    logging.error("Configuración incompleta en 'config.json'.")
+    exit()
 
 # Función para conectar a la base de datos PostgreSQL
 def conectar_db(host, usuario, contrasena, base_de_datos):
@@ -85,15 +96,21 @@ def extraer_info_zip(nombre_zip):
     return cliente, sucursal, fecha_actual
 
 # Obtener la información
-workng = encontrar_zip(workng_dir)
-cliente, sucursal, fecha_actual = extraer_info_zip(workng)
-cliente = cliente.lstrip('0')
+try:
+    workng = encontrar_zip(workng_dir)
+    cliente, sucursal, fecha_actual = extraer_info_zip(workng)
+    cliente = cliente.lstrip('0')
+except FileNotFoundError as e:
+    logging.error(e)
+    exit()
 
 # Verificar existencia y permisos del archivo ZIP
 if not os.path.isfile(workng):
     logging.error(f"El archivo ZIP no existe en la ruta especificada: {workng}")
+    exit()
 elif not os.access(workng, os.R_OK):
     logging.error(f"Permiso denegado para leer el archivo ZIP: {workng}")
+    exit()
 
 # Crear la carpeta Sandbx si no existe
 if not os.path.isdir(sandbx):
@@ -139,7 +156,7 @@ def guardar_sql_dump(nombre_archivo, consultas, version_servidor):
     encabezado = (
         "-- PostgreSQL dump\n"
         "--\n"
-        f"-- Host: localhost    Database: {db_config['base_de_datos']}\n"
+        f"-- Host: localhost    Database: {db_config.get('base_de_datos', 'Desconocida')}\n"
         "-- ------------------------------------------------------\n"
         f"-- Server version {version_servidor}\n\n"
     )
@@ -153,7 +170,7 @@ def guardar_sql_dump(nombre_archivo, consultas, version_servidor):
         logging.error(f"Se produjo un error al guardar el archivo SQL dump: {e}")
 
 # Conectar a la base de datos
-conexion = conectar_db(db_config['host'], db_config['usuario'], db_config['contrasena'], db_config['base_de_datos'])
+conexion = conectar_db(db_config.get('host', ''), db_config.get('usuario', ''), db_config.get('contrasena', ''), db_config.get('base_de_datos', ''))
 
 # Función para obtener la versión del servidor PostgreSQL
 def obtener_version_servidor(conexion):
@@ -168,12 +185,20 @@ def obtener_version_servidor(conexion):
         return "Desconocida"
 
 # Obtener la versión del servidor
-version_servidor = obtener_version_servidor(conexion)
+if conexion:
+    version_servidor = obtener_version_servidor(conexion)
+else:
+    version_servidor = "Desconocida"
 
 # Iterar sobre cada reporte y realizar las operaciones de creación de tabla e inserción
 for reporte in reportes:
     nombre_tabla = f"{reporte}{sucursal}"
     ruta_archivo = os.path.join(sandbx, f'{reporte}{sucursal}.txt')
+
+    # Verificar existencia del archivo TXT
+    if not os.path.isfile(ruta_archivo):
+        logging.warning(f"El archivo TXT no se encontró en la ruta especificada: {ruta_archivo}. Omitiendo este reporte.")
+        continue
 
     # Intentar leer el archivo con diferentes codificaciones
     codificaciones = ['utf-8', 'ISO-8859-1', 'latin1', 'Windows-1252']
@@ -191,15 +216,14 @@ for reporte in reportes:
             logging.error(f"El archivo TXT no se encontró en la ruta especificada: {ruta_archivo}")
             break
         except PermissionError:
-            logging.error(f"Permiso denegado para leer el archivo TXT.")
+            logging.error(f"Permiso denegado para leer el archivo TXT: {ruta_archivo}")
             break
-        except Exception as e:
-            logging.error(f"Se produjo un error al leer el archivo {ruta_archivo}: {e}")
-            break
-    else:
-        raise ValueError(f"No se pudo leer el archivo {ruta_archivo} con las codificaciones probadas.")
 
-    # Convertir la cadena de datos en una lista de listas
+    if raw_data is None:
+        logging.error(f"No se pudo leer el archivo TXT {ruta_archivo} con ninguna de las codificaciones probadas.")
+        continue
+
+    # Procesar el contenido del archivo TXT
     data = [row.split('|') for row in raw_data.strip().split('\n')]
 
     headers = data[0]
@@ -300,10 +324,11 @@ for reporte in reportes:
     ]
     archivo_sql = os.path.join(sandbx, f"{nombre_tabla}.sql.dump")
     guardar_sql_dump(archivo_sql, consultas, version_servidor)
-    ejecutar_consulta(conexion, drop_query)
-    ejecutar_consulta(conexion, create_table_query)
-    ejecutar_consulta(conexion, insert_query)
-
+    
+    if conexion:
+        ejecutar_consulta(conexion, drop_query)
+        ejecutar_consulta(conexion, create_table_query)
+        ejecutar_consulta(conexion, insert_query)
 
 # Cerrar la conexión a la base de datos
 if conexion:
