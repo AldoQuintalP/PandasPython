@@ -11,8 +11,29 @@
     <!-- Incluye Font Awesome 6 desde un CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
+        body {
+            background-color: #76818b; /* Fondo gris oscuro */
+            color: #ffffff; /* Color de texto blanco para contraste */
+        }
         .container {
             margin-top: 20px;
+            background-color: #76818b; /* Fondo blanco para el card */
+            border-radius: 8px; /* Bordes redondeados */
+            padding: 20px;
+        }
+        .card {
+            background-color: #f8f9fa; /* Fondo gris claro para el interior del card */
+        }
+        .card-header {
+            background-color: #e9ecef; /* Fondo gris más claro para el encabezado del card */
+        }
+        .card-body {
+            background-color: #f1f3f5; /* Fondo gris claro para el contenido del card */
+            border-radius: 8px; /* Bordes redondeados */
+            padding: 20px;
+        }
+        .card-header h2, .card-header h5, .form-group label {
+            color: #000000; /* Color negro para los títulos */
         }
         .form-group {
             margin-bottom: 15px;
@@ -46,9 +67,23 @@
         .card-header h5 {
             margin-bottom: 0;
         }
-        /* Estilo para ocultar el campo de reportes */
-        #reportes-field {
-            display: none;
+        /* Agregar un margen superior de 1 cm al primer registro en la pestaña */
+        .tab-pane .form-group:first-of-type {
+            margin-top: 1cm;
+        }
+        /* Fondo blanco para las pestañas y su contenido */
+        .nav-tabs .nav-link {
+            background-color: #ffffff; /* Fondo blanco para la pestaña activa e inactiva */
+            color: #000000; /* Color negro para el texto de la pestaña */
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #ffffff; /* Fondo blanco para la pestaña activa */
+            color: #000000; /* Color negro para el texto de la pestaña activa */
+        }
+        .tab-content {
+            background-color: #ffffff; /* Fondo blanco para el contenido de las pestañas */
+            border-radius: 8px; /* Bordes redondeados */
+            padding: 20px;
         }
     </style>
 </head>
@@ -59,6 +94,7 @@
                 <h2>Configuración de Parámetros</h2>
             </div>
             <div class="card-body">
+                <!-- Campos fuera de la pestaña -->
                 <form method="POST">
                     <div class="form-group">
                         <label for="workng_dir">Directorio de Trabajo:</label>
@@ -68,38 +104,83 @@
                         <label for="sandbx">Directorio de Sandbox:</label>
                         <input type="text" id="sandbx" name="sandbx" class="form-control" value="{{ config.get('sandbx', '') }}">
                     </div>
-                    <!-- Campo de reportes oculto -->
-                    <div id="reportes-field">
-                        <div class="form-group">
-                            <label for="reportes">Reportes (separados por comas):</label>
-                            <input type="text" id="reportes" name="reportes" class="form-control" value="{{ ', '.join(config.get('reportes', [])) }}">
-                        </div>
-                    </div>
-                    <div id="reportes-container">
-                        {% for key, columnas in config.get('columnas_esperadas', {}).items() %}
-                        <div class="form-group d-flex align-items-center">
-                            <label for="columnas_{{ key }}" class="mr-2">{{ key }} Columnas:</label>
-                            <input type="text" id="columnas_{{ key }}" name="columnas_{{ key }}" class="form-control mr-2" value="{{ ', '.join(columnas) }}">
-                            <button type="button" class="trash-btn" data-reporte="{{ key }}" onclick="eliminarReporte('{{ key }}')">
-                                <i class="fa fa-trash-alt"></i> Eliminar
-                            </button>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <div class="btn-container">
-                        <div class="btn-left-container">
-                            <button type="button" id="add-reporte-btn" class="btn btn-success" data-toggle="modal" data-target="#addReportModal">
-                                <i class="fa-regular fa-file-lines"></i> Agregar Reporte
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#dbConfigModal">
-                                <i class="fa-solid fa-database"></i> Configuración bd
-                            </button>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa-solid fa-floppy-disk"></i> Guardar
-                        </button>
-                    </div>
                 </form>
+                <!-- Pestañas -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="layout-mundial-tab" data-toggle="tab" href="#layout-mundial" role="tab" aria-controls="layout-mundial" aria-selected="true">Layout Mundial</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="layout-mundial" role="tabpanel" aria-labelledby="layout-mundial-tab">
+                        <form method="POST">
+                            <!-- Campo de reportes oculto -->
+                            <div id="reportes-field" style="display: none;">
+                                <div class="form-group">
+                                    <label for="reportes">Reportes (separados por comas):</label>
+                                    <input type="text" id="reportes" name="reportes" class="form-control" value="{{ ', '.join(config.get('reportes', [])) }}">
+                                </div>
+                            </div>
+                            <div id="reportes-container">
+                                {% set columns_per_page = 10 %}
+                                {% set page = request.args.get('page', default=1, type='int') %}
+                                {% set start = (page - 1) * columns_per_page %}
+                                {% set end = start + columns_per_page %}
+                                {% set reportes = config.get('columnas_esperadas', {}) %}
+                                {% set reportes_list = reportes.items() | list %}
+                                
+                                {% for key, columnas in reportes_list[start:end] %}
+                                <div class="form-group d-flex align-items-center">
+                                    <label for="columnas_{{ key }}" class="mr-2">{{ key }} Columnas:</label>
+                                    <input type="text" id="columnas_{{ key }}" name="columnas_{{ key }}" class="form-control mr-2" value="{{ ', '.join(columnas) }}">
+                                    <button type="button" class="trash-btn" data-reporte="{{ key }}" onclick="eliminarReporte('{{ key }}')">
+                                        <i class="fa fa-trash-alt"></i> Eliminar
+                                    </button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="btn-left-container">
+                                <button type="button" id="add-reporte-btn" class="btn btn-success" data-toggle="modal" data-target="#addReportModal">
+                                    <i class="fa-regular fa-file-lines"></i> Agregar Reporte
+                                </button>
+                            </div>
+                            <!-- Paginación -->
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination">
+                                    {% if page > 1 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page - 1 }}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    {% set total_pages = ((reportes_list|length - 1) // columns_per_page + 1) %}
+                                    {% for p in range(1, total_pages + 1) %}
+                                    <li class="page-item {% if p == page %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+                                    </li>
+                                    {% endfor %}
+                                    {% if page < total_pages %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page + 1 }}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </form>
+                    </div>
+                </div>
+                <!-- Botones fuera de la pestaña -->
+                <div class="btn-container">
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#dbConfigModal">
+                        <i class="fa-solid fa-database"></i> Configuración bd
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -141,22 +222,18 @@
                     <div class="card-body">
                         <form id="dbConfigForm" method="POST">
                             <div class="form-group">
-                                <label for="db_host">Host DB:</label>
+                                <label for="db_host">Host:</label>
                                 <input type="text" id="db_host" name="db_host" class="form-control" value="{{ config.get('db', {}).get('host', '') }}">
                             </div>
                             <div class="form-group">
-                                <label for="db_usuario">Usuario DB:</label>
-                                <input type="text" id="db_usuario" name="db_usuario" class="form-control" value="{{ config.get('db', {}).get('usuario', '') }}">
+                                <label for="db_user">Usuario:</label>
+                                <input type="text" id="db_user" name="db_user" class="form-control" value="{{ config.get('db', {}).get('usuario', '') }}">
                             </div>
                             <div class="form-group">
-                                <label for="db_contrasena">Contraseña DB:</label>
+                                <label for="db_contrasena">Contraseña:</label>
                                 <input type="password" id="db_contrasena" name="db_contrasena" class="form-control" value="{{ config.get('db', {}).get('contrasena', '') }}">
                             </div>
-                            <div class="form-group">
-                                <label for="db_base_datos">Base de Datos DB:</label>
-                                <input type="text" id="db_base_datos" name="db_base_datos" class="form-control" value="{{ config.get('db', {}).get('base_de_datos', '') }}">
-                            </div>
-                            <button type="button" id="save-db-config-btn" class="btn btn-primary">Guardar Configuración DB</button>
+                            <button type="button" id="save-db-config-btn" class="btn btn-primary">Guardar Configuración BD</button>
                         </form>
                     </div>
                 </div>
@@ -164,10 +241,11 @@
         </div>
     </div>
 
-    <!-- Incluye Bootstrap JS y dependencias desde un CDN -->
+    <!-- Incluye jQuery, Popper.js y Bootstrap JS desde un CDN -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Incluye Font Awesome JS desde un CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>

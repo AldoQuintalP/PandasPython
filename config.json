@@ -8,7 +8,13 @@
         "PROVED",
         "INVNUE",
         "INVUSA",
-        "COTNUE"
+        "COTNUE",
+        "KKKK",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
     ],
     "columnas_esperadas": {
         "MACC": [
@@ -141,6 +147,26 @@
             "DiasCotizacion",
             "NuevoUsado",
             "Sucursal"
+        ],
+        "KKKK": [
+            "Fecha",
+            "Factura",
+            "FechaCierre"
+        ],
+        "A": [
+            "a"
+        ],
+        "B": [
+            "b"
+        ],
+        "C": [
+            "c"
+        ],
+        "D": [
+            "d"
+        ],
+        "E": [
+            "e"
         ]
     },
     "db": {
