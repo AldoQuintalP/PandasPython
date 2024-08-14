@@ -50,6 +50,7 @@ def conectar_db(host, usuario, contrasena, base_de_datos):
 
 # Función para ejecutar una consulta SQL
 def ejecutar_consulta(conexion, consulta):
+    #print(f'Consulta: {consulta}')
     try:
         cursor = conexion.cursor()
         cursor.execute(consulta)
@@ -72,6 +73,20 @@ def limpiar_carpeta(carpeta):
 
 # Limpiar la carpeta Sandbx
 limpiar_carpeta(sandbx)
+
+#Limpia encabezados basura de los reportes
+def limpiar_encabezado(reporte):
+    # Divide el reporte en líneas
+    lines = reporte.strip().splitlines()
+    
+    # Encuentra la primera línea que contiene un separador '|'
+    for i, line in enumerate(lines):
+        if '|' in line:
+            # Retorna todas las líneas a partir de la primera línea válida
+            return '\n'.join(lines[i:])
+    
+    # Si no se encuentra una línea válida, retorna una cadena vacía
+    return ''
 
 # Encontrar el archivo ZIP en la carpeta de trabajo
 def encontrar_zip(carpeta):
@@ -190,6 +205,20 @@ if conexion:
 else:
     version_servidor = "Desconocida"
 
+# Función para renombrar columnas
+def renombrar_columnas(headers):
+    seen = {}
+    new_headers = []
+    for header in headers:
+        if header in seen:
+            seen[header] += 1
+            new_header = f"{header}_{seen[header]}"
+        else:
+            seen[header] = 0
+            new_header = header
+        new_headers.append(new_header)
+    return new_headers
+
 # Iterar sobre cada reporte y realizar las operaciones de creación de tabla e inserción
 for reporte in reportes:
     nombre_tabla = f"{reporte}{sucursal}"
@@ -206,46 +235,47 @@ for reporte in reportes:
     raw_data = None
     for codificacion in codificaciones:
         try:
-            with open(ruta_archivo, 'r', encoding=codificacion) as file:
-                raw_data = file.read()
-            logging.info(f"Archivo {ruta_archivo} leído con éxito usando la codificación: {codificacion}")
+            with open(ruta_archivo, 'r', encoding=codificacion) as f:
+                raw_data = f.read()
             break
-        except UnicodeDecodeError as e:
-            logging.error(f"Error con la codificación {codificacion}: {e}")
-        except FileNotFoundError:
-            logging.error(f"El archivo TXT no se encontró en la ruta especificada: {ruta_archivo}")
-            break
-        except PermissionError:
-            logging.error(f"Permiso denegado para leer el archivo TXT: {ruta_archivo}")
-            break
+        except UnicodeDecodeError:
+            continue
 
     if raw_data is None:
         logging.error(f"No se pudo leer el archivo TXT {ruta_archivo} con ninguna de las codificaciones probadas.")
         continue
 
+    
+    # Se limpia el reporte de la basura
+    raw_data_clean = limpiar_encabezado(raw_data)
+
     # Procesar el contenido del archivo TXT
-    data = [row.split('|') for row in raw_data.strip().split('\n')]
+    data = [row.split('|') for row in raw_data_clean.strip().split('\n')]
 
     # Usar encabezados esperados del archivo de configuración
     encabezados_esperados = columnas_esperadas.get(reporte, [])
     headers = encabezados_esperados
     rows = data
 
-    # Asegurarse de que los nombres de las columnas sean únicos agregando sufijos
-    def renombrar_columnas(headers):
-        seen = {}
-        new_headers = []
-        for header in headers:
-            if header in seen:
-                seen[header] += 1
-                new_header = f"{header}_{seen[header]}"
-            else:
-                seen[header] = 0
-                new_header = header
-            new_headers.append(new_header)
-        return new_headers
+    
 
+    # Comparar las columnas actuales con las esperadas
+    columnas = data[0]
+    print(f'Columnas: {columnas}')
+    columnas_esperadas_reporte = set(columnas_esperadas.get(reporte, []))
+    print(f'Columnas esperadas: {columnas_esperadas_reporte}')
+    # Verificar si al menos una columna coincide
+    if columnas_esperadas_reporte.intersection(columnas):
+        rows = data[1:] 
+        logging.info(f"Al menos una columna de {nombre_tabla} coincide con las columnas esperadas en la configuración.")
+    else:
+        logging.info(f"El documento {nombre_tabla} no trae columnas.")
+        
+
+
+    # Asegurarse de que los nombres de las columnas sean únicos agregando sufijos
     headers = renombrar_columnas(headers)
+
 
     # Ajustar el número de columnas en las filas
     max_columns = len(headers)
@@ -270,18 +300,7 @@ for reporte in reportes:
 
     # Inferir el tipo de datos de cada columna
     def inferir_tipo_dato(serie):
-        try:
-            columna_clean = serie.replace(',', '').replace('', '0')  
-            pd.to_numeric(columna_clean, errors='raise')
-            if serie.str.contains(r'\.').any():
-                return 'DECIMAL(10,2)'
-            elif serie.astype(float).max() > 2147483647:  
-                return 'BIGINT'
-            return 'INTEGER'
-        except (ValueError, TypeError):
-            if serie.str.len().max() > 255:
-                return 'TEXT'
-            return 'VARCHAR(255)'
+        return 'VARCHAR(255)'
 
     # Comparar las columnas actuales con las esperadas
     columnas = set(df.columns)
