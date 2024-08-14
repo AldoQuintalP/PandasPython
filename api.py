@@ -226,11 +226,10 @@ for reporte in reportes:
     # Procesar el contenido del archivo TXT
     data = [row.split('|') for row in raw_data.strip().split('\n')]
 
-    headers = data[0]
-    rows = data[1:]
-
-    # Filtrar encabezados vacíos
-    headers = [header for header in headers if header.strip() != '']
+    # Usar encabezados esperados del archivo de configuración
+    encabezados_esperados = columnas_esperadas.get(reporte, [])
+    headers = encabezados_esperados
+    rows = data
 
     # Asegurarse de que los nombres de las columnas sean únicos agregando sufijos
     def renombrar_columnas(headers):
