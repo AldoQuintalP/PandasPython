@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Reporte</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <style>
+        .list-group-item {
+            cursor: move;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Editar Reporte: {{ reporte_nombre }}</h1>
+        <h2>Columnas</h2>
+        <ul id="columnas-list" class="list-group">
+            {% for columna in columnas %}
+            <li class="list-group-item" data-columna="{{ columna }}">{{ columna }}</li>
+            {% endfor %}
+        </ul>
+        <button id="save-order" class="btn btn-primary mt-3">Guardar Orden</button>
+    </div>
+
+    <script>
+        // Hacer la lista de columnas arrastrable
+        var sortable = Sortable.create(document.getElementById('columnas-list'), {
+            animation: 150,
+            onEnd: function (evt) {
+                console.log('Nuevo orden:', sortable.toArray());
+            }
+        });
+
+        // Manejar el botón de guardar orden
+        document.getElementById('save-order').addEventListener('click', function () {
+            var columnasOrdenadas = sortable.toArray();
+            fetch('/save-order', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    reporte: '{{ reporte_nombre }}',
+                    columnas: JSON.stringify(columnasOrdenadas)
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Orden guardado exitosamente');
+                } else {
+                    alert('Error al guardar el orden');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al guardar el orden');
+            });
+        });
+    </script>
+</body>
+</html>

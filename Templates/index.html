@@ -130,6 +130,9 @@
                                     <button type="button" class="trash-btn" data-reporte="{{ key }}" onclick="eliminarReporte('{{ key }}')">
                                         <i class="fa fa-trash-alt"></i> Eliminar
                                     </button>
+                                    <button type="button" class="btn btn-info ml-2" onclick="editarReporte('{{ key }}')">
+                                        <i class="fa fa-edit"></i> Editar
+                                    </button>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -218,6 +221,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
+        function editarReporte(reporte) {
+            window.location.href = `/edit_reporte/${reporte}`;
+        }
         function eliminarReporte(reporte) {
             Swal.fire({
                 title: 'Confirmar',

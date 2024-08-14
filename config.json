@@ -26,7 +26,8 @@
         "REFSER",
         "REFOEP",
         "VTAPER",
-        "REFPED"
+        "REFPED",
+        "PRUEBA"
     ],
     "columnas_esperadas": {
         "MACC": [
@@ -744,7 +745,8 @@
             "NumeroDespachador",
             "NombreDespachador",
             "Sucursal"
-        ]
+        ],
+        "PRUEBA": ["Fecha","Factura","FechaCierre"]
     },
     "db": {
         "host": "localhost",

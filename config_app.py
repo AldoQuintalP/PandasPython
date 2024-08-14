@@ -132,6 +132,69 @@ def delete_reporte():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo eliminar el reporte.'})
+    
+def obtener_columnas(reporte):
+    try:
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+        
+        # Obtener las columnas para el reporte específico
+        columnas = config.get('columnas_esperadas', {}).get(reporte, [])
+        return columnas
+    except Exception as e:
+        print(f"Error al obtener las columnas: {e}")
+        return []
+
+@app.route('/edit_reporte/<reporte>', methods=['GET'])
+def edit_reporte(reporte):
+    # Lógica para obtener datos del reporte y renderizar la plantilla
+    columnas = obtener_columnas(reporte)  # Implementa esta función según tus necesidades
+    return render_template('edit_reporte.html', reporte_nombre=reporte, columnas=columnas)
+
+@app.route('/save-order', methods=['POST'])
+def save_order():
+    try:
+        # Obtener los datos enviados desde el frontend
+        reporte = request.form.get('reporte')
+        columnas_ordenadas = request.form.get('columnas')
+
+        if not reporte or not columnas_ordenadas:
+            return jsonify({'success': False, 'error': 'Datos incompletos.'})
+
+        # Intentar decodificar el JSON
+        try:
+            columnas_ordenadas = json.loads(columnas_ordenadas)
+        except json.JSONDecodeError:
+            return jsonify({'success': False, 'error': 'El formato de columnas es inválido.'})
+
+        # Leer el archivo de configuración
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+
+        if reporte not in config['columnas_esperadas']:
+            return jsonify({'success': False, 'error': 'El reporte no existe en la configuración.'})
+
+        columnas_originales = config['columnas_esperadas'][reporte]
+
+        # Verificar que todas las columnas ordenadas están en las columnas originales
+        if set(columnas_ordenadas) != set(columnas_originales):
+            return jsonify({'success': False, 'error': 'El nuevo orden contiene columnas no válidas.'})
+
+        # Actualizar el orden de las columnas para el reporte específico
+        config['columnas_esperadas'][reporte] = columnas_ordenadas
+
+        # Guardar la configuración actualizada
+        with open('config.json', 'w') as f:
+            json.dump(config, f, indent=4)
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        # Imprimir el error en la consola para depuración
+        print(f"Error al guardar el orden de columnas: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
