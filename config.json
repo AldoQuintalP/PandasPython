@@ -26,11 +26,10 @@
         "REFSER",
         "REFOEP",
         "VTAPER",
-        "REFPED",
-        "PRUEBA"
+        "REFPED"
     ],
     "columnas_esperadas": {
-        "MACC": [
+        "MACC01": [
             "Fecha",
             "Cuenta",
             "CentroCosto",
@@ -43,7 +42,7 @@
             "Naturaleza",
             "Sucursal"
         ],
-        "MACP": [
+        "MACP01": [
             "Fecha",
             "Cuenta",
             "CentroCosto",
@@ -56,7 +55,7 @@
             "Naturaleza",
             "Sucursal"
         ],
-        "CARTER": [
+        "CARTER01": [
             "NumeroCliente",
             "NombreCliente",
             "TipoCartera",
@@ -73,7 +72,7 @@
             "TipoCliente",
             "Sucursal"
         ],
-        "PROVED": [
+        "PROVED01": [
             "NumeroProveedor",
             "NombreProveedor",
             "TipoProveedor",
@@ -89,7 +88,7 @@
             "SaldoMas120$",
             "Sucursal"
         ],
-        "INVNUE": [
+        "INVNUE01": [
             "Vin",
             "NumeroInventario",
             "CostoCompra$",
@@ -108,7 +107,7 @@
             "NuevoUsado",
             "Sucursal"
         ],
-        "INVUSA": [
+        "INVUSA01": [
             "Vin",
             "NumeroInventario",
             "CostoCompra$",
@@ -128,7 +127,7 @@
             "NuevoUsado",
             "Sucursal"
         ],
-        "COTNUE": [
+        "COTNUE01": [
             "FechaCotizacion",
             "NumCotizacion",
             "TipoCotizacion",
@@ -161,7 +160,7 @@
             "NuevoUsado",
             "Sucursal"
         ],
-        "CREDIT": [
+        "CREDIT01": [
             "FechaFactura",
             "Factura",
             "Vin",
@@ -189,7 +188,7 @@
             "Retoma",
             "TipoRetoma"
         ],
-        "PEDNUE": [
+        "PEDNUE01": [
             "FechaPedido",
             "NumeroPedido",
             "TipoPedido",
@@ -227,7 +226,7 @@
             "NuevoUsado",
             "Sucursal"
         ],
-        "PEDUSA": [
+        "PEDUSA01": [
             "FechaPedido",
             "NumeroPedido",
             "TipoPedido",
@@ -264,7 +263,7 @@
             "MotivoContacto",
             "Sucursal"
         ],
-        "PEDIDOS": [
+        "PEDIDOS01": [
             "FechaPedido",
             "NumeroPedido",
             "TipoPedido",
@@ -302,7 +301,7 @@
             "NuevoUsado",
             "Sucursal"
         ],
-        "VTANUE": [
+        "VTANUE01": [
             "FechaFactura",
             "Factura",
             "FechaPedido",
@@ -368,7 +367,7 @@
             "NuevoUsado",
             "Sucursal"
         ],
-        "VTAUSA": [
+        "VTAUSA01": [
             "FechaFactura",
             "Factura",
             "FechaPedido",
@@ -426,7 +425,7 @@
             "CP",
             "Sucursal"
         ],
-        "SERVTA": [
+        "SERVTA01": [
             "FechaFactura",
             "FechaApertura",
             "FechaEntrega",
@@ -483,7 +482,7 @@
             "Placas",
             "Sucursal"
         ],
-        "DATPER": [
+        "DATPER01": [
             "FechaFactura",
             "Factura",
             "NumeroOT",
@@ -516,7 +515,7 @@
             "SIDAsesor",
             "Sucursal"
         ],
-        "SEROEP": [
+        "SEROEP01": [
             "NumeroOT",
             "Vin",
             "FechaApertura",
@@ -542,7 +541,7 @@
             "Placas",
             "Sucursal"
         ],
-        "CITAS": [
+        "CITAS01": [
             "FechaLevantamiento",
             "NumeroCita",
             "FechaProgramada",
@@ -572,7 +571,7 @@
             "HoraAsistio",
             "Sucursal"
         ],
-        "SERTEC": [
+        "SERTEC01": [
             "FechaCierre",
             "Factura",
             "NumeroOT",
@@ -589,7 +588,7 @@
             "DescripcionOperacion",
             "Sucursal"
         ],
-        "REFCOM": [
+        "REFCOM01": [
             "Factura",
             "FechaFactura",
             "TipoProveedor",
@@ -603,7 +602,7 @@
             "Costo$",
             "Sucursal"
         ],
-        "REFINV": [
+        "REFINV01": [
             "NumeroParte",
             "Descripcion",
             "TipoParte",
@@ -619,7 +618,7 @@
             "Marca",
             "Sucursal"
         ],
-        "REFMOS": [
+        "REFMOS01": [
             "FechaFactura",
             "Factura",
             "TipoPago",
@@ -647,7 +646,7 @@
             "MotivoContacto",
             "Sucursal"
         ],
-        "REFSER": [
+        "REFSER01": [
             "FechaFactura",
             "Factura",
             "TipoPago",
@@ -678,7 +677,7 @@
             "Taller",
             "Sucursal"
         ],
-        "REFOEP": [
+        "REFOEP01": [
             "NumeroOT",
             "FechaEntrega",
             "FechaCierre",
@@ -701,7 +700,7 @@
             "Version",
             "Sucursal"
         ],
-        "VTAPER": [
+        "VTAPER01": [
             "FechaVP",
             "FolioVP",
             "Canal",
@@ -722,7 +721,7 @@
             "Email",
             "Sucursal"
         ],
-        "REFPED": [
+        "REFPED01": [
             "FechaPedido",
             "HoraPedido",
             "FechaDespacho",
@@ -745,8 +744,7 @@
             "NumeroDespachador",
             "NombreDespachador",
             "Sucursal"
-        ],
-        "PRUEBA": ["Fecha","Factura","FechaCierre"]
+        ]
     },
     "db": {
         "host": "localhost",

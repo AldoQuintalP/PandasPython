@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes</title>
+    <!-- Incluye Bootstrap CSS desde un CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Incluye Font Awesome 6 desde un CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa; /* Fondo gris claro */
+            color: #333; /* Color de texto oscuro */
+        }
+        .container {
+            margin-top: 20px;
+            background-color: #ffffff; /* Fondo blanco para el card */
+            border-radius: 8px; /* Bordes redondeados */
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+        }
+        .card {
+            margin-top: 20px;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-body {
+            background-color: #f1f3f5;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        #searchInput {
+            width: 250px;
+        }
+        .client-item {
+            cursor: pointer;
+            color: #007bff;
+        }
+        .client-item:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Gestión de Clientes</h2>
+                <!-- Campo de búsqueda -->
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar cliente...">
+            </div>
+            <div class="card-body">
+                <!-- Mostrar lista de archivos y directorios en CLIENTS -->
+                <h3>Contenido de la carpeta CLIENTS:</h3>
+                {% if files %}
+                    <ul id="clientList">
+                        {% for file in files %}
+                            <li class="client-item" onclick="openClientForm('{{ file }}')">{{ file }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No se encontraron archivos en la carpeta CLIENTS.</p>
+                {% endif %}
+                {% if error %}
+                    <p class="text-danger">{{ error }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para el formulario de cliente -->
+    <div class="modal fade" id="clientFormModal" tabindex="-1" role="dialog" aria-labelledby="clientFormModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clientFormModalLabel">Detalles del Cliente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="clientForm">
+                        <div class="form-group">
+                            <label for="branch">Branch</label>
+                            <input type="text" class="form-control" id="branch" name="branch" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="branch_name">Nombre de Sucursal</label>
+                            <input type="text" class="form-control" id="branch_name" name="branch_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dms">DMS</label>
+                            <input type="text" class="form-control" id="dms" name="dms" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reports">Nombre de los Reportes a Utilizar</label>
+                            <input type="text" class="form-control" id="reports" name="reports" placeholder="Separar por comas" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Incluye jQuery, Popper.js y Bootstrap JS desde un CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Incluye Font Awesome JS desde un CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+
+    <script>
+        // Función para filtrar los resultados de la lista de clientes
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            var input, filter, ul, li, i, txtValue;
+            input = document.getElementById('searchInput');
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("clientList");
+            li = ul.getElementsByTagName('li');
+
+            for (i = 0; i < li.length; i++) {
+                txtValue = li[i].textContent || li[i].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        });
+
+        // Función para abrir el formulario del cliente en un modal
+        function openClientForm(clientName) {
+            // Actualizar el título del modal con el nombre del cliente
+            document.getElementById('clientFormModalLabel').innerText = `Detalles del Cliente: ${clientName}`;
+            // Limpiar los campos del formulario (puedes personalizar según tus necesidades)
+            document.getElementById('clientForm').reset();
+            // Abrir el modal
+            $('#clientFormModal').modal('show');
+        }
+    </script>
+</body>
+</html>

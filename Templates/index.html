@@ -10,14 +10,66 @@
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <!-- Incluye Font Awesome 6 desde un CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <style>
         body {
+            margin: 0;
+            font-family: Arial, sans-serif;
             background-color: #76818b; /* Fondo gris oscuro */
             color: #ffffff; /* Color de texto blanco para contraste */
         }
+        .sidebar {
+            height: 100vh;
+            width: 50px; /* Ancho cuando está oculto */
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            color: #fff;
+            overflow-x: hidden;
+            transition: width 0.3s, transform 0.3s;
+            padding-top: 20px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.expanded {
+            width: 250px; /* Ancho cuando está expandido */
+        }
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #fff;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+        .sidebar .togglebtn {
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: auto;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 10px;
+            background-color: #333; /* Mismo color que la barra lateral */
+            color: #fff;
+            border: none;
+            width: 100%;
+        }
+        .content {
+            margin-left: 50px; /* Ajusta esto según el ancho de la sidebar cuando está oculta */
+            padding: 20px;
+            transition: margin-left 0.3s, overflow 0.3s;
+        }
+        .sidebar.expanded ~ .content {
+            margin-left: 250px; /* Ajusta esto según el ancho de la sidebar cuando está expandida */
+        }
         .container {
             margin-top: 20px;
-            background-color: #76818b; /* Fondo blanco para el card */
+            background-color: #ffffff; /* Fondo blanco para el card */
             border-radius: 8px; /* Bordes redondeados */
             padding: 20px;
         }
@@ -85,73 +137,132 @@
             border-radius: 8px; /* Bordes redondeados */
             padding: 20px;
         }
+
+
+        .sidebar .menu-text {
+            display: none; /* Oculta el texto por defecto */
+        }
+
+        .sidebar.expanded .menu-text {
+            display: inline; /* Muestra el texto cuando la barra lateral está expandida */
+            margin-left: 10px; /* Espacio entre el ícono y el texto */
+        }
+
+        .menu-image {
+            width: 100%; /* La imagen ocupa todo el ancho de la barra lateral */
+            height: auto; /* Mantiene la proporción de la imagen */
+            padding: 10px 0; /* Espaciado alrededor de la imagen */
+            display: block; /* Asegura que la imagen se muestre como un bloque */
+        }
+
+        .sidebar.expanded .menu-image {
+            display: block; /* Muestra la imagen cuando la barra lateral está expandida */
+        }
+
+        .sidebar:not(.expanded) .menu-image {
+            display: none; /* Oculta la imagen cuando la barra lateral está contraída */
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card mb-4 shadow-lg p-3 mb-5 bg-body-tertiary rounded">
-            <div class="card-header">
-                <h2>Configuración de Parámetros</h2>
-            </div>
-            <div class="card-body">
-                <!-- Campos fuera de la pestaña -->
-                <form method="POST">
-                    <div class="form-group">
-                        <label for="workng_dir">Directorio de Trabajo:</label>
-                        <input type="text" id="workng_dir" name="workng_dir" class="form-control" value="{{ config.get('workng_dir', '') }}">
+    <div class="sidebar" id="mySidebar">
+
+        <!-- <img src="images/sdg_logo.jpg" alt="SDG Logo" class="menu-image"> -->
+        <a href="/home" class="menu-item">
+            <i class="fa-solid fa-house-chimney"></i>
+            <span class="menu-text"> Inicio</span> 
+        </a>
+        <a href="/" class="menu-item">
+            <i class="fa-solid fa-gear"></i>
+            <span class="menu-text"> Configuración</span>
+        </a>
+        <a href="/clientes" class="menu-item">
+            <i class="fa-solid fa-folder-open"></i>
+            <span class="menu-text"> Clientes</span> 
+        </a>
+        <a href="/database" class="menu-item">
+            <i class="fa-solid fa-database"></i>
+            <span class="menu-text"> Base de Datos</span> 
+        </a>
+        
+        <!-- Botón Menú inferior -->
+        <span class="togglebtn" onclick="toggleNav()">
+            <i class="fa-solid fa-angles-right"></i> 
+        </span>
+    </div>
+
+    <div id="main">
+        <div class="content">
+            <!-- Aquí va el contenido de la página -->
+            <div class="container">
+                <div class="card mb-4 shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+                    <div class="card-header">
+                        <h2>Configuración de Parámetros</h2>
                     </div>
-                    <div class="form-group">
-                        <label for="sandbx">Directorio de Sandbox:</label>
-                        <input type="text" id="sandbx" name="sandbx" class="form-control" value="{{ config.get('sandbx', '') }}">
-                    </div>
-                </form>
-                <!-- Pestañas -->
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="layout-mundial-tab" data-toggle="tab" href="#layout-mundial" role="tab" aria-controls="layout-mundial" aria-selected="true">Layout Mundial</a>
-                    </li>
-                </ul>
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="layout-mundial" role="tabpanel" aria-labelledby="layout-mundial-tab">
+                    <div class="card-body">
+                        <!-- Campos fuera de la pestaña -->
                         <form method="POST">
-                            <!-- Campo de reportes oculto -->
-                            <div id="reportes-field" style="display: none;">
-                                <div class="form-group">
-                                    <label for="reportes">Reportes (separados por comas):</label>
-                                    <input type="text" id="reportes" name="reportes" class="form-control" value="{{ ', '.join(config.get('reportes', [])) }}">
-                                </div>
+                            <div class="form-group">
+                                <label for="workng_dir">Directorio de Trabajo:</label>
+                                <input type="text" id="workng_dir" name="workng_dir" class="form-control" value="{{ config.get('workng_dir', '') }}">
                             </div>
-                            <div id="reportes-container">
-                                {% set reportes = config.get('columnas_esperadas', {}) %}
-                                {% for key, columnas in reportes.items() %}
-                                <div class="form-group d-flex align-items-center">
-                                    <label for="columnas_{{ key }}" class="mr-2">{{ key }} Columnas:</label>
-                                    <input type="text" id="columnas_{{ key }}" name="columnas_{{ key }}" class="form-control mr-2" value="{{ ', '.join(columnas) }}">
-                                    <button type="button" class="trash-btn" data-reporte="{{ key }}" onclick="eliminarReporte('{{ key }}')">
-                                        <i class="fa fa-trash-alt"></i> Eliminar
-                                    </button>
-                                    <button type="button" class="btn btn-info ml-2" onclick="editarReporte('{{ key }}')">
-                                        <i class="fa fa-edit"></i> Editar
-                                    </button>
-                                </div>
-                                {% endfor %}
-                            </div>
-                            <div class="btn-left-container">
-                                <button type="button" id="add-reporte-btn" class="btn btn-success" data-toggle="modal" data-target="#addReportModal">
-                                    <i class="fa-regular fa-file-lines"></i> Agregar Reporte
-                                </button>
+                            <div class="form-group">
+                                <label for="sandbx">Directorio de Sandbox:</label>
+                                <input type="text" id="sandbx" name="sandbx" class="form-control" value="{{ config.get('sandbx', '') }}">
                             </div>
                         </form>
+                        <!-- Pestañas -->
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="layout-mundial-tab" data-toggle="tab" href="#layout-mundial" role="tab" aria-controls="layout-mundial" aria-selected="true">Layout Mundial</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="layout-mundial" role="tabpanel" aria-labelledby="layout-mundial-tab">
+                                <form method="POST">
+                                    <!-- Campo de reportes oculto -->
+                                    <div id="reportes-field" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="reportes">Reportes (separados por comas):</label>
+                                            <input type="text" id="reportes" name="reportes" class="form-control" value="{{ ', '.join(config.get('reportes', [])) }}">
+                                        </div>
+                                    </div>
+                                    <div id="reportes-container">
+                                        {% set reportes = config.get('columnas_esperadas', {}) %}
+                                        {% for key, columnas in reportes.items() %}
+                                        <div class="form-group d-flex align-items-center">
+                                            <label for="columnas_{{ key }}" class="mr-2">{{ key }} Columnas:</label>
+                                            <input type="text" id="columnas_{{ key }}" name="columnas_{{ key }}" class="form-control mr-2" value="{{ ', '.join(columnas) }}">
+                                            <button type="button" class="trash-btn" data-reporte="{{ key }}" onclick="eliminarReporte('{{ key }}')">
+                                                <i class="fa fa-trash-alt"></i> Eliminar
+                                            </button>
+                                            <button type="button" class="btn btn-info ml-2" onclick="editarReporte('{{ key }}')">
+                                                <i class="fa fa-edit"></i> Editar
+                                            </button>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="btn-container">
+                                        <div class="btn-left-container">
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addReportModal">
+                                                <i class="fa-regular fa-file-lines"></i> Agregar Reporte
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- Botones fuera de la pestaña -->
+                        <div class="btn-container">
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#dbConfigModal">
+                                <i class="fa-solid fa-database"></i> Configuración bd
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa-solid fa-floppy-disk"></i> Guardar
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <!-- Botones fuera de la pestaña -->
-                <div class="btn-container">
-                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#dbConfigModal">
-                        <i class="fa-solid fa-database"></i> Configuración bd
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-floppy-disk"></i> Guardar
-                    </button>
                 </div>
             </div>
         </div>
@@ -221,9 +332,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
+        function toggleNav() {
+            var sidebar = document.getElementById("mySidebar");
+            var main = document.getElementById("main");
+            var toggleBtn = document.querySelector('.togglebtn');
+            
+            if (sidebar.classList.contains("expanded")) {
+                sidebar.classList.remove("expanded");
+                main.style.marginLeft = '50px'; /* Ajusta el margen para el contenido principal */
+                main.style.overflow = 'auto'; /* Muestra el contenido cuando el menú está cerrado */
+                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>'; /* Cambia al ícono de abrir */
+            } else {
+                sidebar.classList.add("expanded");
+                main.style.marginLeft = '250px'; /* Ajusta el margen para el contenido principal */
+                main.style.overflow = 'hidden'; /* Oculta el contenido cuando el menú está abierto */
+                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i> Ocultar Menú'; /* Cambia al ícono de cerrar y muestra la leyenda */
+            }
+        }
+
+
+
         function editarReporte(reporte) {
             window.location.href = `/edit_reporte/${reporte}`;
         }
+
         function eliminarReporte(reporte) {
             Swal.fire({
                 title: 'Confirmar',

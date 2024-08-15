@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import json
+import os
 
 app = Flask(__name__)
 
@@ -193,6 +194,20 @@ def save_order():
         # Imprimir el error en la consola para depuración
         print(f"Error al guardar el orden de columnas: {e}")
         return jsonify({'success': False, 'error': str(e)})
+    
+@app.route('/clientes')
+def clientes():
+    try:
+        # Ruta a la carpeta CLIENTS
+        folder_path = os.path.join(os.getcwd(), 'CLIENTS')
+        
+        # Obtener la lista de archivos y directorios
+        files = os.listdir(folder_path)
+        
+        return render_template('clientes.html', files=files)
+    except Exception as e:
+        print(f"Error al listar archivos en CLIENTS: {e}")
+        return render_template('clientes.html', files=[], error="No se pudo cargar el contenido de la carpeta CLIENTS.")
 
 
 
