@@ -209,6 +209,114 @@ def clientes():
         print(f"Error al listar archivos en CLIENTS: {e}")
         return render_template('clientes.html', files=[], error="No se pudo cargar el contenido de la carpeta CLIENTS.")
 
+@app.route('/guardar_cliente', methods=['POST'])
+def guardar_cliente():
+    try:
+        # Recibir los datos enviados en el cuerpo de la petición
+        data = request.get_json()
+        client_name = data.get('client_name')
+
+        if not client_name:
+            return jsonify({'success': False, 'error': 'El nombre del cliente es necesario.'})
+
+        registros = data.get('registros', [])
+
+        # Crear la ruta de la carpeta del cliente
+        client_folder = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config')
+        
+        # Crear la carpeta si no existe
+        if not os.path.exists(client_folder):
+            os.makedirs(client_folder)
+
+        # Ruta al archivo de configuración del cliente
+        client_config_path = os.path.join(client_folder, 'config.json')
+
+        # Leer la configuración existente
+        if os.path.exists(client_config_path):
+            with open(client_config_path, 'r') as f:
+                existing_config = json.load(f)
+                existing_branches = {reg['branch'] for reg in existing_config.get('registros', [])}
+        else:
+            existing_config = {'registros': []}
+            existing_branches = set()
+
+        # Filtrar los registros para agregar solo los nuevos
+        nuevos_registros = [registro for registro in registros if registro['branch'] not in existing_branches]
+
+        # Verificar si hay nuevos registros para agregar
+        if not nuevos_registros:
+            return jsonify({'success': False, 'error': 'No hay nuevos registros para agregar.'})
+
+        # Agregar los nuevos registros a los existentes
+        existing_config['registros'].extend(nuevos_registros)
+
+        # Guardar la configuración actualizada en el archivo config.json
+        with open(client_config_path, 'w') as f:
+            json.dump(existing_config, f, indent=4)
+
+        return jsonify({'success': True, 'added_records': nuevos_registros})
+
+    except Exception as e:
+        print(f"Error al guardar los datos del cliente: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+
+@app.route('/cliente_detalles/<client_name>', methods=['GET'])
+def cliente_detalles(client_name):
+    try:
+        # Ruta al archivo de configuración del cliente
+        client_config_path = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config', 'config.json')
+        
+        if os.path.exists(client_config_path):
+            # Leer la configuración existente
+            with open(client_config_path, 'r') as f:
+                client_config = json.load(f)
+        else:
+            client_config = {}
+
+        return jsonify({'success': True, 'data': client_config})
+
+    except Exception as e:
+        print(f"Error al cargar los datos del cliente: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+    
+# Elimina registros
+@app.route('/eliminar_registro', methods=['POST'])
+def eliminar_registro():
+    try:
+        data = request.get_json()
+        client_name = data.get('client_name')
+        branch_to_delete = data.get('branch')
+
+        if not client_name or not branch_to_delete:
+            return jsonify({'success': False, 'error': 'El nombre del cliente y el branch son necesarios.'})
+
+        # Ruta al archivo de configuración del cliente
+        client_folder = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config')
+        client_config_path = os.path.join(client_folder, 'config.json')
+
+        # Leer la configuración existente
+        if os.path.exists(client_config_path):
+            with open(client_config_path, 'r') as f:
+                existing_config = json.load(f)
+
+            # Filtrar los registros para eliminar el branch específico
+            registros_actualizados = [reg for reg in existing_config.get('registros', []) if reg['branch'] != branch_to_delete]
+
+            # Guardar la configuración actualizada en el archivo config.json
+            with open(client_config_path, 'w') as f:
+                json.dump({'registros': registros_actualizados}, f, indent=4)
+
+            return jsonify({'success': True})
+
+        else:
+            return jsonify({'success': False, 'error': 'El archivo de configuración no existe.'})
+
+    except Exception as e:
+        print(f"Error al eliminar el registro del cliente: {e}")
+        return jsonify({'success': False, 'error': 'Error al eliminar el registro.'})
+
+
 
 
 if __name__ == '__main__':
