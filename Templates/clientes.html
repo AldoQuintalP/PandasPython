@@ -214,20 +214,7 @@
                         const registros = clientData.registros || [];
                         registros.forEach(registro => {
                             const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${registro.branch_name || ''}</td>
-                                <td>${registro.branch || ''}</td>
-                                <td>${registro.dms || ''}</td>
-                                <td>${Array.isArray(registro.reports) ? registro.reports.join(', ') : registro.reports || ''}</td>
-                                <td>
-                                    <button type="button" class="btn btn-link p-0 edit-btn">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-link p-0 delete-btn">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </td>
-                            `;
+                            row.innerHTML = createEditableRow(registro.branch_name || '', registro.branch || '', registro.dms || '', Array.isArray(registro.reports) ? registro.reports.join(', ') : registro.reports || '');
                             tableBody.appendChild(row);
                         });
 
@@ -252,7 +239,7 @@
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const row = this.closest('tr');
-                    const branch = row.cells[1].innerText;
+                    const branch = row.cells[1].querySelector('input').value;
                     const clientName = document.getElementById('client_name').value;
 
                     Swal.fire({
@@ -315,16 +302,17 @@
             editButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const row = this.closest('tr');
-                    const branchNameCell = row.cells[0];
-                    const branchCell = row.cells[1];
-                    const dmsCell = row.cells[2];
-                    const reportsCell = row.cells[3];
 
-                    // Convertir las celdas en inputs para permitir la edición
-                    branchNameCell.innerHTML = `<input type="text" class="form-control" value="${branchNameCell.innerText}">`;
-                    branchCell.innerHTML = `<input type="text" class="form-control" value="${branchCell.innerText}">`;
-                    dmsCell.innerHTML = `<input type="text" class="form-control" value="${dmsCell.innerText}">`;
-                    reportsCell.innerHTML = `<input type="text" class="form-control" value="${reportsCell.innerText}">`;
+                    // Reactivar los inputs para la edición
+                    const branchNameInput = row.cells[0].querySelector('input');
+                    const branchInput = row.cells[1].querySelector('input');
+                    const dmsInput = row.cells[2].querySelector('input');
+                    const reportsInput = row.cells[3].querySelector('input');
+
+                    branchNameInput.disabled = false;
+                    branchInput.disabled = false;
+                    dmsInput.disabled = false;
+                    reportsInput.disabled = false;
 
                     // Cambiar el ícono de editar por el de guardar
                     this.innerHTML = `<i class="fa-solid fa-floppy-disk"></i>`;
@@ -344,14 +332,14 @@
                 button.addEventListener('click', function() {
                     const row = this.closest('tr');
 
-                    // Captura los valores antes de cualquier manipulación
-                    const branchNameValue = row.cells[0].querySelector('input').value.trim();
-                    const branchValue = row.cells[1].querySelector('input').value.trim();
-                    const dmsValue = row.cells[2].querySelector('input').value.trim();
-                    const reportsValue = row.cells[3].querySelector('input').value.trim();
+                    // Obtener las referencias a los inputs y los valores actuales
+                    const branchNameInput = row.cells[0].querySelector('input');
+                    const branchInput = row.cells[1].querySelector('input');
+                    const dmsInput = row.cells[2].querySelector('input');
+                    const reportsInput = row.cells[3].querySelector('input');
 
-                    // Asegurarse de que los inputs no estén vacíos antes de guardar
-                    if (!branchNameValue || !branchValue || !dmsValue || !reportsValue) {
+                    // Validar que los campos no estén vacíos
+                    if (!branchNameInput.value.trim() || !branchInput.value.trim() || !dmsInput.value.trim() || !reportsInput.value.trim()) {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Campos incompletos',
@@ -360,16 +348,62 @@
                         return;
                     }
 
-                    // Guardar los nuevos valores en las celdas
-                    row.cells[0].innerText = branchNameValue;
-                    row.cells[1].innerText = branchValue;
-                    row.cells[2].innerText = dmsValue;
-                    row.cells[3].innerText = reportsValue;
+                    // Deshabilitar los inputs en lugar de reemplazarlos por texto
+                    branchNameInput.disabled = true;
+                    branchInput.disabled = true;
+                    dmsInput.disabled = true;
+                    reportsInput.disabled = true;
 
                     // Cambiar el ícono de guardar por el de editar
                     this.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
                     this.classList.remove('save-btn');
                     this.classList.add('edit-btn');
+
+                    // Obtener el nombre del cliente
+                    const clientName = document.getElementById('client_name').value;
+
+                    // Enviar los datos editados al servidor para guardar
+                    const registro = {
+                        branch_name: branchNameInput.value,
+                        branch: branchInput.value,
+                        dms: dmsInput.value,
+                        reports: reportsInput.value.split(', ')
+                    };
+
+                    fetch('/actualizar_registro', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            client_name: clientName,
+                            registro: registro
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Éxito',
+                                text: 'Registro actualizado con éxito'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Error al actualizar el registro: ' + data.error
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al actualizar el registro:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error al actualizar el registro'
+                        });
+                    });
 
                     // Reasociar el evento de edición
                     addEditEventListeners();
@@ -377,6 +411,28 @@
             });
         }
 
+        // Llamar a las funciones de asociación de eventos al cargar la página
+        addEditEventListeners();
+        addSaveEventListeners();
+
+
+        // Función para crear una fila editable
+        function createEditableRow(branchName, branch, dms, reports) {
+            return `
+                <td><input type="text" class="form-control" value="${branchName}" disabled></td>
+                <td><input type="text" class="form-control" value="${branch}" disabled></td>
+                <td><input type="text" class="form-control" value="${dms}" disabled></td>
+                <td><input type="text" class="form-control" value="${reports}" disabled></td>
+                <td>
+                    <button type="button" class="btn btn-link p-0 edit-btn">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button type="button" class="btn btn-link p-0 delete-btn">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            `;
+        }
 
         // Función para mostrar los campos del formulario al presionar "Agregar Registro"
         document.getElementById('addRecordBtn').addEventListener('click', function() {
@@ -403,7 +459,7 @@
             const tableBody = document.getElementById('clientDetailsBody');
             let isDuplicate = false;
             for (let i = 0; i < tableBody.rows.length; i++) {
-                const existingBranch = tableBody.rows[i].cells[1].innerText;
+                const existingBranch = tableBody.rows[i].cells[1].querySelector('input').value;
                 if (existingBranch === branch) {
                     isDuplicate = true;
                     break;
@@ -421,20 +477,7 @@
 
             // Si no se repite, agregar el registro a la tabla
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${branchName}</td>
-                <td>${branch}</td>
-                <td>${dms}</td>
-                <td>${reports}</td>
-                <td>
-                    <button type="button" class="btn btn-link p-0 edit-btn">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </button>
-                    <button type="button" class="btn btn-link p-0 delete-btn">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </td>
-            `;
+            row.innerHTML = createEditableRow(branchName, branch, dms, reports);
             tableBody.appendChild(row);
             document.getElementById('clientDetailsTable').style.display = 'table';
 
@@ -468,10 +511,10 @@
             for (let i = 0; i < tableBody.rows.length; i++) {
                 const cells = tableBody.rows[i].cells;
                 const registro = {
-                    branch_name: cells[0].innerText,
-                    branch: cells[1].innerText,
-                    dms: cells[2].innerText,
-                    reports: cells[3].innerText.split(', ')
+                    branch_name: cells[0].querySelector('input').value,
+                    branch: cells[1].querySelector('input').value,
+                    dms: cells[2].querySelector('input').value,
+                    reports: cells[3].querySelector('input').value.split(', ')
                 };
                 registros.push(registro);
             }

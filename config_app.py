@@ -316,7 +316,40 @@ def eliminar_registro():
         print(f"Error al eliminar el registro del cliente: {e}")
         return jsonify({'success': False, 'error': 'Error al eliminar el registro.'})
 
+@app.route('/actualizar_registro', methods=['POST'])
+def actualizar_registro():
+    try:
+        data = request.json
+        registro_actualizado = data['registro']
+        print(f'Registro actualizado: {registro_actualizado}')
 
+        # Leer el archivo de configuración
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+
+        # Verificar que hay registros en el archivo de configuración
+        # registros = config.get('registros', [])
+        # print(f'Registros: {registros}')
+        # if not registros:
+        #     return jsonify({'success': False, 'error': 'No se encontraron registros para actualizar'})
+
+        # Buscar y actualizar el registro específico por 'branch'
+        # for i, registro in enumerate(registros):
+        #     if registro['branch'] == registro_actualizado['branch']:
+        #         registros[i] = registro_actualizado  # Actualizar el registro existente
+        #         break
+        # else:
+        #     return jsonify({'success': False, 'error': 'Branch no encontrado'})
+
+        # Guardar la configuración actualizada
+        with open('config.json', 'w') as f:
+            json.dump(config, f, indent=4)
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo actualizar el registro.'})
 
 
 if __name__ == '__main__':
