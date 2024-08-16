@@ -371,5 +371,40 @@ def actualizar_registro():
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo actualizar el registro.'})
 
+# Editar Formula de las col
+@app.route('/save-formula', methods=['POST'])
+def save_formula():
+    try:
+        reporte = request.form.get('reporte')
+        columna = request.form.get('columna')
+        formula = request.form.get('formula')
+
+        if not reporte or not columna:
+            return jsonify({'success': False, 'error': 'Reporte y columna son necesarios.'})
+
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+
+        # Verificar si el reporte existe
+        if reporte not in config['columnas_esperadas']:
+            return jsonify({'success': False, 'error': 'El reporte no existe.'})
+
+        # Aquí podrías implementar la lógica para almacenar la fórmula
+        # Por ejemplo, podrías almacenar las fórmulas en un diccionario adicional dentro de `config.json`
+        # Por simplicidad, asumiré que agregamos una clave 'formulas' en `config['columnas_esperadas'][reporte]`
+        if 'formulas' not in config['columnas_esperadas'][reporte]:
+            config['columnas_esperadas'][reporte]['formulas'] = {}
+
+        config['columnas_esperadas'][reporte]['formulas'][columna] = formula
+
+        with open('config.json', 'w') as f:
+            json.dump(config, f, indent=4)
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        print(f"Error al guardar la fórmula: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo guardar la fórmula.'})
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -6,9 +6,19 @@
     <title>Editar Reporte</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <!-- Incluye Font Awesome desde un CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         .list-group-item {
             cursor: move;
+        }
+        .edit-formula-btn {
+            color: #28a745; /* Color verde */
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .edit-formula-btn i {
+            margin-right: 5px;
         }
     </style>
 </head>
@@ -18,10 +28,42 @@
         <h2>Columnas</h2>
         <ul id="columnas-list" class="list-group">
             {% for columna in columnas %}
-            <li class="list-group-item" data-columna="{{ columna }}">{{ columna }}</li>
+            <li class="list-group-item d-flex justify-content-between align-items-center" data-columna="{{ columna }}">
+                {{ columna }}
+                <button type="button" class="btn btn-link edit-formula-btn" data-columna="{{ columna }}" data-toggle="modal" data-target="#formulaModal">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i> Editar fórmula
+                </button>
+            </li>
             {% endfor %}
         </ul>
         <button id="save-order" class="btn btn-primary mt-3">Guardar Orden</button>
+    </div>
+
+    <!-- Modal para editar fórmula -->
+    <div class="modal fade" id="formulaModal" tabindex="-1" role="dialog" aria-labelledby="formulaModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="formulaModalLabel">Editar Fórmula</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formulaForm">
+                        <div class="form-group">
+                            <label for="formulaInput">Fórmula para la columna <span id="columnaFormula"></span>:</label>
+                            <input type="text" class="form-control" id="formulaInput" name="formula">
+                            <input type="hidden" id="columnaInput" name="columna">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="saveFormulaBtn">Guardar Fórmula</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -59,6 +101,55 @@
                 alert('Error al guardar el orden');
             });
         });
+
+        // Manejar la apertura del modal de edición de fórmula
+        document.querySelectorAll('.edit-formula-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const columna = this.getAttribute('data-columna');
+                document.getElementById('columnaFormula').innerText = columna;
+                document.getElementById('columnaInput').value = columna;
+
+                // Aquí podrías cargar la fórmula actual si está guardada
+                // Por ahora, simplemente limpiamos el campo de entrada
+                document.getElementById('formulaInput').value = '';
+            });
+        });
+
+        // Manejar el guardado de la fórmula
+        document.getElementById('saveFormulaBtn').addEventListener('click', function () {
+            const formula = document.getElementById('formulaInput').value;
+            const columna = document.getElementById('columnaInput').value;
+
+            fetch('/save-formula', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    reporte: '{{ reporte_nombre }}',
+                    columna: columna,
+                    formula: formula
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Fórmula guardada exitosamente');
+                    $('#formulaModal').modal('hide');
+                } else {
+                    alert('Error al guardar la fórmula');
+                }
+            })
+            .catch(error => {
+                console.error('Error al guardar la fórmula:', error);
+                alert('Error al guardar la fórmula');
+            });
+        });
     </script>
+
+    <!-- Incluye jQuery, Popper.js y Bootstrap JS desde un CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
