@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import json
 import os
+import uuid  # Importar la biblioteca para generar UUIDs
 
 app = Flask(__name__)
 
@@ -321,36 +322,54 @@ def actualizar_registro():
     try:
         data = request.json
         registro_actualizado = data['registro']
-        print(f'Registro actualizado: {registro_actualizado}')
+        client_name = data['client_name']
 
-        # Leer el archivo de configuración
-        with open('config.json', 'r') as f:
-            config = json.load(f)
+        # Verificar si el registro tiene un id, si no, generarlo
+        registro_id = registro_actualizado.get('id')
+        if not registro_id:
+            registro_id = str(uuid.uuid4())
+            registro_actualizado['id'] = registro_id
 
-        # Verificar que hay registros en el archivo de configuración
-        # registros = config.get('registros', [])
-        # print(f'Registros: {registros}')
-        # if not registros:
-        #     return jsonify({'success': False, 'error': 'No se encontraron registros para actualizar'})
+        print(f"Registro recibido: {registro_actualizado}")
+        print(f"Cliente: {client_name}")
 
-        # Buscar y actualizar el registro específico por 'branch'
-        # for i, registro in enumerate(registros):
-        #     if registro['branch'] == registro_actualizado['branch']:
-        #         registros[i] = registro_actualizado  # Actualizar el registro existente
-        #         break
-        # else:
-        #     return jsonify({'success': False, 'error': 'Branch no encontrado'})
+        # Leer el archivo de configuración del cliente específico
+        client_config_path = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config', 'config.json')
 
-        # Guardar la configuración actualizada
-        with open('config.json', 'w') as f:
-            json.dump(config, f, indent=4)
+        if os.path.exists(client_config_path):
+            with open(client_config_path, 'r') as f:
+                client_config = json.load(f)
 
-        return jsonify({'success': True})
+            # Validar que no haya otro registro con el mismo branch
+            for registro in client_config.get('registros', []):
+                if registro['branch'] == registro_actualizado['branch'] and registro['id'] != registro_id:
+                    return jsonify({'success': False, 'error': 'Branch ya existe en otro registro.'})
+
+            # Buscar el registro por ID para actualizarlo o añadirlo si no existe
+            registro_encontrado = None
+            for i, registro in enumerate(client_config.get('registros', [])):
+                if registro.get('id') == registro_id:
+                    registro_encontrado = i
+                    break
+
+            if registro_encontrado is not None:
+                # Actualizar el registro encontrado
+                client_config['registros'][registro_encontrado] = registro_actualizado
+            else:
+                # Añadir el nuevo registro si no se encontró
+                client_config['registros'].append(registro_actualizado)
+
+            # Guardar la configuración actualizada
+            with open(client_config_path, 'w') as f:
+                json.dump(client_config, f, indent=4)
+
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'Archivo de configuración no encontrado'})
 
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo actualizar el registro.'})
-
 
 if __name__ == '__main__':
     app.run(debug=True)
