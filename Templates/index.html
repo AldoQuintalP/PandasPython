@@ -15,12 +15,12 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa; /* Fondo gris oscuro */
-            color: #ffffff; /* Color de texto blanco para contraste */
+            background-color: #f8f9fa;
+            color: #ffffff;
         }
         .sidebar {
             height: 100vh;
-            width: 50px; /* Ancho cuando está oculto */
+            width: 50px;
             position: fixed;
             top: 0;
             left: 0;
@@ -34,7 +34,7 @@
             flex-direction: column;
         }
         .sidebar.expanded {
-            width: 250px; /* Ancho cuando está expandido */
+            width: 250px;
         }
         .sidebar a {
             padding: 15px 20px;
@@ -54,38 +54,38 @@
             margin-bottom: 15px;
             text-align: center;
             padding: 10px;
-            background-color: #333; /* Mismo color que la barra lateral */
+            background-color: #333;
             color: #fff;
             border: none;
             width: 100%;
         }
         .content {
-            margin-left: 50px; /* Ajusta esto según el ancho de la sidebar cuando está oculta */
+            margin-left: 50px;
             padding: 20px;
             transition: margin-left 0.3s, overflow 0.3s;
         }
         .sidebar.expanded ~ .content {
-            margin-left: 250px; /* Ajusta esto según el ancho de la sidebar cuando está expandida */
+            margin-left: 250px;
         }
         .container {
             margin-top: 20px;
-            background-color: #ffffff; /* Fondo blanco para el card */
-            border-radius: 8px; /* Bordes redondeados */
+            background-color: #ffffff;
+            border-radius: 8px;
             padding: 20px;
         }
         .card {
-            background-color: #f8f9fa; /* Fondo gris claro para el interior del card */
+            background-color: #f8f9fa;
         }
         .card-header {
-            background-color: #e9ecef; /* Fondo gris más claro para el encabezado del card */
+            background-color: #e9ecef;
         }
         .card-body {
-            background-color: #f1f3f5; /* Fondo gris claro para el contenido del card */
-            border-radius: 8px; /* Bordes redondeados */
+            background-color: #f1f3f5;
+            border-radius: 8px;
             padding: 20px;
         }
         .card-header h2, .card-header h5, .form-group label {
-            color: #000000; /* Color negro para los títulos */
+            color: #000000;
         }
         .form-group {
             margin-bottom: 15px;
@@ -119,56 +119,56 @@
         .card-header h5 {
             margin-bottom: 0;
         }
-        /* Agregar un margen superior de 1 cm al primer registro en la pestaña */
         .tab-pane .form-group:first-of-type {
             margin-top: 1cm;
         }
-        /* Fondo blanco para las pestañas y su contenido */
         .nav-tabs .nav-link {
-            background-color: #ffffff; /* Fondo blanco para la pestaña activa e inactiva */
-            color: #000000; /* Color negro para el texto de la pestaña */
+            background-color: #ffffff;
+            color: #000000;
         }
         .nav-tabs .nav-link.active {
-            background-color: #ffffff; /* Fondo blanco para la pestaña activa */
-            color: #000000; /* Color negro para el texto de la pestaña activa */
+            background-color: #ffffff;
+            color: #000000;
         }
         .tab-content {
-            background-color: #ffffff; /* Fondo blanco para el contenido de las pestañas */
-            border-radius: 8px; /* Bordes redondeados */
+            background-color: #ffffff;
+            border-radius: 8px;
             padding: 20px;
         }
-
-
         .sidebar .menu-text {
-            display: none; /* Oculta el texto por defecto */
+            display: none;
         }
-
         .sidebar.expanded .menu-text {
-            display: inline; /* Muestra el texto cuando la barra lateral está expandida */
-            margin-left: 10px; /* Espacio entre el ícono y el texto */
+            display: inline;
+            margin-left: 10px;
         }
-
         .menu-image {
-            width: 100%; /* La imagen ocupa todo el ancho de la barra lateral */
-            height: auto; /* Mantiene la proporción de la imagen */
-            padding: 10px 0; /* Espaciado alrededor de la imagen */
-            display: block; /* Asegura que la imagen se muestre como un bloque */
+            width: 100%;
+            height: auto;
+            padding: 10px 0;
+            display: block;
         }
-
         .sidebar.expanded .menu-image {
-            display: block; /* Muestra la imagen cuando la barra lateral está expandida */
+            display: block;
         }
-
         .sidebar:not(.expanded) .menu-image {
-            display: none; /* Oculta la imagen cuando la barra lateral está contraída */
+            display: none;
+        }
+        /* Cambiar el color del texto en los modales a negro */
+        .modal-content {
+            color: #000000; /* Texto en color negro */
         }
 
+        /* Asegurar que el texto dentro de la lista y los campos de texto también sean negros */
+        .modal-content .list-group-item,
+        .modal-content textarea,
+        .modal-content h5 {
+            color: #000000; /* Texto en color negro */
+        }
     </style>
 </head>
 <body>
     <div class="sidebar" id="mySidebar">
-
-        <!-- <img src="images/sdg_logo.jpg" alt="SDG Logo" class="menu-image"> -->
         <a href="/home" class="menu-item">
             <i class="fa-solid fa-house-chimney"></i>
             <span class="menu-text"> Inicio</span> 
@@ -185,8 +185,6 @@
             <i class="fa-solid fa-database"></i>
             <span class="menu-text"> Base de Datos</span> 
         </a>
-        
-        <!-- Botón Menú inferior -->
         <span class="togglebtn" onclick="toggleNav()">
             <i class="fa-solid fa-angles-right"></i> 
         </span>
@@ -194,14 +192,12 @@
 
     <div id="main">
         <div class="content">
-            <!-- Aquí va el contenido de la página -->
             <div class="container">
                 <div class="card mb-4 shadow-lg p-3 mb-5 bg-body-tertiary rounded">
                     <div class="card-header">
                         <h2>Configuración de Parámetros</h2>
                     </div>
                     <div class="card-body">
-                        <!-- Campos fuera de la pestaña -->
                         <form method="POST">
                             <div class="form-group">
                                 <label for="workng_dir">Directorio de Trabajo:</label>
@@ -212,7 +208,6 @@
                                 <input type="text" id="sandbx" name="sandbx" class="form-control" value="{{ config.get('sandbx', '') }}">
                             </div>
                         </form>
-                        <!-- Pestañas -->
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="layout-mundial-tab" data-toggle="tab" href="#layout-mundial" role="tab" aria-controls="layout-mundial" aria-selected="true">Layout Mundial</a>
@@ -221,7 +216,6 @@
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="layout-mundial" role="tabpanel" aria-labelledby="layout-mundial-tab">
                                 <form method="POST">
-                                    <!-- Campo de reportes oculto -->
                                     <div id="reportes-field" style="display: none;">
                                         <div class="form-group">
                                             <label for="reportes">Reportes (separados por comas):</label>
@@ -230,15 +224,18 @@
                                     </div>
                                     <div id="reportes-container">
                                         {% set reportes = config.get('columnas_esperadas', {}) %}
-                                        {% for key, columnas in reportes.items() %}
+                                        {% for key, value in reportes.items() %}
                                         <div class="form-group d-flex align-items-center">
                                             <label for="columnas_{{ key }}" class="mr-2">{{ key }} Columnas:</label>
-                                            <input type="text" id="columnas_{{ key }}" name="columnas_{{ key }}" class="form-control mr-2" value="{{ ', '.join(columnas) }}">
+                                            <input type="text" id="columnas_{{ key }}" name="columnas_{{ key }}" class="form-control mr-2" value="{{ ', '.join(value.get('columnas', [])) }}">
                                             <button type="button" class="trash-btn" data-reporte="{{ key }}" onclick="eliminarReporte('{{ key }}')">
                                                 <i class="fa fa-trash-alt"></i> Eliminar
                                             </button>
                                             <button type="button" class="btn btn-info ml-2" onclick="editarReporte('{{ key }}')">
                                                 <i class="fa fa-edit"></i> Editar
+                                            </button>
+                                            <button type="button" class="btn btn-success ml-2" data-toggle="modal" data-target="#selectColumnModal" onclick="selectColumn('{{ key }}')">
+                                                <i class="fa fa-calculator"></i> Función
                                             </button>
                                         </div>
                                         {% endfor %}
@@ -253,7 +250,6 @@
                                 </form>
                             </div>
                         </div>
-                        <!-- Botones fuera de la pestaña -->
                         <div class="btn-container">
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#dbConfigModal">
                                 <i class="fa-solid fa-database"></i> Configuración bd
@@ -263,6 +259,55 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para seleccionar una columna -->
+    <div class="modal fade" id="selectColumnModal" tabindex="-1" role="dialog" aria-labelledby="selectColumnModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="selectColumnModalLabel">Seleccionar Columna para la Fórmula</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul id="column-select-list" class="list-group">
+                        <!-- Columnas se cargarán aquí -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar una fórmula -->
+    <div class="modal fade" id="functionModal" tabindex="-1" role="dialog" aria-labelledby="functionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="functionModalLabel">Crear Función</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex">
+                    <div class="col-4">
+                        <h6>Columnas Disponibles:</h6>
+                        <ul id="column-list" class="list-group">
+                            <!-- Columnas se cargarán aquí -->
+                        </ul>
+                    </div>
+                    <div class="col-8">
+                        <h6>Fórmula para <span id="selected-column-name"></span>:</h6>
+                        <textarea id="formula-text" class="form-control" rows="6"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="save-formula-btn">Guardar Fórmula</button>
                 </div>
             </div>
         </div>
@@ -339,18 +384,16 @@
             
             if (sidebar.classList.contains("expanded")) {
                 sidebar.classList.remove("expanded");
-                main.style.marginLeft = '50px'; /* Ajusta el margen para el contenido principal */
-                main.style.overflow = 'auto'; /* Muestra el contenido cuando el menú está cerrado */
-                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>'; /* Cambia al ícono de abrir */
+                main.style.marginLeft = '50px';
+                main.style.overflow = 'auto';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
             } else {
                 sidebar.classList.add("expanded");
-                main.style.marginLeft = '250px'; /* Ajusta el margen para el contenido principal */
-                main.style.overflow = 'hidden'; /* Oculta el contenido cuando el menú está abierto */
-                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i> Ocultar Menú'; /* Cambia al ícono de cerrar y muestra la leyenda */
+                main.style.marginLeft = '250px';
+                main.style.overflow = 'hidden';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i> Ocultar Menú';
             }
         }
-
-
 
         function editarReporte(reporte) {
             window.location.href = `/edit_reporte/${reporte}`;
@@ -380,7 +423,7 @@
                             document.querySelector(`button[data-reporte="${reporte}"]`).closest('.form-group').remove();
                             Swal.fire('Eliminado', 'El reporte ha sido eliminado.', 'success')
                             .then(() => {
-                                location.reload(); // Recargar la página después de eliminar
+                                location.reload();
                             });
                         } else {
                             Swal.fire('Error', data.error, 'error');
@@ -394,7 +437,6 @@
             });
         }
 
-        // Añadir nuevos reportes
         document.getElementById('save-report-btn').addEventListener('click', function() {
             var form = document.getElementById('addReportForm');
             fetch('/add-reporte', {
@@ -406,7 +448,7 @@
                 if (data.success) {
                     Swal.fire('Éxito', 'Reporte agregado correctamente', 'success')
                     .then(() => {
-                        location.reload(); // Recargar la página para mostrar el nuevo reporte
+                        location.reload();
                     });
                 } else {
                     Swal.fire('Error', data.error, 'error');
@@ -418,7 +460,6 @@
             });
         });
 
-        // Manejo del formulario de configuración
         document.querySelector('form').addEventListener('submit', function(event) {
             event.preventDefault();
             var form = event.target;
@@ -437,6 +478,74 @@
             .catch(error => {
                 console.error('Error:', error);
                 Swal.fire('Error', 'No se pudo guardar la configuración', 'error');
+            });
+        });
+
+        function selectColumn(reporte) {
+            const columnas = document.getElementById(`columnas_${reporte}`).value.split(',').map(col => col.trim());
+            const columnSelectList = document.getElementById('column-select-list');
+            columnSelectList.innerHTML = '';
+
+            columnas.forEach(col => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.textContent = col;
+                listItem.addEventListener('click', () => {
+                    $('#selectColumnModal').modal('hide');
+                    openFunctionModal(reporte, col);
+                });
+                columnSelectList.appendChild(listItem);
+            });
+
+            $('#selectColumnModal').modal('show');
+        }
+
+        function openFunctionModal(reporte, columna) {
+            const columnas = document.getElementById(`columnas_${reporte}`).value.split(',').map(col => col.trim());
+            const columnList = document.getElementById('column-list');
+            columnList.innerHTML = '';
+
+            columnas.forEach(col => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.textContent = col;
+                listItem.addEventListener('click', () => {
+                    document.getElementById('formula-text').value += ` ${col}`;
+                });
+                columnList.appendChild(listItem);
+            });
+
+            document.getElementById('selected-column-name').textContent = columna;
+            document.getElementById('functionModal').setAttribute('data-reporte', reporte);
+            document.getElementById('functionModal').setAttribute('data-columna', columna);
+            $('#functionModal').modal('show');
+        }
+
+        document.getElementById('save-formula-btn').addEventListener('click', function() {
+            const reporte = document.getElementById('functionModal').getAttribute('data-reporte');
+            const columna = document.getElementById('functionModal').getAttribute('data-columna');
+            const formula = document.getElementById('formula-text').value;
+
+            fetch('/save-formula', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    reporte: reporte,
+                    columna: columna,
+                    formula: formula
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Éxito', 'Fórmula guardada correctamente', 'success');
+                    $('#functionModal').modal('hide');
+                } else {
+                    Swal.fire('Error', data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'No se pudo guardar la fórmula', 'error');
             });
         });
     </script>

@@ -5,11 +5,24 @@ import uuid  # Importar la biblioteca para generar UUIDs
 
 app = Flask(__name__)
 
+def cargar_config():
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+    
+    # Asegurarse de que cada reporte tenga la estructura adecuada
+    for reporte, data in config.get('columnas_esperadas', {}).items():
+        if isinstance(data, list):
+            config['columnas_esperadas'][reporte] = {
+                'columnas': data,
+                'formulas': {}
+            }
+    return config
+
+
 # Ruta para cargar la configuración
 @app.route('/')
 def index():
-    with open('config.json', 'r') as f:
-        config = json.load(f)
+    config = cargar_config()
     return render_template('index.html', config=config)
 
 # Ruta para guardar la configuración principal
@@ -17,9 +30,7 @@ def index():
 def save_config():
     try:
         data = request.form
-        # Cargar configuración existente
-        with open('config.json', 'r') as f:
-            config = json.load(f)
+        config = cargar_config()
 
         # Actualizar configuraciones principales
         config['workng_dir'] = data.get('workng_dir', '')
@@ -34,7 +45,10 @@ def save_config():
                 columnas = [col.strip() for col in data.get(key, '').split(',') if col.strip()]
                 if reporte in columnas_esperadas:
                     return jsonify({'success': False, 'error': f'El reporte "{reporte}" ya está agregado.'})
-                columnas_esperadas[reporte] = columnas
+                columnas_esperadas[reporte] = {
+                    'columnas': columnas,
+                    'formulas': {}
+                }
         
         config['columnas_esperadas'] = columnas_esperadas
 
@@ -53,8 +67,7 @@ def save_config():
 def save_db_config():
     try:
         data = request.form
-        with open('config.json', 'r') as f:
-            config = json.load(f)
+        config = cargar_config()
 
         config['db'] = {
             'host': data.get('db_host', ''),
@@ -83,13 +96,15 @@ def add_reporte():
         if not nombre:
             return jsonify({'success': False, 'error': 'El nombre del reporte no puede estar vacío.'})
 
-        with open('config.json', 'r') as f:
-            config = json.load(f)
+        config = cargar_config()
 
         if nombre in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte ya existe.'})
 
-        config['columnas_esperadas'][nombre] = columnas
+        config['columnas_esperadas'][nombre] = {
+            'columnas': columnas,
+            'formulas': {}
+        }
 
         # Añadir el nombre del reporte a la lista de reportes
         if nombre not in config['reportes']:
@@ -113,8 +128,7 @@ def delete_reporte():
         if not reporte:
             return jsonify({'success': False, 'error': 'El reporte no puede estar vacío.'})
 
-        with open('config.json', 'r') as f:
-            config = json.load(f)
+        config = cargar_config()
 
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe.'})
@@ -134,77 +148,63 @@ def delete_reporte():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo eliminar el reporte.'})
-    
-def obtener_columnas(reporte):
-    try:
-        with open('config.json', 'r') as f:
-            config = json.load(f)
-        
-        # Obtener las columnas para el reporte específico
-        columnas = config.get('columnas_esperadas', {}).get(reporte, [])
-        return columnas
-    except Exception as e:
-        print(f"Error al obtener las columnas: {e}")
-        return []
 
 @app.route('/edit_reporte/<reporte>', methods=['GET'])
 def edit_reporte(reporte):
-    # Lógica para obtener datos del reporte y renderizar la plantilla
-    columnas = obtener_columnas(reporte)  # Implementa esta función según tus necesidades
-    return render_template('edit_reporte.html', reporte_nombre=reporte, columnas=columnas)
+    config = cargar_config()
+    columnas_info = config['columnas_esperadas'].get(reporte, {'columnas': [], 'formulas': {}})
+    
+    # Asegurarse de que columnas_info sea un diccionario
+    if isinstance(columnas_info, list):
+        columnas_info = {'columnas': columnas_info, 'formulas': {}}
+
+    columnas = columnas_info.get('columnas', [])
+    formulas = columnas_info.get('formulas', {})
+
+    return render_template('edit_reporte.html', reporte_nombre=reporte, columnas=columnas, formulas=formulas)
 
 @app.route('/save-order', methods=['POST'])
 def save_order():
     try:
-        # Obtener los datos enviados desde el frontend
         reporte = request.form.get('reporte')
         columnas_ordenadas = request.form.get('columnas')
 
         if not reporte or not columnas_ordenadas:
             return jsonify({'success': False, 'error': 'Datos incompletos.'})
 
-        # Intentar decodificar el JSON
         try:
             columnas_ordenadas = json.loads(columnas_ordenadas)
         except json.JSONDecodeError:
             return jsonify({'success': False, 'error': 'El formato de columnas es inválido.'})
 
-        # Leer el archivo de configuración
-        with open('config.json', 'r') as f:
-            config = json.load(f)
+        config = cargar_config()
 
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe en la configuración.'})
 
-        columnas_originales = config['columnas_esperadas'][reporte]
+        # Asegurarse de que la entrada es un diccionario con 'columnas' y 'formulas'
+        if isinstance(config['columnas_esperadas'][reporte], list):
+            config['columnas_esperadas'][reporte] = {
+                'columnas': config['columnas_esperadas'][reporte],
+                'formulas': {}
+            }
 
-        # Verificar que todas las columnas ordenadas están en las columnas originales
-        if set(columnas_ordenadas) != set(columnas_originales):
-            return jsonify({'success': False, 'error': 'El nuevo orden contiene columnas no válidas.'})
+        config['columnas_esperadas'][reporte]['columnas'] = columnas_ordenadas
 
-        # Actualizar el orden de las columnas para el reporte específico
-        config['columnas_esperadas'][reporte] = columnas_ordenadas
-
-        # Guardar la configuración actualizada
         with open('config.json', 'w') as f:
             json.dump(config, f, indent=4)
 
         return jsonify({'success': True})
 
     except Exception as e:
-        # Imprimir el error en la consola para depuración
         print(f"Error al guardar el orden de columnas: {e}")
         return jsonify({'success': False, 'error': str(e)})
-    
+
 @app.route('/clientes')
 def clientes():
     try:
-        # Ruta a la carpeta CLIENTS
         folder_path = os.path.join(os.getcwd(), 'CLIENTS')
-        
-        # Obtener la lista de archivos y directorios
         files = os.listdir(folder_path)
-        
         return render_template('clientes.html', files=files)
     except Exception as e:
         print(f"Error al listar archivos en CLIENTS: {e}")
@@ -213,7 +213,6 @@ def clientes():
 @app.route('/guardar_cliente', methods=['POST'])
 def guardar_cliente():
     try:
-        # Recibir los datos enviados en el cuerpo de la petición
         data = request.get_json()
         client_name = data.get('client_name')
 
@@ -222,17 +221,12 @@ def guardar_cliente():
 
         registros = data.get('registros', [])
 
-        # Crear la ruta de la carpeta del cliente
         client_folder = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config')
-        
-        # Crear la carpeta si no existe
         if not os.path.exists(client_folder):
             os.makedirs(client_folder)
 
-        # Ruta al archivo de configuración del cliente
         client_config_path = os.path.join(client_folder, 'config.json')
 
-        # Leer la configuración existente
         if os.path.exists(client_config_path):
             with open(client_config_path, 'r') as f:
                 existing_config = json.load(f)
@@ -241,7 +235,6 @@ def guardar_cliente():
             existing_config = {'registros': []}
             existing_branches = set()
 
-        # Filtrar los registros para agregar solo los nuevos
         nuevos_registros = [registro for registro in registros if registro['branch'] not in existing_branches]
 
         # Verificar si hay nuevos registros para agregar
@@ -261,15 +254,12 @@ def guardar_cliente():
         print(f"Error al guardar los datos del cliente: {e}")
         return jsonify({'success': False, 'error': str(e)})
 
-
 @app.route('/cliente_detalles/<client_name>', methods=['GET'])
 def cliente_detalles(client_name):
     try:
-        # Ruta al archivo de configuración del cliente
         client_config_path = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config', 'config.json')
         
         if os.path.exists(client_config_path):
-            # Leer la configuración existente
             with open(client_config_path, 'r') as f:
                 client_config = json.load(f)
         else:
@@ -280,8 +270,7 @@ def cliente_detalles(client_name):
     except Exception as e:
         print(f"Error al cargar los datos del cliente: {e}")
         return jsonify({'success': False, 'error': str(e)})
-    
-# Elimina registros
+
 @app.route('/eliminar_registro', methods=['POST'])
 def eliminar_registro():
     try:
@@ -292,19 +281,15 @@ def eliminar_registro():
         if not client_name or not branch_to_delete:
             return jsonify({'success': False, 'error': 'El nombre del cliente y el branch son necesarios.'})
 
-        # Ruta al archivo de configuración del cliente
         client_folder = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config')
         client_config_path = os.path.join(client_folder, 'config.json')
 
-        # Leer la configuración existente
         if os.path.exists(client_config_path):
             with open(client_config_path, 'r') as f:
                 existing_config = json.load(f)
 
-            # Filtrar los registros para eliminar el branch específico
             registros_actualizados = [reg for reg in existing_config.get('registros', []) if reg['branch'] != branch_to_delete]
 
-            # Guardar la configuración actualizada en el archivo config.json
             with open(client_config_path, 'w') as f:
                 json.dump({'registros': registros_actualizados}, f, indent=4)
 
@@ -324,28 +309,21 @@ def actualizar_registro():
         registro_actualizado = data['registro']
         client_name = data['client_name']
 
-        # Verificar si el registro tiene un id, si no, generarlo
         registro_id = registro_actualizado.get('id')
         if not registro_id:
             registro_id = str(uuid.uuid4())
             registro_actualizado['id'] = registro_id
 
-        print(f"Registro recibido: {registro_actualizado}")
-        print(f"Cliente: {client_name}")
-
-        # Leer el archivo de configuración del cliente específico
         client_config_path = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config', 'config.json')
 
         if os.path.exists(client_config_path):
             with open(client_config_path, 'r') as f:
                 client_config = json.load(f)
 
-            # Validar que no haya otro registro con el mismo branch
             for registro in client_config.get('registros', []):
                 if registro['branch'] == registro_actualizado['branch'] and registro['id'] != registro_id:
                     return jsonify({'success': False, 'error': 'Branch ya existe en otro registro.'})
 
-            # Buscar el registro por ID para actualizarlo o añadirlo si no existe
             registro_encontrado = None
             for i, registro in enumerate(client_config.get('registros', [])):
                 if registro.get('id') == registro_id:
@@ -353,13 +331,10 @@ def actualizar_registro():
                     break
 
             if registro_encontrado is not None:
-                # Actualizar el registro encontrado
                 client_config['registros'][registro_encontrado] = registro_actualizado
             else:
-                # Añadir el nuevo registro si no se encontró
                 client_config['registros'].append(registro_actualizado)
 
-            # Guardar la configuración actualizada
             with open(client_config_path, 'w') as f:
                 json.dump(client_config, f, indent=4)
 
@@ -371,7 +346,7 @@ def actualizar_registro():
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo actualizar el registro.'})
 
-# Editar Formula de las col
+# Editar Formula de las columnas
 @app.route('/save-formula', methods=['POST'])
 def save_formula():
     try:
@@ -382,18 +357,17 @@ def save_formula():
         if not reporte or not columna:
             return jsonify({'success': False, 'error': 'Reporte y columna son necesarios.'})
 
-        with open('config.json', 'r') as f:
-            config = json.load(f)
+        config = cargar_config()
 
-        # Verificar si el reporte existe
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe.'})
 
-        # Aquí podrías implementar la lógica para almacenar la fórmula
-        # Por ejemplo, podrías almacenar las fórmulas en un diccionario adicional dentro de `config.json`
-        # Por simplicidad, asumiré que agregamos una clave 'formulas' en `config['columnas_esperadas'][reporte]`
-        if 'formulas' not in config['columnas_esperadas'][reporte]:
-            config['columnas_esperadas'][reporte]['formulas'] = {}
+        # Asegurarse de que el reporte esté en formato dict
+        if isinstance(config['columnas_esperadas'][reporte], list):
+            config['columnas_esperadas'][reporte] = {
+                'columnas': config['columnas_esperadas'][reporte],
+                'formulas': {}
+            }
 
         config['columnas_esperadas'][reporte]['formulas'][columna] = formula
 
