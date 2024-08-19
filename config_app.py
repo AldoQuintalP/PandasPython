@@ -1,10 +1,14 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import os
-import uuid  # Importar la biblioteca para generar UUIDs
+import uuid
 
 app = Flask(__name__)
 
+# Cargar la configuración desde config.json
 def cargar_config():
     with open('config.json', 'r') as f:
         config = json.load(f)
@@ -18,26 +22,89 @@ def cargar_config():
             }
     return config
 
+# Cargar la configuración de la base de datos desde config.json
+config = cargar_config()
+db_config = config.get('db', {})
+app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{db_config.get('usuario')}:{db_config.get('contrasena')}@{db_config.get('host')}/{db_config.get('base_de_datos')}"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Ruta para cargar la configuración
+db = SQLAlchemy(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        hashed_password = generate_password_hash(password, method='sha256')
+
+        new_user = User(username=username, email=email, password=hashed_password)
+
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Usuario registrado exitosamente', category='success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            flash('Error al registrar usuario: {}'.format(e), category='danger')
+            return redirect(url_for('register'))
+
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            flash('Inicio de sesión exitoso', category='success')
+            return redirect(url_for('index'))
+        else:
+            flash('Correo o contraseña incorrectos', category='danger')
+            return redirect(url_for('login'))
+
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Has cerrado sesión', category='info')
+    return redirect(url_for('login'))
+
 @app.route('/')
+@login_required
 def index():
     config = cargar_config()
     return render_template('index.html', config=config)
 
-# Ruta para guardar la configuración principal
 @app.route('/', methods=['POST'])
+@login_required
 def save_config():
     try:
         data = request.form
         config = cargar_config()
 
-        # Actualizar configuraciones principales
         config['workng_dir'] = data.get('workng_dir', '')
         config['sandbx'] = data.get('sandbx', '')
         config['reportes'] = [rep.strip() for rep in data.get('reportes', '').split(',') if rep.strip()]
 
-        # Validar y actualizar columnas esperadas
         columnas_esperadas = {}
         for key in data.keys():
             if key.startswith('columnas_'):
@@ -52,7 +119,6 @@ def save_config():
         
         config['columnas_esperadas'] = columnas_esperadas
 
-        # Guardar configuración
         with open('config.json', 'w') as f:
             json.dump(config, f, indent=4)
 
@@ -62,8 +128,8 @@ def save_config():
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo guardar la configuración.'})
 
-# Ruta para guardar la configuración de la base de datos
 @app.route('/save-db-config', methods=['POST'])
+@login_required
 def save_db_config():
     try:
         data = request.form
@@ -85,8 +151,8 @@ def save_db_config():
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo guardar la configuración de la base de datos.'})
 
-# Ruta para agregar un nuevo reporte
 @app.route('/add-reporte', methods=['POST'])
+@login_required
 def add_reporte():
     try:
         nombre = request.form.get('nombre')
@@ -106,7 +172,6 @@ def add_reporte():
             'formulas': {}
         }
 
-        # Añadir el nombre del reporte a la lista de reportes
         if nombre not in config['reportes']:
             config['reportes'].append(nombre)
 
@@ -119,8 +184,8 @@ def add_reporte():
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo agregar el reporte.'})
 
-# Ruta para eliminar un reporte
 @app.route('/delete-reporte', methods=['POST'])
+@login_required
 def delete_reporte():
     try:
         reporte = request.form.get('reporte')
@@ -133,10 +198,8 @@ def delete_reporte():
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe.'})
 
-        # Eliminar el reporte de columnas_esperadas
         del config['columnas_esperadas'][reporte]
 
-        # Eliminar el nombre del reporte de la lista de reportes
         if reporte in config['reportes']:
             config['reportes'].remove(reporte)
 
@@ -149,13 +212,12 @@ def delete_reporte():
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo eliminar el reporte.'})
 
-
 @app.route('/edit_reporte/<reporte>', methods=['GET'])
+@login_required
 def edit_reporte(reporte):
     config = cargar_config()
     columnas_info = config['columnas_esperadas'].get(reporte, {'columnas': [], 'formulas': {}})
     
-    # Asegurarse de que columnas_info sea un diccionario
     if isinstance(columnas_info, list):
         columnas_info = {'columnas': columnas_info, 'formulas': {}}
 
@@ -165,6 +227,7 @@ def edit_reporte(reporte):
     return jsonify({'success': True, 'columnas': columnas, 'formulas': formulas})
 
 @app.route('/save-order', methods=['POST'])
+@login_required
 def save_order():
     try:
         reporte = request.form.get('reporte')
@@ -183,7 +246,6 @@ def save_order():
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe en la configuración.'})
 
-        # Asegurarse de que la entrada es un diccionario con 'columnas' y 'formulas'
         if isinstance(config['columnas_esperadas'][reporte], list):
             config['columnas_esperadas'][reporte] = {
                 'columnas': config['columnas_esperadas'][reporte],
@@ -202,6 +264,7 @@ def save_order():
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/clientes')
+@login_required
 def clientes():
     try:
         folder_path = os.path.join(os.getcwd(), 'CLIENTS')
@@ -212,6 +275,7 @@ def clientes():
         return render_template('clientes.html', files=[], error="No se pudo cargar el contenido de la carpeta CLIENTS.")
 
 @app.route('/guardar_cliente', methods=['POST'])
+@login_required
 def guardar_cliente():
     try:
         data = request.get_json()
@@ -238,14 +302,11 @@ def guardar_cliente():
 
         nuevos_registros = [registro for registro in registros if registro['branch'] not in existing_branches]
 
-        # Verificar si hay nuevos registros para agregar
         if not nuevos_registros:
             return jsonify({'success': False, 'error': 'No hay nuevos registros para agregar.'})
 
-        # Agregar los nuevos registros a los existentes
         existing_config['registros'].extend(nuevos_registros)
 
-        # Guardar la configuración actualizada en el archivo config.json
         with open(client_config_path, 'w') as f:
             json.dump(existing_config, f, indent=4)
 
@@ -256,6 +317,7 @@ def guardar_cliente():
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/cliente_detalles/<client_name>', methods=['GET'])
+@login_required
 def cliente_detalles(client_name):
     try:
         client_config_path = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config', 'config.json')
@@ -273,6 +335,7 @@ def cliente_detalles(client_name):
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/eliminar_registro', methods=['POST'])
+@login_required
 def eliminar_registro():
     try:
         data = request.get_json()
@@ -304,6 +367,7 @@ def eliminar_registro():
         return jsonify({'success': False, 'error': 'Error al eliminar el registro.'})
 
 @app.route('/actualizar_registro', methods=['POST'])
+@login_required
 def actualizar_registro():
     try:
         data = request.json
@@ -347,8 +411,8 @@ def actualizar_registro():
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo actualizar el registro.'})
 
-# Editar Formula de las columnas
 @app.route('/save-formula', methods=['POST'])
+@login_required
 def save_formula():
     try:
         reporte = request.form.get('reporte')
@@ -363,7 +427,6 @@ def save_formula():
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe.'})
 
-        # Asegurarse de que el reporte esté en formato dict
         if isinstance(config['columnas_esperadas'][reporte], list):
             config['columnas_esperadas'][reporte] = {
                 'columnas': config['columnas_esperadas'][reporte],
@@ -380,8 +443,9 @@ def save_formula():
     except Exception as e:
         print(f"Error al guardar la fórmula: {e}")
         return jsonify({'success': False, 'error': 'No se pudo guardar la fórmula.'})
-    
+
 @app.route('/delete-formula', methods=['POST'])
+@login_required
 def delete_formula():
     try:
         reporte = request.form.get('reporte')
@@ -395,7 +459,6 @@ def delete_formula():
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe.'})
 
-        # Asegurarse de que el reporte esté en formato dict
         if isinstance(config['columnas_esperadas'][reporte], list):
             return jsonify({'success': False, 'error': 'El formato del reporte no es válido.'})
 
@@ -413,6 +476,7 @@ def delete_formula():
         print(f"Error al eliminar la fórmula: {e}")
         return jsonify({'success': False, 'error': 'No se pudo eliminar la fórmula.'})
 
-
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
