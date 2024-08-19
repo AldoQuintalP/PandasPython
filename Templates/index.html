@@ -90,8 +90,7 @@
         .form-group {
             margin-bottom: 15px;
         }
-        .trash-btn {
-            background: #dc3545;
+        .trash-btn, .edit-btn {
             border: none;
             color: white;
             cursor: pointer;
@@ -100,11 +99,20 @@
             align-items: center;
             padding: 5px 10px;
         }
+        .trash-btn {
+            background: #dc3545;
+        }
         .trash-btn:hover {
             background: #c82333;
         }
-        .trash-btn i {
+        .trash-btn i, .edit-btn i {
             margin-right: 5px;
+        }
+        .edit-btn {
+            background: #ffc107;
+        }
+        .edit-btn:hover {
+            background: #e0a800;
         }
         .btn-container {
             display: flex;
@@ -165,6 +173,103 @@
         .modal-content h5 {
             color: #000000; /* Texto en color negro */
         }
+
+        /* Asegurar que los botones no se desplacen y que el texto largo no los afecte */
+        .table td {
+            vertical-align: middle;
+            white-space: nowrap; /* Evita que el texto se envuelva */
+        }
+
+        .d-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .formula-text {
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px; /* Ajusta el ancho máximo según sea necesario */
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .table td button {
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .table td span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px; /* Ajusta el ancho máximo según sea necesario */
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .table td .btn {
+            white-space: nowrap;
+        }
+
+        .table td .btn-group {
+            display: flex;
+            gap: 5px;
+        }
+
+        .table td .btn-group .btn {
+            flex: 1;
+        }
+
+        .table td:nth-child(2) {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px; /* Ajusta el ancho máximo según sea necesario */
+        }
+
+        .modal-body {
+            max-height: 70vh; /* Limita la altura máxima del cuerpo del modal */
+            overflow-y: auto; /* Agrega desplazamiento vertical si es necesario */
+        }
+
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto; /* Agrega desplazamiento horizontal si es necesario */
+            -webkit-overflow-scrolling: touch; /* Permite desplazamiento suave en dispositivos táctiles */
+        }
+
+        .function-list, .operator-list {
+            max-height: 100px; /* Limitar la altura para hacer espacio para el scroll */
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .function-list ul, .operator-list ul {
+            padding-left: 0;
+        }
+
+        .function-list li, .operator-list li {
+            cursor: pointer;
+            list-style-type: none;
+            padding: 5px;
+            margin: 2px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+
+        .function-list li:hover, .operator-list li:hover {
+            background-color: #e9ecef;
+        }
+        .list-group-item:hover {
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
@@ -234,7 +339,7 @@
                                             <button type="button" class="btn btn-info ml-2" onclick="editarReporte('{{ key }}')">
                                                 <i class="fa fa-edit"></i> Editar
                                             </button>
-                                            <button type="button" class="btn btn-success ml-2" data-toggle="modal" data-target="#selectColumnModal" onclick="selectColumn('{{ key }}')">
+                                            <button type="button" class="btn btn-success ml-2" onclick="selectColumn('{{ key }}')">
                                                 <i class="fa fa-calculator"></i> Función
                                             </button>
                                         </div>
@@ -282,6 +387,37 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal para ver las columnas con fórmulas -->
+    <div class="modal fade" id="viewFormulasModal" tabindex="-1" role="dialog" aria-labelledby="viewFormulasModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 30%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewFormulasModalLabel">Columnas con Fórmulas Existentes</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Columna</th>
+                                <th>Fórmula</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="formulas-list">
+                            <!-- Columnas con fórmulas se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="addFunctionBtn">Añadir Función</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal para agregar una fórmula -->
     <div class="modal fade" id="functionModal" tabindex="-1" role="dialog" aria-labelledby="functionModalLabel" aria-hidden="true">
@@ -297,12 +433,36 @@
                     <div class="col-4">
                         <h6>Columnas Disponibles:</h6>
                         <ul id="column-list" class="list-group">
-                            <!-- Columnas se cargarán aquí -->
+                            <!-- Las columnas se agregarán aquí dinámicamente -->
+                            
+                            <!-- Más columnas dinámicamente -->
                         </ul>
                     </div>
                     <div class="col-8">
                         <h6>Fórmula para <span id="selected-column-name"></span>:</h6>
-                        <textarea id="formula-text" class="form-control" rows="6"></textarea>
+                        <textarea id="formula-text" class="form-control" rows="2"></textarea>
+                        <h6 class="mt-4">Funciones de Excel:</h6>
+                        <div class="function-list">
+                            <ul id="excel-functions" class="list-group">
+                                <li class="list-group-item">IF</li>
+                                <li class="list-group-item">INT</li>
+                                <li class="list-group-item">INSTR</li>
+                                <li class="list-group-item">ISUPPER</li>
+                                <!-- Añadir más funciones según sea necesario -->
+                            </ul>
+                        </div>
+                        <h6 class="mt-4">Operadores:</h6>
+                        <div class="operator-list">
+                            <ul id="operators" class="list-group">
+                                <li class="list-group-item">+</li>
+                                <li class="list-group-item">-</li>
+                                <li class="list-group-item">*</li>
+                                <li class="list-group-item">/</li>
+                                <li class="list-group-item">&lt;</li>
+                                <li class="list-group-item">&gt;</li>
+                                <li class="list-group-item">=</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -486,18 +646,151 @@
             const columnSelectList = document.getElementById('column-select-list');
             columnSelectList.innerHTML = '';
 
+            // Obtener las fórmulas existentes para las columnas
+            fetch(`/edit_reporte/${reporte}`)
+                .then(response => response.json())
+                .then(data => {
+                    const formulas = data.formulas || {};
+                    const formulasList = document.getElementById('formulas-list');
+                    formulasList.innerHTML = '';
+
+                    for (const [columna, formula] of Object.entries(formulas)) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${columna}</td>
+                            <td>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="formula-text text-truncate" title="${formula}">
+                                        ${formula}
+                                    </span>
+                                    <button type="button" class="btn btn-light btn-sm ml-2" data-bs-toggle="tooltip" data-bs-placement="top" title="${formula}">
+                                        <i class="fa fa-question-circle"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-warning btn-sm" onclick="editarFormula('${reporte}', '${columna}', '${formula}')">
+                                        <i class="fa fa-edit"></i> Editar
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="eliminarFormula('${reporte}', '${columna}')">
+                                        <i class="fa fa-trash-alt"></i> Eliminar
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        formulasList.appendChild(row);
+                    }
+
+                    // Inicializar tooltips de Bootstrap después de que el contenido se ha agregado al DOM
+                    $(document).ready(function(){
+                        $('[data-toggle="tooltip"]').tooltip(); 
+                    });
+
+                    // Re-inicializar tooltips cada vez que el modal se muestra, para asegurar que se apliquen a los nuevos elementos añadidos
+                    $('#viewFormulasModal').on('shown.bs.modal', function () {
+                        $('[data-toggle="tooltip"]').tooltip();
+                    });
+
+                    // Mostrar modal con las columnas que tienen fórmulas
+                    $('#viewFormulasModal').modal('show');
+
+                    // Eliminar eventos anteriores del botón para evitar conflictos
+                    $('#addFunctionBtn').off('click');
+
+                    // Configurar el botón "Añadir Función" para abrir el modal de selección de columna
+                    $('#addFunctionBtn').on('click', function() {
+                        $('#viewFormulasModal').modal('hide'); // Asegurarse de que este modal se cierre
+
+                        // Filtrar las columnas que no tienen fórmula asignada
+                        const columnasSinFormula = columnas.filter(col => !formulas[col]);
+
+                        // Mostrar solo las columnas que no tienen fórmula en el modal
+                        columnasSinFormula.forEach(col => {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'list-group-item';
+                            listItem.textContent = col;
+                            listItem.addEventListener('click', () => {
+                                $('#selectColumnModal').modal('hide');
+                                openFunctionModal(reporte, col);
+                            });
+                            columnSelectList.appendChild(listItem);
+                        });
+
+                        // Asegurarse de abrir el modal de selección de columna
+                        $('#selectColumnModal').modal('show');
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al cargar las fórmulas:', error);
+                    Swal.fire('Error', 'No se pudieron cargar las fórmulas existentes', 'error');
+                });
+        }
+
+
+        function editarFormula(reporte, columna, formula) {
+            const columnas = document.getElementById(`columnas_${reporte}`).value.split(',').map(col => col.trim());
+            const columnList = document.getElementById('column-list');
+            columnList.innerHTML = '';
+
+            // Cargar las columnas disponibles en el cuadro de texto del lado izquierdo
             columnas.forEach(col => {
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item';
                 listItem.textContent = col;
                 listItem.addEventListener('click', () => {
-                    $('#selectColumnModal').modal('hide');
-                    openFunctionModal(reporte, col);
+                    document.getElementById('formula-text').value += ` ${col}`;
                 });
-                columnSelectList.appendChild(listItem);
+                columnList.appendChild(listItem);
             });
 
-            $('#selectColumnModal').modal('show');
+            // Cargar la fórmula existente en el cuadro de texto
+            document.getElementById('selected-column-name').textContent = columna;
+            document.getElementById('formula-text').value = formula;
+            document.getElementById('functionModal').setAttribute('data-reporte', reporte);
+            document.getElementById('functionModal').setAttribute('data-columna', columna);
+
+            // Mostrar el modal de edición de fórmula
+            $('#functionModal').modal('show');
+        }
+
+
+        function eliminarFormula(reporte, columna) {
+            Swal.fire({
+                title: 'Confirmar',
+                text: `¿Estás seguro de que deseas eliminar la fórmula para la columna "${columna}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/delete-formula', {
+                        method: 'POST',
+                        body: new URLSearchParams({
+                            reporte: reporte,
+                            columna: columna
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Eliminado', 'La fórmula ha sido eliminada.', 'success')
+                            .then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', data.error, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'No se pudo eliminar la fórmula', 'error');
+                    });
+                }
+            });
         }
 
         function openFunctionModal(reporte, columna) {
@@ -516,10 +809,20 @@
             });
 
             document.getElementById('selected-column-name').textContent = columna;
+            document.getElementById('formula-text').value = ''; // Asegurarse de que el cuadro de texto esté vacío al crear una nueva función
             document.getElementById('functionModal').setAttribute('data-reporte', reporte);
             document.getElementById('functionModal').setAttribute('data-columna', columna);
             $('#functionModal').modal('show');
         }
+
+        // Agregar funcionalidad para añadir operadores y funciones al cuadro de texto
+        document.querySelectorAll('#column-list .list-group-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const formulaText = document.getElementById('formula-text');
+                formulaText.value += ` ${this.textContent}`;
+            });
+        });
+
 
         document.getElementById('save-formula-btn').addEventListener('click', function() {
             const reporte = document.getElementById('functionModal').getAttribute('data-reporte');
@@ -537,8 +840,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    Swal.fire('Éxito', 'Fórmula guardada correctamente', 'success');
-                    $('#functionModal').modal('hide');
+                    Swal.fire('Éxito', 'Fórmula guardada correctamente', 'success')
+                    .then(() => {
+                        $('#functionModal').modal('hide'); // Cierra el modal de edición
+                        selectColumn(reporte); // Recarga el modal de columnas con fórmulas existentes
+                    });
                 } else {
                     Swal.fire('Error', data.error, 'error');
                 }

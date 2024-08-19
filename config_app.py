@@ -149,6 +149,7 @@ def delete_reporte():
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo eliminar el reporte.'})
 
+
 @app.route('/edit_reporte/<reporte>', methods=['GET'])
 def edit_reporte(reporte):
     config = cargar_config()
@@ -161,7 +162,7 @@ def edit_reporte(reporte):
     columnas = columnas_info.get('columnas', [])
     formulas = columnas_info.get('formulas', {})
 
-    return render_template('edit_reporte.html', reporte_nombre=reporte, columnas=columnas, formulas=formulas)
+    return jsonify({'success': True, 'columnas': columnas, 'formulas': formulas})
 
 @app.route('/save-order', methods=['POST'])
 def save_order():
@@ -379,6 +380,39 @@ def save_formula():
     except Exception as e:
         print(f"Error al guardar la fórmula: {e}")
         return jsonify({'success': False, 'error': 'No se pudo guardar la fórmula.'})
+    
+@app.route('/delete-formula', methods=['POST'])
+def delete_formula():
+    try:
+        reporte = request.form.get('reporte')
+        columna = request.form.get('columna')
+
+        if not reporte or not columna:
+            return jsonify({'success': False, 'error': 'Reporte y columna son necesarios.'})
+
+        config = cargar_config()
+
+        if reporte not in config['columnas_esperadas']:
+            return jsonify({'success': False, 'error': 'El reporte no existe.'})
+
+        # Asegurarse de que el reporte esté en formato dict
+        if isinstance(config['columnas_esperadas'][reporte], list):
+            return jsonify({'success': False, 'error': 'El formato del reporte no es válido.'})
+
+        if columna in config['columnas_esperadas'][reporte]['formulas']:
+            del config['columnas_esperadas'][reporte]['formulas'][columna]
+
+            with open('config.json', 'w') as f:
+                json.dump(config, f, indent=4)
+
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'La fórmula no existe.'})
+
+    except Exception as e:
+        print(f"Error al eliminar la fórmula: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo eliminar la fórmula.'})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

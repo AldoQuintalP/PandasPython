@@ -2,7 +2,8 @@
     "workng_dir": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\2-Workng",
     "sandbx": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\3-Sandbx",
     "reportes": [
-        "VTAUSA"
+        "VTAUSA",
+        "VTANUE"
     ],
     "columnas_esperadas": {
         "VTAUSA": {
@@ -20,8 +21,24 @@
                 "Sucursal"
             ],
             "formulas": {
-                "Cuenta": "LimpiaTexto(Fecha) ",
-                "CentroCosto": "Hola mundo "
+                "Fecha": " Fecha 123123123123",
+                "SaldoInicial$": " SaldoInicial$11111",
+                "CentroCosto": "eeeee",
+                "Cuenta": " IF Fecha  + Saldo$"
+            }
+        },
+        "VTANUE": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {
+                "VentaTOT": "aaaaaaaaaaaaaaa",
+                "Venta": "777"
             }
         }
     },
