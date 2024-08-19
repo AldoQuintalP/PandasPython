@@ -1,7 +1,6 @@
-
 # Ignorar el entorno virtual
 .venv/
-
+venv/
 # Archivos de compilación de Python
 __pycache__/
 *.pyc
@@ -17,6 +16,7 @@ __pycache__/
 
 # Ignorar el archivo de configuración
 config.json
+prueba.py
 
 # Ignorar la carpeta 3-Sandbx y todo su contenido
 3-Sandbx/

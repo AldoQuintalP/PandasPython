@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes</title>
+    <!-- Incluye Bootstrap CSS desde un CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Incluye Font Awesome 6 desde un CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Incluye SweetAlert2 desde un CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            margin-top: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            margin-top: 20px;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            background-color: #f1f3f5;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #searchInput {
+            width: 250px;
+        }
+
+        .client-item {
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        .client-item:hover {
+            text-decoration: underline;
+        }
+
+        #clientDetailsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #clientDetailsTable th,
+        #clientDetailsTable td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #clientDetailsTable th {
+            background-color: #007bff;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        #clientDetailsTable td {
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        #clientDetailsTable tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        #clientDetailsTable tbody tr.selected {
+            background-color: #e2e2e2;
+        }
+
+        #clientDetailsTable td:last-child {
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        #clientDetailsTable .btn {
+            margin: 0 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
+        #formFields {
+            display: none;
+        }
+
+        .delete-btn,
+        .edit-btn {
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        .delete-btn:hover,
+        .edit-btn:hover {
+            color: #0056b3;
+        }
+
+        .reportes-column {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .sidebar {
+            height: 100vh;
+            width: 50px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            color: #fff;
+            overflow-x: hidden;
+            transition: width 0.3s, transform 0.3s;
+            padding-top: 20px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.expanded {
+            width: 250px;
+        }
+
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #fff;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+
+        .sidebar .togglebtn {
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: auto;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            width: 100%;
+        }
+
+        .content {
+            margin-left: 50px;
+            padding: 20px;
+            transition: margin-left 0.3s, overflow 0.3s;
+        }
+
+        .sidebar.expanded~.content {
+            margin-left: 250px;
+        }
+
+        .sidebar .menu-text {
+            display: none;
+        }
+
+        .sidebar.expanded .menu-text {
+            display: inline;
+            margin-left: 10px;
+        }
+
+        .menu-image {
+            width: 100%;
+            height: auto;
+            padding: 10px 0;
+            display: block;
+        }
+
+        .sidebar.expanded .menu-image {
+            display: block;
+        }
+
+        .sidebar:not(.expanded) .menu-image {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar" id="mySidebar">
+        <a href="/home" class="menu-item">
+            <i class="fa-solid fa-house-chimney"></i>
+            <span class="menu-text"> Inicio</span>
+        </a>
+        <a href="/" class="menu-item">
+            <i class="fa-solid fa-gear"></i>
+            <span class="menu-text"> Configuración</span>
+        </a>
+        <a href="/clientes" class="menu-item">
+            <i class="fa-solid fa-folder-open"></i>
+            <span class="menu-text"> Clientes</span>
+        </a>
+        <a href="/database" class="menu-item">
+            <i class="fa-solid fa-database"></i>
+            <span class="menu-text"> Base de Datos</span>
+        </a>
+
+        <span class="togglebtn" onclick="toggleNav()">
+            <i class="fa-solid fa-angles-right"></i>
+        </span>
+    </div>
+
+    <div id="main">
+        <div class="content">
+            <div class="container">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Gestión de Clientes</h2>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Buscar cliente...">
+                    </div>
+                    <div class="card-body">
+                        <h3>Contenido de la carpeta CLIENTS:</h3>
+                        {% if files %}
+                        <ul id="clientList">
+                            {% for file in files %}
+                            <li class="client-item" onclick="openClientForm('{{ file }}')">{{ file }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No se encontraron archivos en la carpeta CLIENTS.</p>
+                        {% endif %}
+                        {% if error %}
+                        <p class="text-danger">{{ error }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="clientFormModal" tabindex="-1" role="dialog" aria-labelledby="clientFormModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clientFormModalLabel">Detalles del Cliente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table" id="clientDetailsTable">
+                        <thead>
+                            <tr>
+                                <th>Sucursal</th>
+                                <th>Branch</th>
+                                <th>DMS</th>
+                                <th>Reportes</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientDetailsBody">
+                            <!-- Se llenará dinámicamente con los datos del cliente -->
+                        </tbody>
+                    </table>
+
+                    <button type="button" class="btn btn-secondary" id="addRecordBtn">
+                        <i class="fa-solid fa-circle-plus"></i> Agregar Registro
+                    </button>
+
+                    <form id="clientForm" style="margin-top: 15px;">
+                        <div id="formFields">
+                            <input type="hidden" id="client_name" name="client_name">
+                            <div class="form-group">
+                                <label for="branch">Branch</label>
+                                <input type="text" class="form-control" id="branch" name="branch">
+                            </div>
+                            <div class="form-group">
+                                <label for="branch_name">Nombre de Sucursal</label>
+                                <input type="text" class="form-control" id="branch_name" name="branch_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="dms">DMS</label>
+                                <input type="text" class="form-control" id="dms" name="dms">
+                            </div>
+                            <div class="form-group">
+                                <label for="reports">Nombre de los Reportes a Utilizar</label>
+                                <input type="text" class="form-control" id="reports" name="reports" placeholder="Separar por comas">
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="addToTableBtn">
+                                <i class="fa-solid fa-table"></i> Añadir a la Tabla
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="saveDataBtn" style="margin-top: 15px;">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editRecordModal" tabindex="-1" role="dialog" aria-labelledby="editRecordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRecordModalLabel">Editar Registro</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editRecordForm">
+                        <input type="hidden" id="edit_record_id">
+                        <div class="form-group">
+                            <label for="edit_branch_name">Nombre de Sucursal</label>
+                            <input type="text" class="form-control" id="edit_branch_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_branch">Branch</label>
+                            <input type="text" class="form-control" id="edit_branch">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_dms">DMS</label>
+                            <input type="text" class="form-control" id="edit_dms">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_reports">Nombre de los Reportes a Utilizar</label>
+                            <textarea class="form-control" id="edit_reports" placeholder="Separar por comas" rows="3"></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="saveEditBtn">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Incluye jQuery, Popper.js y Bootstrap JS desde un CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Incluye Font Awesome JS desde un CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <!-- Incluye SweetAlert2 desde un CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function toggleNav() {
+            var sidebar = document.getElementById("mySidebar");
+            var main = document.getElementById("main");
+            var toggleBtn = document.querySelector('.togglebtn');
+
+            if (sidebar.classList.contains("expanded")) {
+                sidebar.classList.remove("expanded");
+                main.style.marginLeft = '50px';
+                main.style.overflow = 'auto';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
+            } else {
+                sidebar.classList.add("expanded");
+                main.style.marginLeft = '250px';
+                main.style.overflow = 'hidden';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i> Ocultar Menú';
+            }
+        }
+
+        // Función para filtrar los resultados de la lista de clientes
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            var input, filter, ul, li, i, txtValue;
+            input = document.getElementById('searchInput');
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("clientList");
+            li = ul.getElementsByTagName('li');
+
+            for (i = 0; i < li.length; i++) {
+                txtValue = li[i].textContent || li[i].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        });
+
+        // Función para abrir el formulario del cliente en un modal y cargar los datos existentes
+        function openClientForm(clientName) {
+            document.getElementById('clientFormModalLabel').innerText = `Detalles del Cliente: ${clientName}`;
+            document.getElementById('client_name').value = clientName;
+            document.getElementById('clientForm').reset();
+            document.getElementById('clientDetailsTable').style.display = 'none';
+            document.getElementById('clientDetailsBody').innerHTML = '';
+            document.getElementById('formFields').style.display = 'none';
+
+            // Cargar datos existentes para el cliente
+            fetch(`/cliente_detalles/${clientName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        const clientData = data.data;
+                        const tableBody = document.getElementById('clientDetailsBody');
+                        const registros = clientData.registros || [];
+
+                        registros.forEach(registro => {
+                            const row = document.createElement('tr');
+                            row.dataset.id = registro.id;
+                            row.innerHTML = createEditableRow(
+                                registro.branch_name || '',
+                                registro.branch || '',
+                                registro.dms || '',
+                                Array.isArray(registro.reports) ? registro.reports.join(', ') : registro.reports || ''
+                            );
+                            tableBody.appendChild(row);
+                        });
+
+                        document.getElementById('clientDetailsTable').style.display = 'table';
+                        addDeleteEventListeners();
+                        addEditEventListeners();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar los detalles del cliente:', error);
+                });
+
+            $('#clientFormModal').modal('show');
+        }
+
+        function addDeleteEventListeners() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.removeEventListener('click', handleDeleteClick);
+                button.addEventListener('click', handleDeleteClick);
+            });
+        }
+
+        function handleDeleteClick(event) {
+            const row = event.target.closest('tr');
+            const branch = row.cells[1].querySelector('span').textContent;
+            const clientName = document.getElementById('client_name').value;
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminarlo!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/eliminar_registro`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            client_name: clientName,
+                            branch: branch
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            row.remove();
+                            Swal.fire('Eliminado!', 'El registro ha sido eliminado.', 'success');
+                        } else {
+                            Swal.fire('Error!', data.error || 'Hubo un problema al eliminar el registro.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al eliminar el registro:', error);
+                        Swal.fire('Error!', 'Hubo un problema al eliminar el registro.', 'error');
+                    });
+                }
+            });
+        }
+
+        function addEditEventListeners() {
+            const editButtons = document.querySelectorAll('.edit-btn');
+            editButtons.forEach(button => {
+                button.removeEventListener('click', handleEditClick);
+                button.addEventListener('click', handleEditClick);
+            });
+        }
+
+        function handleEditClick(event) {
+            const button = event.target.closest('button');
+            const row = button.closest('tr');
+            const rowId = row.dataset.id;
+
+            const branchNameInput = row.cells[0].querySelector('span').textContent;
+            const branchInput = row.cells[1].querySelector('span').textContent;
+            const dmsInput = row.cells[2].querySelector('span').textContent;
+            const reportsInput = row.cells[3].querySelector('span').textContent;
+
+            document.getElementById('edit_record_id').value = rowId;
+            document.getElementById('edit_branch_name').value = branchNameInput;
+            document.getElementById('edit_branch').value = branchInput;
+            document.getElementById('edit_dms').value = dmsInput;
+            document.getElementById('edit_reports').value = reportsInput;
+
+            $('#editRecordModal').modal('show');
+        }
+
+        document.getElementById('saveEditBtn').addEventListener('click', function() {
+            const rowId = document.getElementById('edit_record_id').value;
+            const branchNameInput = document.getElementById('edit_branch_name').value;
+            const branchInput = document.getElementById('edit_branch').value;
+            const dmsInput = document.getElementById('edit_dms').value;
+            const reportsInput = document.getElementById('edit_reports').value;
+
+            if (!branchNameInput || !branchInput || !dmsInput || !reportsInput) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos incompletos',
+                    text: 'Por favor, complete todos los campos antes de guardar.'
+                });
+                return;
+            }
+
+            const tableBody = document.getElementById('clientDetailsBody');
+            let isDuplicate = false;
+            for (let i = 0; i < tableBody.rows.length; i++) {
+                if (tableBody.rows[i].dataset.id !== rowId) {
+                    const existingBranch = tableBody.rows[i].cells[1].querySelector('span').textContent;
+                    if (existingBranch === branchInput) {
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isDuplicate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Branch duplicado',
+                    text: 'El número de Branch ya existe en otro registro. Por favor, ingrese un número de Branch diferente.'
+                });
+                return;
+            }
+
+            const clientName = document.getElementById('client_name').value;
+
+            const registro = {
+                id: rowId,
+                branch_name: branchNameInput,
+                branch: branchInput,
+                dms: dmsInput,
+                reports: reportsInput.split(', ')
+            };
+
+            fetch('/actualizar_registro', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    client_name: clientName,
+                    registro: registro
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const row = document.querySelector(`tr[data-id="${rowId}"]`);
+                    row.cells[0].querySelector('span').textContent = branchNameInput;
+                    row.cells[1].querySelector('span').textContent = branchInput;
+                    row.cells[2].querySelector('span').textContent = dmsInput;
+                    row.cells[3].querySelector('span').textContent = reportsInput;
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Registro actualizado con éxito',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+
+                    $('#editRecordModal').modal('hide');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error al actualizar el registro: ' + data.error
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al actualizar el registro:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al actualizar el registro'
+                });
+            });
+        });
+
+        function createEditableRow(branchName, branch, dms, reports) {
+            return `
+                <td><span>${branchName}</span></td>
+                <td><span>${branch}</span></td>
+                <td><span>${dms}</span></td>
+                <td class="reportes-column"><span>${reports}</span></td>
+                <td>
+                    <button type="button" class="btn btn-link p-0 edit-btn">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button type="button" class="btn btn-link p-0 delete-btn">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            `;
+        }
+
+        document.getElementById('addRecordBtn').addEventListener('click', function() {
+            document.getElementById('formFields').style.display = 'block';
+        });
+
+        document.getElementById('addToTableBtn').addEventListener('click', function() {
+            const branchName = document.getElementById('branch_name').value;
+            const branch = document.getElementById('branch').value;
+            const dms = document.getElementById('dms').value;
+            const reports = document.getElementById('reports').value;
+
+            if (!branchName || !branch || !dms || !reports) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos incompletos',
+                    text: 'Por favor, complete todos los campos antes de agregar.'
+                });
+                return;
+            }
+
+            const tableBody = document.getElementById('clientDetailsBody');
+            let isDuplicate = false;
+            for (let i = 0; i < tableBody.rows.length; i++) {
+                const existingBranch = tableBody.rows[i].cells[1].querySelector('span').textContent;
+                if (existingBranch === branch) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+
+            if (isDuplicate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Branch duplicado',
+                    text: 'El número de Branch ya existe en la tabla. Por favor, ingrese un número de Branch diferente.'
+                });
+                return;
+            }
+
+            const id = generateUUID();
+
+            const row = document.createElement('tr');
+            row.dataset.id = id;
+            row.innerHTML = createEditableRow(branchName, branch, dms, reports);
+
+            tableBody.appendChild(row);
+            document.getElementById('clientDetailsTable').style.display = 'table';
+
+            addDeleteEventListeners();
+            addEditEventListeners();
+
+            document.getElementById('clientForm').reset();
+            document.getElementById('formFields').style.display = 'none';
+        });
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        document.getElementById('saveDataBtn').addEventListener('click', function() {
+            const clientName = document.getElementById('client_name').value;
+
+            if (!clientName) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El nombre del cliente no está definido.'
+                });
+                return;
+            }
+
+            const tableBody = document.getElementById('clientDetailsBody');
+            const registros = [];
+
+            for (let i = 0; i < tableBody.rows.length; i++) {
+                const cells = tableBody.rows[i].cells;
+                const registro = {
+                    id: tableBody.rows[i].dataset.id,
+                    branch_name: cells[0].querySelector('span').textContent,
+                    branch: cells[1].querySelector('span').textContent,
+                    dms: cells[2].querySelector('span').textContent,
+                    reports: cells[3].querySelector('span').textContent.split(', ')
+                };
+                registros.push(registro);
+            }
+
+            fetch('/guardar_cliente', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    client_name: clientName,
+                    registros: registros
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Datos guardados con éxito'
+                    }).then(() => {
+                        $('#clientFormModal').modal('hide');
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error al guardar los datos: ' + data.error
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al guardar los datos:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al guardar los datos'
+                });
+            });
+        });
+
+        addDeleteEventListeners();
+        addEditEventListeners();
+    </script>
+</body>
+
+</html>

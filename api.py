@@ -12,14 +12,26 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Leer configuración desde el archivo JSON
-with open('config.json', 'r', encoding='utf-8') as config_file:
-    config = json.load(config_file)
+try:
+    with open('config.json', 'r', encoding='utf-8') as config_file:
+        config = json.load(config_file)
+except FileNotFoundError:
+    logging.error("No se encontró el archivo de configuración 'config.json'.")
+    exit()
+except json.JSONDecodeError:
+    logging.error("El archivo de configuración 'config.json' no es un JSON válido.")
+    exit()
 
 # Configuración
-workng_dir = config['workng_dir']
-sandbx = config['sandbx']
-reportes = config['reportes']
-db_config = config['db']
+workng_dir = config.get('workng_dir')
+sandbx = config.get('sandbx')
+reportes = config.get('reportes', [])
+db_config = config.get('db', {})
+columnas_esperadas = config.get('columnas_esperadas', {})
+
+if not workng_dir or not sandbx or not reportes or not db_config:
+    logging.error("Configuración incompleta en 'config.json'.")
+    exit()
 
 # Función para conectar a la base de datos PostgreSQL
 def conectar_db(host, usuario, contrasena, base_de_datos):
@@ -38,6 +50,7 @@ def conectar_db(host, usuario, contrasena, base_de_datos):
 
 # Función para ejecutar una consulta SQL
 def ejecutar_consulta(conexion, consulta):
+    #print(f'Consulta: {consulta}')
     try:
         cursor = conexion.cursor()
         cursor.execute(consulta)
@@ -60,6 +73,20 @@ def limpiar_carpeta(carpeta):
 
 # Limpiar la carpeta Sandbx
 limpiar_carpeta(sandbx)
+
+#Limpia encabezados basura de los reportes
+def limpiar_encabezado(reporte):
+    # Divide el reporte en líneas
+    lines = reporte.strip().splitlines()
+    
+    # Encuentra la primera línea que contiene un separador '|'
+    for i, line in enumerate(lines):
+        if '|' in line:
+            # Retorna todas las líneas a partir de la primera línea válida
+            return '\n'.join(lines[i:])
+    
+    # Si no se encuentra una línea válida, retorna una cadena vacía
+    return ''
 
 # Encontrar el archivo ZIP en la carpeta de trabajo
 def encontrar_zip(carpeta):
@@ -84,15 +111,21 @@ def extraer_info_zip(nombre_zip):
     return cliente, sucursal, fecha_actual
 
 # Obtener la información
-workng = encontrar_zip(workng_dir)
-cliente, sucursal, fecha_actual = extraer_info_zip(workng)
-cliente = cliente.lstrip('0')
+try:
+    workng = encontrar_zip(workng_dir)
+    cliente, sucursal, fecha_actual = extraer_info_zip(workng)
+    cliente = cliente.lstrip('0')
+except FileNotFoundError as e:
+    logging.error(e)
+    exit()
 
 # Verificar existencia y permisos del archivo ZIP
 if not os.path.isfile(workng):
     logging.error(f"El archivo ZIP no existe en la ruta especificada: {workng}")
+    exit()
 elif not os.access(workng, os.R_OK):
     logging.error(f"Permiso denegado para leer el archivo ZIP: {workng}")
+    exit()
 
 # Crear la carpeta Sandbx si no existe
 if not os.path.isdir(sandbx):
@@ -133,8 +166,26 @@ for archivo in os.listdir(sandbx):
             os.rename(ruta_antigua, ruta_nueva)
             logging.info(f"Archivo renombrado de {archivo} a {nuevo_nombre}")
 
+# Función para guardar consultas SQL en un archivo
+def guardar_sql_dump(nombre_archivo, consultas, version_servidor):
+    encabezado = (
+        "-- PostgreSQL dump\n"
+        "--\n"
+        f"-- Host: localhost    Database: {db_config.get('base_de_datos', 'Desconocida')}\n"
+        "-- ------------------------------------------------------\n"
+        f"-- Server version {version_servidor}\n\n"
+    )
+    try:
+        with open(nombre_archivo, 'w', encoding='utf-8') as f:
+            f.write(encabezado)
+            for consulta in consultas:
+                f.write(consulta + '\n')
+        logging.info(f"Archivo SQL dump generado: {nombre_archivo}")
+    except Exception as e:
+        logging.error(f"Se produjo un error al guardar el archivo SQL dump: {e}")
+
 # Conectar a la base de datos
-conexion = conectar_db(db_config['host'], db_config['usuario'], db_config['contrasena'], db_config['base_de_datos'])
+conexion = conectar_db(db_config.get('host', ''), db_config.get('usuario', ''), db_config.get('contrasena', ''), db_config.get('base_de_datos', ''))
 
 # Función para obtener la versión del servidor PostgreSQL
 def obtener_version_servidor(conexion):
@@ -148,31 +199,35 @@ def obtener_version_servidor(conexion):
         logging.error(f"Error al obtener la versión del servidor: {e}")
         return "Desconocida"
 
-# Función para guardar consultas SQL en un archivo
-def guardar_sql_dump(nombre_archivo, consultas, version_servidor):
-    encabezado = (
-        "-- MySQL dump\n"
-        "--\n"
-        f"-- Host: localhost    Database: sim_{cliente}\n"
-        "-- ------------------------------------------------------\n"
-        f"-- Server version {version_servidor}\n\n"
-    )
-    try:
-        with open(nombre_archivo, 'w', encoding='utf-8') as f:
-            f.write(encabezado)
-            for consulta in consultas:
-                f.write(consulta + '\n')
-        logging.info(f"Archivo SQL dump generado: {nombre_archivo}")
-    except Exception as e:
-        logging.error(f"Se produjo un error al guardar el archivo SQL dump: {e}")
-
 # Obtener la versión del servidor
-version_servidor = obtener_version_servidor(conexion)
+if conexion:
+    version_servidor = obtener_version_servidor(conexion)
+else:
+    version_servidor = "Desconocida"
+
+# Función para renombrar columnas
+def renombrar_columnas(headers):
+    seen = {}
+    new_headers = []
+    for header in headers:
+        if header in seen:
+            seen[header] += 1
+            new_header = f"{header}_{seen[header]}"
+        else:
+            seen[header] = 0
+            new_header = header
+        new_headers.append(new_header)
+    return new_headers
 
 # Iterar sobre cada reporte y realizar las operaciones de creación de tabla e inserción
 for reporte in reportes:
     nombre_tabla = f"{reporte}{sucursal}"
     ruta_archivo = os.path.join(sandbx, f'{reporte}{sucursal}.txt')
+
+    # Verificar existencia del archivo TXT
+    if not os.path.isfile(ruta_archivo):
+        logging.warning(f"El archivo TXT no se encontró en la ruta especificada: {ruta_archivo}. Omitiendo este reporte.")
+        continue
 
     # Intentar leer el archivo con diferentes codificaciones
     codificaciones = ['utf-8', 'ISO-8859-1', 'latin1', 'Windows-1252']
@@ -180,48 +235,47 @@ for reporte in reportes:
     raw_data = None
     for codificacion in codificaciones:
         try:
-            with open(ruta_archivo, 'r', encoding=codificacion) as file:
-                raw_data = file.read()
-            logging.info(f"Archivo {ruta_archivo} leído con éxito usando la codificación: {codificacion}")
+            with open(ruta_archivo, 'r', encoding=codificacion) as f:
+                raw_data = f.read()
             break
-        except UnicodeDecodeError as e:
-            logging.error(f"Error con la codificación {codificacion}: {e}")
-        except FileNotFoundError:
-            logging.error(f"El archivo TXT no se encontró en la ruta especificada: {ruta_archivo}")
-            break
-        except PermissionError:
-            logging.error(f"Permiso denegado para leer el archivo TXT.")
-            break
-        except Exception as e:
-            logging.error(f"Se produjo un error al leer el archivo {ruta_archivo}: {e}")
-            break
+        except UnicodeDecodeError:
+            continue
+
+    if raw_data is None:
+        logging.error(f"No se pudo leer el archivo TXT {ruta_archivo} con ninguna de las codificaciones probadas.")
+        continue
+
+    
+    # Se limpia el reporte de la basura
+    raw_data_clean = limpiar_encabezado(raw_data)
+
+    # Procesar el contenido del archivo TXT
+    data = [row.split('|') for row in raw_data_clean.strip().split('\n')]
+
+    # Usar encabezados esperados del archivo de configuración
+    encabezados_esperados = columnas_esperadas.get(reporte, [])
+    headers = encabezados_esperados
+    rows = data
+
+    
+
+    # Comparar las columnas actuales con las esperadas
+    columnas = data[0]
+    print(f'Columnas: {columnas}')
+    columnas_esperadas_reporte = set(columnas_esperadas.get(reporte, []))
+    print(f'Columnas esperadas: {columnas_esperadas_reporte}')
+    # Verificar si al menos una columna coincide
+    if columnas_esperadas_reporte.intersection(columnas):
+        rows = data[1:] 
+        logging.info(f"Al menos una columna de {nombre_tabla} coincide con las columnas esperadas en la configuración.")
     else:
-        raise ValueError(f"No se pudo leer el archivo {ruta_archivo} con las codificaciones probadas.")
+        logging.info(f"El documento {nombre_tabla} no trae columnas.")
+        
 
-    # Convertir la cadena de datos en una lista de listas
-    data = [row.split('|') for row in raw_data.strip().split('\n')]
-
-    headers = data[0]
-    rows = data[1:]
-
-    # Filtrar encabezados vacíos
-    headers = [header for header in headers if header.strip() != '']
 
     # Asegurarse de que los nombres de las columnas sean únicos agregando sufijos
-    def renombrar_columnas(headers):
-        seen = {}
-        new_headers = []
-        for header in headers:
-            if header in seen:
-                seen[header] += 1
-                new_header = f"{header}_{seen[header]}"
-            else:
-                seen[header] = 0
-                new_header = header
-            new_headers.append(new_header)
-        return new_headers
-
     headers = renombrar_columnas(headers)
+
 
     # Ajustar el número de columnas en las filas
     max_columns = len(headers)
@@ -246,18 +300,15 @@ for reporte in reportes:
 
     # Inferir el tipo de datos de cada columna
     def inferir_tipo_dato(serie):
-        try:
-            columna_clean = serie.replace(',', '').replace('', '0')  
-            pd.to_numeric(columna_clean, errors='raise')
-            if serie.str.contains(r'\.').any():
-                return 'DECIMAL(10,2)'
-            elif serie.astype(float).max() > 2147483647:  
-                return 'BIGINT'
-            return 'INTEGER'
-        except (ValueError, TypeError):
-            if serie.str.len().max() > 255:
-                return 'TEXT'
-            return 'VARCHAR(255)'
+        return 'VARCHAR(255)'
+
+    # Comparar las columnas actuales con las esperadas
+    columnas = set(df.columns)
+    columnas_esperadas_reporte = set(columnas_esperadas.get(reporte, []))
+
+    if not columnas_esperadas_reporte.intersection(columnas):
+        logging.info(f"No se genera SQL dump para {nombre_tabla}. Las columnas no coinciden con las esperadas.")
+        continue
 
     # Crear la consulta SQL para crear la tabla
     create_table_query = f"CREATE TABLE IF NOT EXISTS {nombre_tabla} (\n"
@@ -291,6 +342,11 @@ for reporte in reportes:
     ]
     archivo_sql = os.path.join(sandbx, f"{nombre_tabla}.sql.dump")
     guardar_sql_dump(archivo_sql, consultas, version_servidor)
+    
+    if conexion:
+        ejecutar_consulta(conexion, drop_query)
+        ejecutar_consulta(conexion, create_table_query)
+        ejecutar_consulta(conexion, insert_query)
 
 # Cerrar la conexión a la base de datos
 if conexion:
