@@ -5,7 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import os
 import uuid
-from forms import LoginForm  
+from ext import db  # Importar db desde ext.py
+from forms import RegistrationForm, LoginForm
+from models import User  # Import the User model after db is initialized
 
 app = Flask(__name__)
 
@@ -30,17 +32,12 @@ app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{db_config.get('usuario')}:{db_config.get('contrasena')}@{db_config.get('host')}/{db_config.get('base_de_datos')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+# Inicializar db con la aplicación
+db.init_app(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-
-# Modelo de Usuario
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -48,40 +45,53 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        hashed_password = generate_password_hash(password, method='sha256')
-
-        new_user = User(username=username, email=email, password=hashed_password)
-
+    form = RegistrationForm()
+    
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256')
+        
+        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        
         try:
             db.session.add(new_user)
             db.session.commit()
-            flash('Usuario registrado exitosamente', category='success')
-            return redirect(url_for('login'))
+            flash('Registro exitoso', 'success')  # Flash de éxito
+            return render_template('register.html', form=form, success=True)
         except Exception as e:
-            flash('Error al registrar usuario: {}'.format(e), category='danger')
-            return redirect(url_for('register'))
-
-    return render_template('register.html')
+            db.session.rollback()
+            flash('Ocurrió un error durante el registro', 'danger')
+    
+    return render_template('register.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print("Login route called")  # Debug statement
+    
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        print(f"Email: {email}, Password: {password}")  # Debugging output
+        
         user = User.query.filter_by(email=email).first()
-        if user and check_password_hash(user.password, password):
-            login_user(user)
-            flash('Inicio de sesión exitoso', category='success')
-            return redirect(url_for('index'))
+        
+        if user:
+            print(f"User found: {user.email}")  # Debugging output
+            if check_password_hash(user.password, password):
+                login_user(user)
+                print("Login successful")  # Debugging output
+                flash('Inicio de sesión exitoso', category='success')
+                return redirect(url_for('index'))
+            else:
+                print("Password incorrect")  # Debugging output
+                flash('Correo o contraseña incorrectos', category='danger')
         else:
+            print("User not found")  # Debugging output
             flash('Correo o contraseña incorrectos', category='danger')
-            return redirect(url_for('login'))
-
+        
+        return redirect(url_for('login'))
+    
     return render_template('login.html')
+
 
 @app.route('/logout')
 @login_required
