@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
+    {% extends "layout.html" %}
+    {% block content %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Clientes</title>
@@ -222,6 +223,8 @@
 
 <body>
     <div class="sidebar" id="mySidebar">
+        <br>
+        <br>
         <a href="/home" class="menu-item">
             <i class="fa-solid fa-house-chimney"></i>
             <span class="menu-text"> Inicio</span>
@@ -777,5 +780,5 @@
         addEditEventListeners();
     </script>
 </body>
-
+{% endblock %}
 </html>
