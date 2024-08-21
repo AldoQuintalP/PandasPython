@@ -6,15 +6,14 @@
     "columnas_esperadas": {
         "VTAUSA": {
             "columnas": [
-                "CentroCosto",
                 "Descripcion",
-                "SaldoInicial$",
-                "Debitos$",
-                "Creditos$",
-                "Saldo$",
-                "TipoCuenta",
+                "CentroCosto",
                 "Naturaleza",
-                "Sucursal"
+                "Sucursal",
+                "SaldoInicial$",
+                "Saldo$",
+                "Debitos$",
+                "TipoCuenta"
             ],
             "formulas": {
                 "Cuenta": " Cuenta Cuenta",

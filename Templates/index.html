@@ -284,6 +284,11 @@
         .content, .container, h2, h3, p, ul, li {
             color: #000000;
         }
+        .sortable-ghost {
+            opacity: 0.5;
+            background-color: #e9ecef;
+        }
+
     </style>
 </head>
 <body>
@@ -393,10 +398,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="saveOrderBtn">Guardar Orden</button>
                 </div>
             </div>
         </div>
     </div>
+
 
 
     <!-- Modal para seleccionar una columna -->
@@ -537,6 +544,9 @@
     <!-- Incluye Font Awesome JS desde un CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Incluir Sortable.js desde un CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
     <script>
         function toggleNav() {
             var sidebar = document.getElementById("mySidebar");
@@ -560,41 +570,53 @@
             window.location.href = `/edit_reporte/${reporte}`;
         }
         
-        function abrirEditarColumnasModal(tab, reporte) {
-    const columnEditList = document.getElementById('column-edit-list');
-    columnEditList.innerHTML = '';
-
-    // Obtener las columnas existentes
-    fetch(`/edit_reporte/${reporte}?tab_name=${tab}`)
+        function abrirEditarColumnasModal(tabName, reporte) {
+    fetch(`/edit_reporte/${reporte}?tab_name=${tabName}`)
         .then(response => response.json())
         .then(data => {
             const columnas = data.columnas || [];
+            const columnList = document.getElementById('column-edit-list');
+            columnList.innerHTML = '';
 
-            columnas.forEach(columna => {
+            columnas.forEach(col => {
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-                listItem.textContent = columna;
+                listItem.textContent = col;
+
+                // Añadir botones de editar y eliminar
+                const btnGroup = document.createElement('div');
+                btnGroup.className = 'btn-group ml-auto';
 
                 const editBtn = document.createElement('button');
                 editBtn.className = 'btn btn-warning btn-sm';
-                editBtn.innerHTML = '<i class="fa fa-edit"></i> Editar';
-                editBtn.addEventListener('click', () => editarColumna(tab, reporte, columna));
+                editBtn.innerHTML = '<i class="fa fa-edit"></i>';
+                editBtn.addEventListener('click', function() {
+                    editarColumna(tabName, reporte, col);
+                });
 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn btn-danger btn-sm';
-                deleteBtn.innerHTML = '<i class="fa fa-trash-alt"></i> Eliminar';
-                deleteBtn.addEventListener('click', () => eliminarColumna(tab, reporte, columna));
+                deleteBtn.innerHTML = '<i class="fa fa-trash-alt"></i>';
+                deleteBtn.addEventListener('click', function() {
+                    eliminarColumna(tabName, reporte, col);
+                });
 
-                const btnGroup = document.createElement('div');
-                btnGroup.className = 'btn-group';
                 btnGroup.appendChild(editBtn);
                 btnGroup.appendChild(deleteBtn);
-
                 listItem.appendChild(btnGroup);
-                columnEditList.appendChild(listItem);
+
+                columnList.appendChild(listItem);
             });
 
-            // Mostrar el modal de edición de columnas
+            // Inicializar la funcionalidad de arrastrar y soltar
+            new Sortable(columnList, {
+                animation: 150,
+                ghostClass: 'blue-background-class',
+            });
+
+            document.getElementById('editColumnModal').setAttribute('data-tab', tabName);
+            document.getElementById('editColumnModal').setAttribute('data-reporte', reporte);
+
             $('#editColumnModal').modal('show');
         })
         .catch(error => {
@@ -602,6 +624,46 @@
             Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
         });
 }
+
+document.getElementById('saveOrderBtn').addEventListener('click', function() {
+    const columnEditList = document.getElementById('column-edit-list');
+    const ordenColumnas = Array.from(columnEditList.children).map(item => item.textContent.trim());
+
+    const tabName = document.getElementById('editColumnModal').getAttribute('data-tab');
+    const reporte = document.getElementById('editColumnModal').getAttribute('data-reporte');
+
+    if (!tabName || !reporte) {
+        Swal.fire('Error', 'El nombre de la pestaña y el reporte son necesarios', 'error');
+        return;
+    }
+
+    // Enviar el nuevo orden al servidor
+    fetch('/guardar-orden-columnas', {
+        method: 'POST',
+        body: new URLSearchParams({
+            tab_name: tabName,
+            reporte: reporte,
+            columnas: JSON.stringify(ordenColumnas)
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire('Éxito', 'Orden de columnas guardado correctamente', 'success')
+                .then(() => {
+                    $('#editColumnModal').modal('hide');
+                    abrirEditarColumnasModal(tabName, reporte);  // Recargar el modal para reflejar los cambios
+                });
+        } else {
+            Swal.fire('Error', data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo guardar el orden de las columnas', 'error');
+    });
+});
+
 
 function editarColumna(tab, reporte, columna) {
     Swal.fire({

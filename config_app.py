@@ -694,6 +694,37 @@ def eliminar_columna():
     except Exception as e:
         print(f"Error al eliminar la columna: {e}")
         return jsonify({'success': False, 'error': 'No se pudo eliminar la columna.'})
+    
+@app.route('/guardar-orden-columnas', methods=['POST'])
+@login_required
+def guardar_orden_columnas():
+    try:
+        tab_name = request.form.get('tab_name')
+        reporte = request.form.get('reporte')
+        columnas = request.form.get('columnas')
+
+        if not tab_name or not reporte or not columnas:
+            return jsonify({'success': False, 'error': 'Faltan datos para guardar el orden de columnas.'})
+
+        columnas_ordenadas = json.loads(columnas)
+
+        config = cargar_config(tab_name)
+        if config is None:
+            return jsonify({'success': False, 'error': 'No se pudo cargar la configuración para la pestaña especificada.'})
+
+        if reporte not in config['columnas_esperadas']:
+            return jsonify({'success': False, 'error': 'El reporte no existe en la configuración.'})
+
+        config['columnas_esperadas'][reporte]['columnas'] = columnas_ordenadas
+
+        config_path = os.path.join('CLIENTS', 'dms', f'{tab_name}.json')
+        with open(config_path, 'w') as f:
+            json.dump(config, f, indent=4)
+
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Error al guardar el orden de columnas: {e}")
+        return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':
     with app.app_context():
