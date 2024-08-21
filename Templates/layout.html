@@ -32,7 +32,7 @@
         <div class="container-fluid">
             <!-- Imagen a la izquierda del navbar -->
             <a class="navbar-brand" href="#">
-                <img src="{{ url_for('static', filename='images/sdg_logos.png') }}" alt="Logo">
+                <img src="{{ url_for('static', filename='images/sdg_logos.png') }}" alt="Logo" class="img-fluid" style="height: 50px; max-height: 100%; object-fit: contain;">
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -41,10 +41,15 @@
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link">User: {{ current_user.username }}</a>
+                        <span class="navbar-text text-white font-weight-bold mr-3" style="font-size: 1.25rem;">
+                            <i class="fa fa-user-circle" style="font-size: 1.5rem;"></i> {{ current_user.username }}
+                        </span>
                     </li>
+                    
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                        <a class="nav-link" href="{{ url_for('logout') }}">
+                            <button class="btn btn-outline-light">Logout</button>
+                        </a>
                     </li>
                     {% else %}
                     <li class="nav-item">

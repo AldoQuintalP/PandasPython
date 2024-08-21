@@ -145,23 +145,35 @@ def save_config():
 def save_db_config():
     try:
         data = request.form
-        config = cargar_config()
 
-        config['db'] = {
+        # Crear la configuración a partir de los datos del formulario
+        db_config = {
             'host': data.get('db_host', ''),
-            'usuario': data.get('db_usuario', ''),
+            'usuario': data.get('db_user', ''),
             'contrasena': data.get('db_contrasena', ''),
-            'base_de_datos': data.get('db_base_datos', '')
+            'base_de_datos': data.get('db_base_datos', ''),
+            'workng_dir': data.get('workng_dir', ''),
+            'sandbx': data.get('sandbx', '')
         }
 
-        with open('config.json', 'w') as f:
-            json.dump(config, f, indent=4)
+        # Ruta del archivo database.json
+        db_config_path = 'database.json'
+
+        # Verificar si el archivo existe, si no, crearlo
+        if not os.path.exists(db_config_path):
+            with open(db_config_path, 'w') as f:
+                json.dump({}, f)  # Crear el archivo vacío si no existe
+
+        # Guardar la configuración en el archivo database.json
+        with open(db_config_path, 'w') as f:
+            json.dump(db_config, f, indent=4)
 
         return jsonify({'success': True})
 
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo guardar la configuración de la base de datos.'})
+
 
 @app.route('/add-reporte', methods=['POST'])
 @login_required
@@ -487,6 +499,16 @@ def delete_formula():
     except Exception as e:
         print(f"Error al eliminar la fórmula: {e}")
         return jsonify({'success': False, 'error': 'No se pudo eliminar la fórmula.'})
+    
+
+@app.route('/database', methods=['GET', 'POST'])
+@login_required
+def database():
+    # Asegúrate de que cargar_config() devuelve un diccionario
+    config = cargar_config()
+
+    return render_template('database.html', config=config)
+
 
 if __name__ == '__main__':
     with app.app_context():

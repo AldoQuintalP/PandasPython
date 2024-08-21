@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% extends "layout.html" %}
+    {% block content %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración de Base de Datos</title>
+    <!-- Incluye Bootstrap CSS desde un CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Incluye SweetAlert2 CSS desde un CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Incluye Font Awesome 6 desde un CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #000000;
+        }
+        .sidebar {
+            height: 100vh;
+            width: 50px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            color: #fff;
+            overflow-x: hidden;
+            transition: width 0.3s, transform 0.3s;
+            padding-top: 20px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.expanded {
+            width: 250px;
+        }
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #fff;
+            display: block;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar.expanded a {
+            justify-content: flex-start;
+        }
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+        .sidebar .togglebtn {
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: auto;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            width: 100%;
+        }
+        .content {
+            margin-left: 50px;
+            padding: 20px;
+            transition: margin-left 0.3s, overflow 0.3s;
+        }
+        .sidebar.expanded ~ .content {
+            margin-left: 250px;
+        }
+        .container {
+            margin-top: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .card {
+            background-color: #f8f9fa;
+        }
+        .card-header {
+            background-color: #e9ecef;
+        }
+        .card-body {
+            background-color: #f1f3f5;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .card-header h2, .card-header h5, .form-group label {
+            color: #000000;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .btn-left-container {
+            display: flex;
+            gap: 10px;
+        }
+        .card-header h5 {
+            margin-bottom: 0;
+        }
+        .tab-pane .form-group:first-of-type {
+            margin-top: 1cm;
+        }
+        .nav-tabs .nav-link {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        .tab-content {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .sidebar .menu-text {
+            display: none;
+        }
+        .sidebar.expanded .menu-text {
+            display: inline;
+            margin-left: 10px;
+        }
+        .menu-image {
+            width: 100%;
+            height: auto;
+            padding: 10px 0;
+            display: block;
+        }
+        .sidebar.expanded .menu-image {
+            display: block;
+        }
+        .sidebar:not(.expanded) .menu-image {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="mySidebar">
+        <br>
+        <br>
+        <a href="/home" class="menu-item">
+            <i class="fa-solid fa-house-chimney"></i>
+            <span class="menu-text">Inicio</span> 
+        </a>
+        <a href="/" class="menu-item">
+            <i class="fa-solid fa-gear"></i>
+            <span class="menu-text">Configuración</span>
+        </a>
+        <a href="/clientes" class="menu-item">
+            <i class="fa-solid fa-folder-open"></i>
+            <span class="menu-text">Clientes</span> 
+        </a>
+        <a href="/database" class="menu-item">
+            <i class="fa-solid fa-database"></i>
+            <span class="menu-text">Base de Datos</span> 
+        </a>
+        <span class="togglebtn" onclick="toggleNav()">
+            <i class="fa-solid fa-angles-right"></i>
+        </span>
+    </div>
+
+    <div id="main">
+        <div class="content">
+            <div class="container">
+                <div class="card mb-4 shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+                    <div class="card-header">
+                        <h2>Configuración de Base de Datos</h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="workng_dir">Directorio de Trabajo:</label>
+                                <input type="text" id="workng_dir" name="workng_dir" class="form-control" value="{{ config.get('workng_dir', '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="sandbx">Directorio de Sandbox:</label>
+                                <input type="text" id="sandbx" name="sandbx" class="form-control" value="{{ config.get('sandbx', '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="db_host">Host:</label>
+                                <input type="text" id="db_host" name="db_host" class="form-control" value="{{ config.get('db', {}).get('host', '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="db_user">Usuario:</label>
+                                <input type="text" id="db_user" name="db_user" class="form-control" value="{{ config.get('db', {}).get('usuario', '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="db_contrasena">Contraseña:</label>
+                                <input type="password" id="db_contrasena" name="db_contrasena" class="form-control" value="{{ config.get('db', {}).get('contrasena', '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="db_base_datos">Base de datos:</label>
+                                <input type="text" id="db_base_datos" name="db_base_datos" class="form-control" value="{{ config.get('db', {}).get('base_de_datos', '') }}">
+                            </div>
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" id="save-db-config-btn">
+                                    <i class="fa-solid fa-floppy-disk"></i> Guardar Configuración BD
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Incluye jQuery, Popper.js y Bootstrap JS desde un CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Incluye Font Awesome JS desde un CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+        function toggleNav() {
+            var sidebar = document.getElementById("mySidebar");
+            var main = document.getElementById("main");
+            var toggleBtn = document.querySelector('.togglebtn');
+            
+            if (sidebar.classList.contains("expanded")) {
+                sidebar.classList.remove("expanded");
+                main.style.marginLeft = '50px';
+                main.style.overflow = 'auto';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
+            } else {
+                sidebar.classList.add("expanded");
+                main.style.marginLeft = '250px';
+                main.style.overflow = 'hidden';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i> Ocultar Menú';
+            }
+        }
+
+        document.getElementById('save-db-config-btn').addEventListener('click', function() {
+            var form = document.querySelector('form');
+            var data = new FormData(form);
+            fetch('/save-db-config', {
+                method: 'POST',
+                body: data,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Éxito', 'Configuración de base de datos guardada correctamente', 'success');
+                } else {
+                    Swal.fire('Error', data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'No se pudo guardar la configuración de la base de datos', 'error');
+            });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>
