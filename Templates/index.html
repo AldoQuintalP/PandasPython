@@ -307,16 +307,6 @@
                         <h2>Configuración de Parámetros</h2>
                     </div>
                     <div class="card-body">
-                        <form method="POST">
-                            <div class="form-group">
-                                <label for="workng_dir">Directorio de Trabajo:</label>
-                                <input type="text" id="workng_dir" name="workng_dir" class="form-control" value="{{ config.get('workng_dir', '') }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="sandbx">Directorio de Sandbox:</label>
-                                <input type="text" id="sandbx" name="sandbx" class="form-control" value="{{ config.get('sandbx', '') }}">
-                            </div>
-                        </form>
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="layout-mundial-tab" data-toggle="tab" href="#layout-mundial" role="tab" aria-controls="layout-mundial" aria-selected="true">Layout Mundial</a>
@@ -360,9 +350,6 @@
                             </div>
                         </div>
                         <div class="btn-container">
-                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#dbConfigModal">
-                                <i class="fa-solid fa-database"></i> Configuración bd
-                            </button>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fa-solid fa-floppy-disk"></i> Guardar
                             </button>
@@ -394,7 +381,7 @@
     
     <!-- Modal para ver las columnas con fórmulas -->
     <div class="modal fade" id="viewFormulasModal" tabindex="-1" role="dialog" aria-labelledby="viewFormulasModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document" style="max-width: 30%;">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 40%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="viewFormulasModalLabel">Columnas con Fórmulas Existentes</h5>
@@ -496,36 +483,6 @@
                                 <input type="text" id="nuevo_reporte_columnas" name="columnas" class="form-control">
                             </div>
                             <button type="button" id="save-report-btn" class="btn btn-primary">Guardar Reporte</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para la configuración de la base de datos -->
-    <div class="modal fade" id="dbConfigModal" tabindex="-1" role="dialog" aria-labelledby="dbConfigModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title" id="dbConfigModalLabel">Configuración de la Base de Datos</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="dbConfigForm" method="POST">
-                            <div class="form-group">
-                                <label for="db_host">Host:</label>
-                                <input type="text" id="db_host" name="db_host" class="form-control" value="{{ config.get('db', {}).get('host', '') }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="db_user">Usuario:</label>
-                                <input type="text" id="db_user" name="db_user" class="form-control" value="{{ config.get('db', {}).get('usuario', '') }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="db_contrasena">Contraseña:</label>
-                                <input type="password" id="db_contrasena" name="db_contrasena" class="form-control" value="{{ config.get('db', {}).get('contrasena', '') }}">
-                            </div>
-                            <button type="button" id="save-db-config-btn" class="btn btn-primary">Guardar Configuración BD</button>
                         </form>
                     </div>
                 </div>

@@ -13,9 +13,22 @@ app = Flask(__name__)
 
 # Cargar la configuración desde config.json
 def cargar_config():
-    with open('config.json', 'r') as f:
-        config = json.load(f)
+    config_path = 'config.json'
     
+    # Verificar si el archivo existe
+    if not os.path.exists(config_path):
+        # Crear una estructura básica si el archivo no existe
+        config = {
+            "columnas_esperadas": {},
+            "reportes": []
+        }
+        with open(config_path, 'w') as f:
+            json.dump(config, f, indent=4)
+    else:
+        # Si el archivo existe, cargar su contenido
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+
     # Asegurarse de que cada reporte tenga la estructura adecuada
     for reporte, data in config.get('columnas_esperadas', {}).items():
         if isinstance(data, list):
@@ -25,9 +38,32 @@ def cargar_config():
             }
     return config
 
+# Cargar la configuración de la base de datos desde database.json
+def cargar_db_config():
+    db_config_path = 'database.json'
+    
+    # Verificar si el archivo database.json existe
+    if not os.path.exists(db_config_path):
+        # Crear una estructura básica si el archivo no existe
+        db_config = {
+            "host": "",
+            "usuario": "",
+            "contrasena": "",
+            "base_de_datos": ""
+        }
+        with open(db_config_path, 'w') as f:
+            json.dump(db_config, f, indent=4)
+    else:
+        # Si el archivo existe, cargar su contenido
+        with open(db_config_path, 'r') as f:
+            db_config = json.load(f)
+
+    return db_config
+
+
+
 # Cargar la configuración de la base de datos desde config.json
-config = cargar_config()
-db_config = config.get('db', {})
+db_config = cargar_db_config()
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{db_config.get('usuario')}:{db_config.get('contrasena')}@{db_config.get('host')}/{db_config.get('base_de_datos')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -113,8 +149,6 @@ def save_config():
         data = request.form
         config = cargar_config()
 
-        config['workng_dir'] = data.get('workng_dir', '')
-        config['sandbx'] = data.get('sandbx', '')
         config['reportes'] = [rep.strip() for rep in data.get('reportes', '').split(',') if rep.strip()]
 
         columnas_esperadas = {}
@@ -139,6 +173,7 @@ def save_config():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': 'No se pudo guardar la configuración.'})
+
 
 @app.route('/save-db-config', methods=['POST'])
 @login_required
@@ -501,13 +536,19 @@ def delete_formula():
         return jsonify({'success': False, 'error': 'No se pudo eliminar la fórmula.'})
     
 
-@app.route('/database', methods=['GET', 'POST'])
+@app.route('/database', methods=['GET'])
 @login_required
 def database():
-    # Asegúrate de que cargar_config() devuelve un diccionario
-    config = cargar_config()
+    # Verificar si database.json existe y cargar su contenido
+    db_config_path = 'database.json'
+    if os.path.exists(db_config_path):
+        with open(db_config_path, 'r') as f:
+            db_config = json.load(f)
+    else:
+        db_config = {}
 
-    return render_template('database.html', config=config)
+    return render_template('database.html', config=db_config)
+
 
 
 if __name__ == '__main__':
