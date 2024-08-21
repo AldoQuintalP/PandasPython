@@ -13,7 +13,9 @@
                 "SaldoInicial$",
                 "Saldo$",
                 "Debitos$",
-                "TipoCuenta"
+                "TipoCuenta",
+                "Triple corona",
+                "Triple corona777"
             ],
             "formulas": {
                 "Cuenta": " Cuenta Cuenta",

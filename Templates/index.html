@@ -396,14 +396,46 @@
                         <!-- Las columnas se cargarán aquí dinámicamente -->
                     </ul>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="saveOrderBtn">Guardar Orden</button>
+                <div class="modal-footer d-flex justify-content-between align-items-center">
+                    <!-- Botón para agregar una nueva columna -->
+                    <button type="button" class="btn btn-success" id="addNewColumnBtn">
+                        <i class="fa fa-plus"></i> Agregar Nueva Columna
+                    </button>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" id="saveOrderBtn">Guardar Orden</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+
+    <!-- Modal para agregar una nueva columna -->
+    <div class="modal fade" id="addColumnModal" tabindex="-1" role="dialog" aria-labelledby="addColumnModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addColumnModalLabel">Agregar Nueva Columna</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addColumnForm">
+                        <div class="form-group">
+                            <label for="new_column_name">Nombre de la nueva columna:</label>
+                            <input type="text" id="new_column_name" name="new_column_name" class="form-control" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="saveColumnBtn">Guardar Columna</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- Modal para seleccionar una columna -->
@@ -716,6 +748,7 @@ function editarColumna(tab, reporte, columna) {
         }
     });
 }
+
 
 function eliminarColumna(tab, reporte, columna) {
     Swal.fire({
@@ -1065,6 +1098,45 @@ function eliminarColumna(tab, reporte, columna) {
         });
 }
 
+document.getElementById('addColumnBtn').addEventListener('click', function() {
+    $('#addColumnModal').modal('show');
+});
+
+document.getElementById('saveColumnBtn').addEventListener('click', function() {
+    const newColumnName = document.getElementById('new_column_name').value.trim();
+    const tabName = document.getElementById('editColumnModal').getAttribute('data-tab');
+    const reporte = document.getElementById('editColumnModal').getAttribute('data-reporte');
+
+    if (!newColumnName) {
+        Swal.fire('Error', 'El nombre de la columna no puede estar vacío.', 'error');
+        return;
+    }
+
+    fetch('/add-columna', {
+        method: 'POST',
+        body: new URLSearchParams({
+            tab_name: tabName,
+            reporte: reporte,
+            nueva_columna: newColumnName
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire('Éxito', 'Columna agregada correctamente', 'success')
+            .then(() => {
+                $('#addColumnModal').modal('hide');
+                abrirEditarColumnasModal(tabName, reporte);  // Recargar el modal para reflejar los cambios
+            });
+        } else {
+            Swal.fire('Error', data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo agregar la columna', 'error');
+    });
+});
 
 function eliminarFormula(reporte, columna) {
     const tabName = document.querySelector('.nav-tabs .nav-link.active').textContent.trim();  // Obtener el nombre de la pestaña activa

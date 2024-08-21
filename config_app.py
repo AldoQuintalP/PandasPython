@@ -725,6 +725,37 @@ def guardar_orden_columnas():
     except Exception as e:
         print(f"Error al guardar el orden de columnas: {e}")
         return jsonify({'success': False, 'error': str(e)})
+    
+@app.route('/add-columna', methods=['POST'])
+@login_required
+def add_columna():
+    try:
+        tab_name = request.form.get('tab_name')
+        reporte = request.form.get('reporte')
+        nueva_columna = request.form.get('nueva_columna')
+
+        if not tab_name or not reporte or not nueva_columna:
+            return jsonify({'success': False, 'error': 'Pestaña, reporte, y columna son necesarios.'})
+
+        config = cargar_config(tab_name)
+
+        if reporte not in config['columnas_esperadas']:
+            return jsonify({'success': False, 'error': 'El reporte no existe.'})
+
+        columnas = config['columnas_esperadas'][reporte]['columnas']
+        if nueva_columna in columnas:
+            return jsonify({'success': False, 'error': 'La columna ya existe.'})
+
+        columnas.append(nueva_columna)
+        with open(f'CLIENTS/dms/{tab_name}.json', 'w') as f:
+            json.dump(config, f, indent=4)
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        print(f"Error al agregar la columna: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo agregar la columna.'})
+
 
 if __name__ == '__main__':
     with app.app_context():
