@@ -11,31 +11,19 @@ from models import User  # Import the User model after db is initialized
 
 app = Flask(__name__)
 
-# Cargar la configuración desde config.json
-def cargar_config():
-    config_path = 'config.json'
+# Cargar la configuración desde un archivo JSON específico
+def cargar_config(tab_name):
+    config_path = os.path.join('CLIENTS', 'dms', f'{tab_name}.json')
     
-    # Verificar si el archivo existe
+    # Si el archivo no existe, retornar un error claro
     if not os.path.exists(config_path):
-        # Crear una estructura básica si el archivo no existe
-        config = {
-            "columnas_esperadas": {},
-            "reportes": []
-        }
-        with open(config_path, 'w') as f:
-            json.dump(config, f, indent=4)
-    else:
-        # Si el archivo existe, cargar su contenido
-        with open(config_path, 'r') as f:
-            config = json.load(f)
-
-    # Asegurarse de que cada reporte tenga la estructura adecuada
-    for reporte, data in config.get('columnas_esperadas', {}).items():
-        if isinstance(data, list):
-            config['columnas_esperadas'][reporte] = {
-                'columnas': data,
-                'formulas': {}
-            }
+        print(f"El archivo {config_path} no existe.")  # Para fines de depuración
+        return None
+    
+    # Si el archivo existe, cargar su contenido
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    
     return config
 
 # Cargar la configuración de la base de datos desde database.json
@@ -139,8 +127,20 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-    config = cargar_config()
-    return render_template('index.html', config=config)
+    tabs = cargar_tabs()
+    tab_data = {}
+
+    dms_folder = os.path.join(os.getcwd(), 'CLIENTS', 'dms')
+
+    for tab in tabs:
+        tab_path = os.path.join(dms_folder, f"{tab}.json")
+        if os.path.exists(tab_path):
+            with open(tab_path, 'r') as f:
+                tab_data[tab] = json.load(f)
+        else:
+            tab_data[tab] = {"reportes": []}
+
+    return render_template('index.html', tabs=tabs, tab_data=tab_data)
 
 @app.route('/', methods=['POST'])
 @login_required
@@ -214,76 +214,93 @@ def save_db_config():
 @login_required
 def add_reporte():
     try:
-        nombre = request.form.get('nombre')
+        tab_name = request.form.get('tab_name')
+        nombre_reporte = request.form.get('nombre')
         columnas = request.form.get('columnas', '').split(',')
         columnas = [col.strip() for col in columnas if col.strip()]
 
-        if not nombre:
-            return jsonify({'success': False, 'error': 'El nombre del reporte no puede estar vacío.'})
+        if not tab_name or not nombre_reporte:
+            return jsonify({'success': False, 'error': 'El nombre del reporte y la pestaña son necesarios.'})
 
-        config = cargar_config()
+        # Ruta al archivo JSON de la pestaña correspondiente
+        dms_folder = os.path.join(os.getcwd(), 'CLIENTS', 'dms')
+        tab_path = os.path.join(dms_folder, f"{tab_name}.json")
 
-        if nombre in config['columnas_esperadas']:
-            return jsonify({'success': False, 'error': 'El reporte ya existe.'})
+        if not os.path.exists(tab_path):
+            return jsonify({'success': False, 'error': 'La pestaña especificada no existe.'})
 
-        config['columnas_esperadas'][nombre] = {
-            'columnas': columnas,
-            'formulas': {}
+        # Cargar el contenido del archivo JSON
+        with open(tab_path, 'r') as f:
+            config = json.load(f)
+
+        # Verificar si el reporte ya existe
+        if nombre_reporte in config.get('reportes', []):
+            return jsonify({'success': False, 'error': 'El reporte ya existe en esta pestaña.'})
+
+        # Agregar el nuevo reporte al JSON
+        config['reportes'].append(nombre_reporte)
+        config['columnas_esperadas'][nombre_reporte] = {
+            "columnas": columnas,
+            "formulas": {}
         }
 
-        if nombre not in config['reportes']:
-            config['reportes'].append(nombre)
-
-        with open('config.json', 'w') as f:
+        # Guardar el JSON actualizado
+        with open(tab_path, 'w') as f:
             json.dump(config, f, indent=4)
 
         return jsonify({'success': True})
 
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'success': False, 'error': 'No se pudo agregar el reporte.'})
+        print(f"Error al guardar el reporte: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo guardar el reporte.'})
 
 @app.route('/delete-reporte', methods=['POST'])
 @login_required
 def delete_reporte():
     try:
+        tab_name = request.form.get('tab_name')
         reporte = request.form.get('reporte')
 
-        if not reporte:
-            return jsonify({'success': False, 'error': 'El reporte no puede estar vacío.'})
+        if not tab_name or not reporte:
+            return jsonify({'success': False, 'error': 'El nombre de la pestaña y el reporte son necesarios.'})
 
-        config = cargar_config()
+        # Cargar la configuración para la pestaña especificada
+        config = cargar_config(tab_name)
 
-        if reporte not in config['columnas_esperadas']:
+        if reporte not in config['reportes']:
             return jsonify({'success': False, 'error': 'El reporte no existe.'})
 
+        # Eliminar el reporte de la configuración
+        config['reportes'].remove(reporte)
         del config['columnas_esperadas'][reporte]
 
-        if reporte in config['reportes']:
-            config['reportes'].remove(reporte)
-
-        with open('config.json', 'w') as f:
+        # Guardar la configuración actualizada
+        config_path = os.path.join('CLIENTS', 'dms', f'{tab_name}.json')
+        with open(config_path, 'w') as f:
             json.dump(config, f, indent=4)
 
         return jsonify({'success': True})
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error al eliminar el reporte: {e}")
         return jsonify({'success': False, 'error': 'No se pudo eliminar el reporte.'})
+
 
 @app.route('/edit_reporte/<reporte>', methods=['GET'])
 @login_required
 def edit_reporte(reporte):
-    config = cargar_config()
+    tab_name = request.args.get('tab_name')
+    dms_folder = os.path.join(os.getcwd(), 'CLIENTS', 'dms')
+    tab_path = os.path.join(dms_folder, f"{tab_name}.json")
+
+    if not os.path.exists(tab_path):
+        return jsonify({'success': False, 'error': 'El archivo de la pestaña especificada no existe.'})
+
+    with open(tab_path, 'r') as f:
+        config = json.load(f)
+
     columnas_info = config['columnas_esperadas'].get(reporte, {'columnas': [], 'formulas': {}})
-    
-    if isinstance(columnas_info, list):
-        columnas_info = {'columnas': columnas_info, 'formulas': {}}
-
-    columnas = columnas_info.get('columnas', [])
-    formulas = columnas_info.get('formulas', {})
-
-    return jsonify({'success': True, 'columnas': columnas, 'formulas': formulas})
+    return jsonify({'success': True, 'columnas': columnas_info['columnas'], 'formulas': columnas_info['formulas']})
 
 @app.route('/save-order', methods=['POST'])
 @login_required
@@ -474,27 +491,27 @@ def actualizar_registro():
 @login_required
 def save_formula():
     try:
+        tab_name = request.form.get('name')  # Obtener el nombre de la pestaña desde el formulario
+        print(f'tab_name: {tab_name}')
         reporte = request.form.get('reporte')
         columna = request.form.get('columna')
         formula = request.form.get('formula')
 
-        if not reporte or not columna:
-            return jsonify({'success': False, 'error': 'Reporte y columna son necesarios.'})
+        if not tab_name or not reporte or not columna:
+            return jsonify({'success': False, 'error': 'Pestaña, reporte y columna son necesarios.'})
 
-        config = cargar_config()
+        # Cargar la configuración para la pestaña especificada
+        config = cargar_config(tab_name)
 
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe.'})
 
-        if isinstance(config['columnas_esperadas'][reporte], list):
-            config['columnas_esperadas'][reporte] = {
-                'columnas': config['columnas_esperadas'][reporte],
-                'formulas': {}
-            }
-
+        # Actualizar o agregar la fórmula en la columna correspondiente
         config['columnas_esperadas'][reporte]['formulas'][columna] = formula
 
-        with open('config.json', 'w') as f:
+        # Guardar la configuración actualizada en el archivo correspondiente
+        config_path = os.path.join('CLIENTS', 'dms', f'{tab_name}.json')
+        with open(config_path, 'w') as f:
             json.dump(config, f, indent=4)
 
         return jsonify({'success': True})
@@ -502,29 +519,33 @@ def save_formula():
     except Exception as e:
         print(f"Error al guardar la fórmula: {e}")
         return jsonify({'success': False, 'error': 'No se pudo guardar la fórmula.'})
-
+    
 @app.route('/delete-formula', methods=['POST'])
-@login_required
 def delete_formula():
     try:
+        tab_name = request.form.get('name')  # Obtener el nombre de la pestaña
         reporte = request.form.get('reporte')
         columna = request.form.get('columna')
 
-        if not reporte or not columna:
-            return jsonify({'success': False, 'error': 'Reporte y columna son necesarios.'})
+        if not tab_name or not reporte or not columna:
+            return jsonify({'success': False, 'error': 'Pestaña, reporte y columna son necesarios.'})
 
-        config = cargar_config()
+        # Cargar la configuración para la pestaña especificada
+        config = cargar_config(tab_name)
 
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe.'})
 
+        # Asegurarse de que el reporte esté en formato dict
         if isinstance(config['columnas_esperadas'][reporte], list):
             return jsonify({'success': False, 'error': 'El formato del reporte no es válido.'})
 
         if columna in config['columnas_esperadas'][reporte]['formulas']:
             del config['columnas_esperadas'][reporte]['formulas'][columna]
 
-            with open('config.json', 'w') as f:
+            # Guardar la configuración actualizada
+            config_path = os.path.join('CLIENTS', 'dms', f'{tab_name}.json')
+            with open(config_path, 'w') as f:
                 json.dump(config, f, indent=4)
 
             return jsonify({'success': True})
@@ -534,8 +555,9 @@ def delete_formula():
     except Exception as e:
         print(f"Error al eliminar la fórmula: {e}")
         return jsonify({'success': False, 'error': 'No se pudo eliminar la fórmula.'})
-    
 
+
+    
 @app.route('/database', methods=['GET'])
 @login_required
 def database():
@@ -549,7 +571,129 @@ def database():
 
     return render_template('database.html', config=db_config)
 
+# Ruta al archivo donde se guardan las pestañas
+tabs_file = os.path.join(os.getcwd(), 'CLIENTS', 'dms', 'tabs.json')
 
+def cargar_tabs():
+    if os.path.exists(tabs_file):
+        with open(tabs_file, 'r') as f:
+            return json.load(f)
+    return []
+
+def guardar_tab(tab_name):
+    tabs = cargar_tabs()
+    if tab_name not in tabs:
+        tabs.append(tab_name)
+        with open(tabs_file, 'w') as f:
+            json.dump(tabs, f, indent=4)
+
+@app.route('/add_tab', methods=['POST'])
+@login_required
+def add_tab():
+    try:
+        tab_name = request.form.get('tab_name')
+        if not tab_name:
+            return jsonify({'success': False, 'error': 'El nombre de la pestaña es necesario.'})
+        
+        # Ruta al archivo tabs.json que almacena las pestañas
+        tabs_file = os.path.join(os.getcwd(), 'CLIENTS', 'dms', 'tabs.json')
+        
+        # Crear la carpeta CLIENTS/dms si no existe
+        dms_folder = os.path.join(os.getcwd(), 'CLIENTS', 'dms')
+        if not os.path.exists(dms_folder):
+            os.makedirs(dms_folder)
+        
+        # Cargar las pestañas existentes desde tabs.json
+        if os.path.exists(tabs_file):
+            with open(tabs_file, 'r') as f:
+                tabs = json.load(f)
+        else:
+            tabs = []
+
+        # Verificar si la pestaña ya existe
+        if tab_name in tabs:
+            return jsonify({'success': False, 'error': 'La pestaña ya existe.'})
+
+        # Agregar la nueva pestaña a la lista y guardar en tabs.json
+        tabs.append(tab_name)
+        with open(tabs_file, 'w') as f:
+            json.dump(tabs, f, indent=4)
+
+        # Crear un archivo JSON con la estructura inicial para la nueva pestaña, incluyendo el nombre
+        tab_path = os.path.join(dms_folder, f"{tab_name}.json")
+        initial_data = {
+            "name": tab_name,  # Agregar la llave 'name' con el nombre de la pestaña
+            "reportes": [],
+            "columnas_esperadas": {}
+        }
+
+        with open(tab_path, 'w') as f:
+            json.dump(initial_data, f, indent=4)
+        
+        return jsonify({'success': True})
+    
+    except Exception as e:
+        print(f"Error al crear la nueva pestaña: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo crear la nueva pestaña.'})
+
+@app.route('/editar-columna', methods=['POST'])
+@login_required
+def editar_columna():
+    try:
+        tab_name = request.form.get('tab_name')
+        reporte = request.form.get('reporte')
+        columna = request.form.get('columna')
+        nueva_columna = request.form.get('nueva_columna')
+
+        if not tab_name or not reporte or not columna or not nueva_columna:
+            return jsonify({'success': False, 'error': 'Pestaña, reporte, y columna son necesarios.'})
+
+        config = cargar_config(tab_name)
+
+        if reporte not in config['columnas_esperadas']:
+            return jsonify({'success': False, 'error': 'El reporte no existe.'})
+
+        columnas = config['columnas_esperadas'][reporte]['columnas']
+        if columna in columnas:
+            columnas[columnas.index(columna)] = nueva_columna
+            with open(f'CLIENTS/dms/{tab_name}.json', 'w') as f:
+                json.dump(config, f, indent=4)
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'La columna no existe.'})
+
+    except Exception as e:
+        print(f"Error al editar la columna: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo editar la columna.'})
+
+@app.route('/eliminar-columna', methods=['POST'])
+@login_required
+def eliminar_columna():
+    try:
+        tab_name = request.form.get('tab_name')
+        reporte = request.form.get('reporte')
+        columna = request.form.get('columna')
+
+        if not tab_name or not reporte or not columna:
+            return jsonify({'success': False, 'error': 'Pestaña, reporte y columna son necesarios.'})
+
+        config = cargar_config(tab_name)
+
+        if reporte not in config['columnas_esperadas']:
+            return jsonify({'success': False, 'error': 'El reporte no existe.'})
+
+        columnas = config['columnas_esperadas'][reporte]['columnas']
+        if columna in columnas:
+            columnas.remove(columna)
+            with open(f'CLIENTS/dms/{tab_name}.json', 'w') as f:
+                json.dump(config, f, indent=4)
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'La columna no existe.'})
+
+    except Exception as e:
+        print(f"Error al eliminar la columna: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo eliminar la columna.'})
 
 if __name__ == '__main__':
     with app.app_context():

@@ -1,0 +1,25 @@
+{
+    "name": "BProm",
+    "reportes": [
+        "VTAUSA"
+    ],
+    "columnas_esperadas": {
+        "VTAUSA": {
+            "columnas": [
+                "CentroCosto",
+                "Descripcion",
+                "SaldoInicial$",
+                "Debitos$",
+                "Creditos$",
+                "Saldo$",
+                "TipoCuenta",
+                "Naturaleza",
+                "Sucursal"
+            ],
+            "formulas": {
+                "Cuenta": " Cuenta Cuenta",
+                "Fecha": " Cuenta Cuenta"
+            }
+        }
+    }
+}
