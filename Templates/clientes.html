@@ -218,6 +218,11 @@
         .sidebar:not(.expanded) .menu-image {
             display: none;
         }
+        /* Estilo para una transición suave del tamaño del modal */
+        .modal-dialog {
+            transition: all 0.3s ease;
+        }
+
     </style>
 </head>
 
@@ -320,7 +325,7 @@
 
     <!-- Modal de "Agregar Nuevo Registro" -->
     <div class="modal fade" id="addRecordModal" tabindex="-1" role="dialog" aria-labelledby="addRecordModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-sm" id="addRecordModalDialog" role="document"> <!-- Inicialmente modal-sm -->
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addRecordModalLabel">Agregar Nuevo Registro</h5>
@@ -329,46 +334,59 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="addRecordForm">
-                        <div class="form-group">
-                            <label for="branch_name">Nombre de Sucursal</label>
-                            <input type="text" class="form-control" id="branch_name" name="branch_name" required>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <form id="addRecordForm">
+                                <div class="form-group">
+                                    <label for="branch_name">Nombre de Sucursal</label>
+                                    <input type="text" class="form-control" id="branch_name" name="branch_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="branch">Branch</label>
+                                    <input type="text" class="form-control" id="branch" name="branch" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="checkbox" id="multipleDmsCheckbox" name="multiple_dms">
+                                    <label for="multipleDmsCheckbox">¿Utiliza múltiples DMS?</label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dms">DMS</label>
+                                    <select class="form-control" id="dms" name="dms" required>
+                                        <option value="" disabled selected>Seleccione un DMS</option>
+                                        <!-- Las opciones se cargarán dinámicamente -->
+                                    </select>
+                                </div>
+                                <div class="form-group" id="reportsContainer" style="display: none;">
+                                    <label for="reports">Selecciona los Reportes a Utilizar:</label>
+                                    <div id="reportsCheckboxGroup">
+                                        <!-- Los checkboxes de reportes se cargarán aquí -->
+                                    </div>
+                                </div>
+                                <div class="form-group d-flex justify-content-between">
+                                    <button type="button" class="btn btn-primary" id="saveRecordBtn">
+                                        Guardar Registro
+                                    </button>
+                                    <button type="button" class="btn btn-secondary ml-2" id="addDmsBtn" style="display: none;">
+                                        +
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        <div class="form-group">
-                            <label for="branch">Branch</label>
-                            <input type="text" class="form-control" id="branch" name="branch" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="checkbox" id="multipleDmsCheckbox" name="multiple_dms">
-                            <label for="multipleDmsCheckbox">¿Utiliza múltiples DMS?</label>
-                            <input type="number" id="dmsCount" name="dms_count" class="form-control" style="display: none;" placeholder="Cantidad de DMS">
-                        </div>
-                        <div class="form-group">
-                            <label for="dms">DMS</label>
-                            <select class="form-control" id="dms" name="dms" required>
-                                <option value="" disabled selected>Seleccione un DMS</option>
-                                <!-- Las opciones se cargarán dinámicamente -->
-                            </select>
-                        </div>
-                        <div class="form-group" id="reportsContainer" style="display: none;">
-                            <label for="reports">Selecciona los Reportes a Utilizar:</label>
-                            <div id="reportsCheckboxGroup">
-                                <!-- Los checkboxes de reportes se cargarán aquí -->
+                        <div class="col-md-4" id="addedRecordsContainer" style="display: none;">
+                            <h5>Registros Agregados</h5>
+                            <div id="dmsContainer" style="border: 1px solid #ddd; padding: 10px; min-height: 200px;">
+                                <!-- Aquí se mostrarán los DMS adicionales -->
                             </div>
-                        </div>                        
-                        <button type="button" class="btn btn-primary" id="saveRecordBtn">
-                            Guardar Registro
-                        </button>
-                    </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     
-
     
-
-
+    
+    
     <div class="modal fade" id="editRecordModal" tabindex="-1" role="dialog" aria-labelledby="editRecordModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -419,29 +437,28 @@
        document.addEventListener('DOMContentLoaded', function() {
     const addRecordBtn = document.getElementById('addRecordBtn');
     const multipleDmsCheckbox = document.getElementById('multipleDmsCheckbox');
-    const dmsCountField = document.getElementById('dmsCount');
+    const dmsContainer = document.getElementById('dmsContainer');
+    const addDmsBtn = document.getElementById('addDmsBtn');
+    const addedRecordsContainer = document.getElementById('addedRecordsContainer');
+    const modalDialog = document.getElementById('addRecordModalDialog');
 
     if (addRecordBtn) {
         addRecordBtn.addEventListener('click', function() {
-            // Abrir el modal de "Agregar Nuevo Registro"
             $('#addRecordModal').modal('show');
-
-            // Limpiar el formulario
             document.getElementById('addRecordForm').reset();
-            document.getElementById('reportsCheckboxGroup').innerHTML = ''; // Limpiar los checkboxes
-            document.getElementById('reportsContainer').style.display = 'none'; // Ocultar el contenedor de reportes
+            document.getElementById('reportsCheckboxGroup').innerHTML = '';
+            document.getElementById('reportsContainer').style.display = 'none';
+            dmsContainer.innerHTML = '';
+            addDmsBtn.style.display = 'none';
+            addedRecordsContainer.style.display = 'none';
+            modalDialog.classList.remove('modal-lg', 'modal-xl');
 
-            // Ocultar el campo de cantidad de DMS
-            dmsCountField.style.display = 'none';
-
-            // Cargar las opciones de DMS desde tabs.json
             fetch('/get_tabs_json')
                 .then(response => response.json())
                 .then(data => {
                     const dmsSelect = document.getElementById('dms');
-                    dmsSelect.innerHTML = ''; // Limpiar las opciones existentes
+                    dmsSelect.innerHTML = '';
 
-                    // Agregar opción vacía por defecto
                     const defaultOption = document.createElement('option');
                     defaultOption.value = '';
                     defaultOption.textContent = 'Seleccione un DMS';
@@ -456,20 +473,18 @@
                         });
                     }
 
-                    // Seleccionar el DMS cargado y obtener los reportes
+                    handleDmsSelectionChange(dmsSelect);
+
                     dmsSelect.addEventListener('change', function() {
                         const selectedDms = dmsSelect.value;
 
                         if (selectedDms) {
-                            // Mostrar el contenedor de reportes
                             document.getElementById('reportsContainer').style.display = 'block';
-
-                            // Cargar el archivo JSON específico del DMS seleccionado para obtener los reportes
                             fetch(`/get_reportes_json?dms=${selectedDms}`)
                                 .then(response => response.json())
                                 .then(reportData => {
                                     const reportsCheckboxGroup = document.getElementById('reportsCheckboxGroup');
-                                    reportsCheckboxGroup.innerHTML = ''; // Limpiar los checkboxes existentes
+                                    reportsCheckboxGroup.innerHTML = '';
 
                                     if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
                                         reportData.reportes.forEach(reporte => {
@@ -493,7 +508,6 @@
                                             reportsCheckboxGroup.appendChild(checkboxDiv);
                                         });
                                     } else {
-                                        // Mostrar mensaje de que no hay reportes configurados
                                         const noReportsMessage = document.createElement('p');
                                         noReportsMessage.textContent = 'No hay modelos configurados para este DMS, revisa la configuración.';
                                         noReportsMessage.className = 'text-warning';
@@ -505,7 +519,6 @@
                                     Swal.fire('Error', 'No se pudieron cargar los reportes', 'error');
                                 });
                         } else {
-                            // Ocultar el contenedor de reportes si no hay un DMS seleccionado
                             document.getElementById('reportsContainer').style.display = 'none';
                         }
                     });
@@ -516,21 +529,153 @@
                 });
         });
 
-        // Evento para mostrar u ocultar el campo de cantidad de DMS
         multipleDmsCheckbox.addEventListener('change', function() {
             if (multipleDmsCheckbox.checked) {
-                dmsCountField.style.display = 'block';
-                dmsCountField.setAttribute('min', '2'); 
-                dmsCountField.setAttribute('max', '5'); 
-                dmsCountField.value = 2;
+                addDmsBtn.style.display = 'inline-block';
+                addedRecordsContainer.style.display = 'block';
+                modalDialog.classList.add('modal-lg');
             } else {
-                dmsCountField.style.display = 'none';
+                dmsContainer.innerHTML = '';
+                addDmsBtn.style.display = 'none';
+                addedRecordsContainer.style.display = 'none';
+                modalDialog.classList.remove('modal-lg');
             }
         });
+
+        addDmsBtn.addEventListener('click', function() {
+            const newDmsSelect = document.createElement('select');
+            newDmsSelect.className = 'form-control mt-2';
+            newDmsSelect.name = 'dms';
+            newDmsSelect.required = true;
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Seleccione un DMS';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            newDmsSelect.appendChild(defaultOption);
+
+            fetch('/get_tabs_json')
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        data.forEach(dms => {
+                            const option = document.createElement('option');
+                            option.value = dms;
+                            option.textContent = dms;
+                            newDmsSelect.appendChild(option);
+                        });
+                    }
+
+                    handleDmsSelectionChange(newDmsSelect);
+                });
+
+            const newReportsContainer = document.createElement('div');
+            newReportsContainer.className = 'form-group mt-2';
+            newReportsContainer.style.display = 'none';
+
+            const newReportsLabel = document.createElement('label');
+            newReportsLabel.textContent = 'Selecciona los Reportes a Utilizar:';
+            newReportsContainer.appendChild(newReportsLabel);
+
+            const newReportsCheckboxGroup = document.createElement('div');
+            newReportsContainer.appendChild(newReportsCheckboxGroup);
+
+            newDmsSelect.addEventListener('change', function() {
+                const selectedDms = newDmsSelect.value;
+
+                if (selectedDms) {
+                    newReportsContainer.style.display = 'block';
+                    fetch(`/get_reportes_json?dms=${selectedDms}`)
+                        .then(response => response.json())
+                        .then(reportData => {
+                            newReportsCheckboxGroup.innerHTML = '';
+
+                            if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
+                                reportData.reportes.forEach(reporte => {
+                                    const checkboxDiv = document.createElement('div');
+                                    checkboxDiv.className = 'form-check';
+
+                                    const checkbox = document.createElement('input');
+                                    checkbox.className = 'form-check-input';
+                                    checkbox.type = 'checkbox';
+                                    checkbox.id = `report_${reporte}`;
+                                    checkbox.value = reporte;
+
+                                    const label = document.createElement('label');
+                                    label.className = 'form-check-label';
+                                    label.htmlFor = `report_${reporte}`;
+                                    label.textContent = reporte;
+
+                                    checkboxDiv.appendChild(checkbox);
+                                    checkboxDiv.appendChild(label);
+
+                                    newReportsCheckboxGroup.appendChild(checkboxDiv);
+                                });
+                            } else {
+                                const noReportsMessage = document.createElement('p');
+                                noReportsMessage.textContent = 'No hay modelos configurados para este DMS, revisa la configuración.';
+                                noReportsMessage.className = 'text-warning';
+                                newReportsCheckboxGroup.appendChild(noReportsMessage);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al cargar los reportes:', error);
+                            Swal.fire('Error', 'No se pudieron cargar los reportes', 'error');
+                        });
+                } else {
+                    newReportsContainer.style.display = 'none';
+                }
+            });
+
+            dmsContainer.appendChild(newDmsSelect);
+            dmsContainer.appendChild(newReportsContainer);
+        });
+
+        function handleDmsSelectionChange(selectElement) {
+            selectElement.addEventListener('change', function() {
+                const selectedOption = selectElement.value;
+                const allDmsSelects = document.querySelectorAll('select[name="dms"]');
+
+                let isDuplicate = false;
+
+                allDmsSelects.forEach(select => {
+                    if (select !== selectElement && select.value === selectedOption) {
+                        isDuplicate = true;
+                    }
+                });
+
+                if (isDuplicate) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'DMS duplicado',
+                        text: 'Este DMS ya ha sido seleccionado en otro campo. Por favor, elige otro.'
+                    });
+                    selectElement.value = ''; // Restablecer el `select`
+                } else {
+                    allDmsSelects.forEach(select => {
+                        if (select !== selectElement) {
+                            const optionToRemove = select.querySelector(`option[value="${selectedOption}"]`);
+                            if (optionToRemove) {
+                                optionToRemove.remove();
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        document.querySelectorAll('select[name="dms"]').forEach(select => {
+            handleDmsSelectionChange(select);
+        });
+
     } else {
         console.error('El botón de "Agregar Registro" no fue encontrado.');
     }
 });
+
+
+
 
 
 
