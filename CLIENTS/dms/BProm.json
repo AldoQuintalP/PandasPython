@@ -1,21 +1,41 @@
 {
     "name": "BProm",
     "reportes": [
-        "VTAUSA"
+        "VTAUSA",
+        "VTAUSA02"
     ],
     "columnas_esperadas": {
         "VTAUSA": {
             "columnas": [
-                "Descripcion",
+                "Triple coronae",
+                "Sucursal",
                 "CentroCosto",
                 "Naturaleza",
-                "Sucursal",
                 "SaldoInicial$",
                 "Saldo$",
                 "Debitos$",
                 "TipoCuenta",
+                "Triple corona777",
                 "Triple corona",
-                "Triple corona777"
+                "Triple corona3"
+            ],
+            "formulas": {
+                "Cuenta": " Cuenta Cuenta",
+                "Fecha": " Cuenta Cuenta"
+            }
+        },
+        "VTAUSA02": {
+            "columnas": [
+                "Sucursal",
+                "CentroCosto",
+                "Naturaleza",
+                "SaldoInicial$",
+                "Saldo$",
+                "Debitos$",
+                "TipoCuenta",
+                "Triple corona777",
+                "Triple corona",
+                "Triple corona3"
             ],
             "formulas": {
                 "Cuenta": " Cuenta Cuenta",

@@ -756,6 +756,50 @@ def add_columna():
         print(f"Error al agregar la columna: {e}")
         return jsonify({'success': False, 'error': 'No se pudo agregar la columna.'})
 
+@app.route('/duplicar-reporte', methods=['POST'])
+def duplicar_reporte():
+    try:
+        tab_name = request.form.get('tab_name')
+        reporte = request.form.get('reporte')
+        nuevo_reporte = request.form.get('nuevo_reporte')
+
+        if not tab_name or not reporte or not nuevo_reporte:
+            return jsonify({"success": False, "error": "Faltan parámetros"}), 400
+
+        # Ruta del archivo JSON correspondiente a la pestaña
+        json_file_path = f"CLIENTS/dms/{tab_name}.json"
+
+        # Verifica que el archivo JSON exista
+        if not os.path.exists(json_file_path):
+            return jsonify({"success": False, "error": "Archivo de configuración no encontrado"}), 404
+
+        # Cargar la configuración actual
+        with open(json_file_path, 'r') as file:
+            config_data = json.load(file)
+
+        # Verifica si el reporte original existe
+        if reporte not in config_data.get('reportes', []):
+            return jsonify({"success": False, "error": "El reporte original no existe"}), 404
+
+        # Verifica si el nuevo reporte ya existe
+        if nuevo_reporte in config_data.get('reportes', []):
+            return jsonify({"success": False, "error": "El nuevo nombre de reporte ya existe"}), 400
+
+        # Duplicar el reporte
+        config_data['reportes'].append(nuevo_reporte)
+        config_data['columnas_esperadas'][nuevo_reporte] = config_data['columnas_esperadas'][reporte]
+
+        # Guardar los cambios en el archivo JSON
+        with open(json_file_path, 'w') as file:
+            json.dump(config_data, file, indent=4)
+
+        return jsonify({"success": True}), 200
+
+    except Exception as e:
+        # Imprimir el error en la consola para depuración
+        print(f"Error al duplicar el reporte: {e}")
+        return jsonify({"success": False, "error": f"Error interno: {str(e)}"}), 500
+
 
 if __name__ == '__main__':
     with app.app_context():

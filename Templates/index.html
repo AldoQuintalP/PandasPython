@@ -358,6 +358,9 @@
                                             <button class="trash-btn btn btn-danger" onclick="eliminarReporte('{{ tab }}', '{{ reporte }}')">
                                                 <i class="fa fa-trash-alt"></i> Eliminar
                                             </button>
+                                            <button class="duplicate-btn btn btn-info" onclick="duplicarReporte('{{ tab }}', '{{ reporte }}')">
+                                                <i class="fa fa-copy"></i> Duplicar
+                                            </button>
                                         </div>
                                     </li>
                                     {% endfor %}
@@ -380,6 +383,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para editar una columna específica -->
+    <div class="modal fade" id="editSpecificColumnModal" tabindex="-1" role="dialog" aria-labelledby="editSpecificColumnModalLabel" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editSpecificColumnModalLabel">Editar Columna</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editColumnForm">
+                        <div class="form-group">
+                            <label for="edit_column_name">Nombre de la columna:</label>
+                            <input type="text" id="edit_column_name" name="edit_column_name" class="form-control" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="saveEditColumnBtn">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Modal para editar una columna -->
     <div class="modal fade" id="editColumnModal" tabindex="-1" role="dialog" aria-labelledby="editColumnModalLabel" aria-hidden="true">
@@ -412,17 +442,17 @@
 
 
     <!-- Modal para agregar una nueva columna -->
-    <div class="modal fade" id="addColumnModal" tabindex="-1" role="dialog" aria-labelledby="addColumnModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addNewColumnModal" tabindex="-1" role="dialog" aria-labelledby="addNewColumnModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addColumnModalLabel">Agregar Nueva Columna</h5>
+                    <h5 class="modal-title" id="addNewColumnModalLabel">Agregar Nueva Columna</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="addColumnForm">
+                    <form id="addNewColumnForm">
                         <div class="form-group">
                             <label for="new_column_name">Nombre de la nueva columna:</label>
                             <input type="text" id="new_column_name" name="new_column_name" class="form-control" required>
@@ -431,11 +461,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="saveColumnBtn">Guardar Columna</button>
+                    <button type="button" class="btn btn-primary" id="saveNewColumnBtn">Guardar Columna</button>
                 </div>
             </div>
         </div>
     </div>
+
 
 
     <!-- Modal para seleccionar una columna -->
@@ -698,56 +729,67 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
 
 
 function editarColumna(tab, reporte, columna) {
-    Swal.fire({
-        title: 'Editar Columna',
-        input: 'text',
-        inputValue: columna,
-        showCancelButton: true,
-        confirmButtonText: 'Guardar',
-        cancelButtonText: 'Cancelar',
-        inputAttributes: {
-            autocapitalize: 'off'
-        },
-        preConfirm: (nuevoNombreColumna) => {
-            if (!nuevoNombreColumna) {
-                Swal.showValidationMessage('El nombre de la columna no puede estar vacío');
-                return false;
-            }
-            return fetch('/editar-columna', {
-                method: 'POST',
-                body: new URLSearchParams({
-                    tab_name: tab,
-                    reporte: reporte,
-                    columna: columna,
-                    nueva_columna: nuevoNombreColumna
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) {
-                    throw new Error(data.error);
-                }
-                return data;
-            })
-            .catch(error => {
-                Swal.showValidationMessage(
-                    `Request failed: ${error}`
-                );
-            });
-        },
-        allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: '¡Éxito!',
-                text: 'Columna editada correctamente',
-                icon: 'success'
-            }).then(() => {
-                abrirEditarColumnasModal(tab, reporte);  // Recargar el modal
-            });
-        }
-    });
+    // Establecer los atributos del modal
+    document.getElementById('editSpecificColumnModal').setAttribute('data-tab', tab);
+    document.getElementById('editSpecificColumnModal').setAttribute('data-reporte', reporte);
+    document.getElementById('editSpecificColumnModal').setAttribute('data-original-column', columna);
+    
+    // Establecer el valor actual del nombre de la columna
+    document.getElementById('edit_column_name').value = columna;
+
+    // Mostrar el modal de edición de columna específica
+    $('#editSpecificColumnModal').modal('show');
 }
+
+
+// Evento para guardar los cambios al hacer clic en el botón de guardar en el modal
+document.getElementById('saveEditColumnBtn').addEventListener('click', function() {
+    const newColumnName = document.getElementById('edit_column_name').value.trim();
+    const tabName = document.getElementById('editSpecificColumnModal').getAttribute('data-tab');
+    const reporte = document.getElementById('editSpecificColumnModal').getAttribute('data-reporte');
+    const originalColumnName = document.getElementById('editSpecificColumnModal').getAttribute('data-original-column');
+    
+    // Obtener todas las columnas actuales para evitar duplicados
+    const existingColumns = Array.from(document.getElementById('column-edit-list').children).map(item => item.textContent.trim());
+
+    // Comprobar si el nuevo nombre de la columna ya existe
+    if (existingColumns.includes(newColumnName) && newColumnName !== originalColumnName) {
+        Swal.fire('Error', 'El nombre de la columna ya existe. Por favor, elige otro nombre.', 'error');
+        return;
+    }
+
+    if (!newColumnName) {
+        Swal.fire('Error', 'El nombre de la columna no puede estar vacío.', 'error');
+        return;
+    }
+
+    // Enviar el cambio al servidor si la validación es correcta
+    fetch('/editar-columna', {
+        method: 'POST',
+        body: new URLSearchParams({
+            tab_name: tabName,
+            reporte: reporte,
+            columna: originalColumnName,
+            nueva_columna: newColumnName
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire('Éxito', 'Columna editada correctamente', 'success')
+            .then(() => {
+                $('#editSpecificColumnModal').modal('hide');
+                abrirEditarColumnasModal(tabName, reporte);  // Recargar el modal para reflejar los cambios
+            });
+        } else {
+            Swal.fire('Error', data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo editar la columna', 'error');
+    });
+});
 
 
 function eliminarColumna(tab, reporte, columna) {
@@ -788,6 +830,59 @@ function eliminarColumna(tab, reporte, columna) {
         }
     });
 }
+
+// Botón para abrir el modal de agregar nueva columna
+document.getElementById('addNewColumnBtn').addEventListener('click', function() {
+    $('#addNewColumnModal').modal('show');
+});
+
+// Botón para guardar la nueva columna
+document.getElementById('saveNewColumnBtn').addEventListener('click', function() {
+    const newColumnName = document.getElementById('new_column_name').value.trim();
+    const tabName = document.getElementById('editColumnModal').getAttribute('data-tab');
+    const reporte = document.getElementById('editColumnModal').getAttribute('data-reporte');
+
+    document.getElementById('new_column_name').value = '';
+    // Obtener todas las columnas actuales para evitar duplicados
+    const existingColumns = Array.from(document.getElementById('column-edit-list').children).map(item => item.textContent.trim());
+
+    // Comprobar si el nuevo nombre de la columna ya existe
+    if (existingColumns.includes(newColumnName)) {
+        Swal.fire('Error', 'El nombre de la columna ya existe. Por favor, elige otro nombre.', 'error');
+        return;
+    }
+
+    if (!newColumnName) {
+        Swal.fire('Error', 'El nombre de la columna no puede estar vacío.', 'error');
+        return;
+    }
+
+    // Enviar la nueva columna al servidor si la validación es correcta
+    fetch('/add-columna', {
+        method: 'POST',
+        body: new URLSearchParams({
+            tab_name: tabName,
+            reporte: reporte,
+            nueva_columna: newColumnName
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire('Éxito', 'Columna agregada correctamente', 'success')
+            .then(() => {
+                $('#addNewColumnModal').modal('hide');
+                abrirEditarColumnasModal(tabName, reporte);  // Recargar el modal para reflejar los cambios
+            });
+        } else {
+            Swal.fire('Error', data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo agregar la columna', 'error');
+    });
+});
 
 
         function eliminarReporte(tab, reporte) {
@@ -1213,6 +1308,57 @@ function openFunctionModal(tab, reporte, columnaSeleccionada) {
             console.error('Error al cargar las columnas:', error);
             Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
         });
+}
+
+function duplicarReporte(tab, reporte) {
+    Swal.fire({
+        title: 'Duplicar Reporte',
+        text: `Estás a punto de duplicar el reporte "${reporte}". Por favor, ingresa un nuevo nombre:`,
+        input: 'text',
+        inputPlaceholder: 'Nuevo nombre del reporte',
+        showCancelButton: true,
+        confirmButtonText: 'Duplicar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: (nuevoNombreReporte) => {
+            if (!nuevoNombreReporte) {
+                Swal.showValidationMessage('El nombre del nuevo reporte no puede estar vacío');
+                return false;
+            }
+            return fetch('/duplicar-reporte', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    tab_name: tab,
+                    reporte: reporte,
+                    nuevo_reporte: nuevoNombreReporte
+                }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud');
+                }
+                return response.json(); // Asegúrate de que el servidor devuelve JSON
+            })
+            .then(data => {
+                if (!data.success) {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+                return data;
+            })
+            .catch(error => {
+                Swal.showValidationMessage(`Request failed: ${error}`);
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'El reporte ha sido duplicado correctamente',
+                icon: 'success'
+            }).then(() => {
+                location.reload();  // Recargar la página para ver el nuevo reporte
+            });
+        }
+    });
 }
 
 
