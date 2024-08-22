@@ -275,6 +275,7 @@
         </div>
     </div>
 
+    <!-- Modal Detalles del Cliente -->
     <div class="modal fade" id="clientFormModal" tabindex="-1" role="dialog" aria-labelledby="clientFormModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -300,32 +301,13 @@
                         </tbody>
                     </table>
 
-                    <button type="button" class="btn btn-secondary" id="addRecordBtn">
+                    <button type="button" id="addRecordBtn" class="btn btn-secondary">
                         <i class="fa-solid fa-circle-plus"></i> Agregar Registro
                     </button>
-
                     <form id="clientForm" style="margin-top: 15px;">
                         <div id="formFields">
                             <input type="hidden" id="client_name" name="client_name">
-                            <div class="form-group">
-                                <label for="branch">Branch</label>
-                                <input type="text" class="form-control" id="branch" name="branch">
-                            </div>
-                            <div class="form-group">
-                                <label for="branch_name">Nombre de Sucursal</label>
-                                <input type="text" class="form-control" id="branch_name" name="branch_name">
-                            </div>
-                            <div class="form-group">
-                                <label for="dms">DMS</label>
-                                <input type="text" class="form-control" id="dms" name="dms">
-                            </div>
-                            <div class="form-group">
-                                <label for="reports">Nombre de los Reportes a Utilizar</label>
-                                <input type="text" class="form-control" id="reports" name="reports" placeholder="Separar por comas">
-                            </div>
-                            <button type="button" class="btn btn-secondary" id="addToTableBtn">
-                                <i class="fa-solid fa-table"></i> Añadir a la Tabla
-                            </button>
+                            <!-- Los campos de formulario se han eliminado, ya que ahora se gestionan en el modal aparte -->
                         </div>
                         <button type="button" class="btn btn-primary" id="saveDataBtn" style="margin-top: 15px;">
                             <i class="fa-solid fa-floppy-disk"></i> Guardar
@@ -335,6 +317,57 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal de "Agregar Nuevo Registro" -->
+    <div class="modal fade" id="addRecordModal" tabindex="-1" role="dialog" aria-labelledby="addRecordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addRecordModalLabel">Agregar Nuevo Registro</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addRecordForm">
+                        <div class="form-group">
+                            <label for="branch_name">Nombre de Sucursal</label>
+                            <input type="text" class="form-control" id="branch_name" name="branch_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="branch">Branch</label>
+                            <input type="text" class="form-control" id="branch" name="branch" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" id="multipleDmsCheckbox" name="multiple_dms">
+                            <label for="multipleDmsCheckbox">¿Utiliza múltiples DMS?</label>
+                            <input type="number" id="dmsCount" name="dms_count" class="form-control" style="display: none;" placeholder="Cantidad de DMS">
+                        </div>
+                        <div class="form-group">
+                            <label for="dms">DMS</label>
+                            <select class="form-control" id="dms" name="dms" required>
+                                <option value="" disabled selected>Seleccione un DMS</option>
+                                <!-- Las opciones se cargarán dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="form-group" id="reportsContainer" style="display: none;">
+                            <label for="reports">Selecciona los Reportes a Utilizar:</label>
+                            <div id="reportsCheckboxGroup">
+                                <!-- Los checkboxes de reportes se cargarán aquí -->
+                            </div>
+                        </div>                        
+                        <button type="button" class="btn btn-primary" id="saveRecordBtn">
+                            Guardar Registro
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    
+
 
     <div class="modal fade" id="editRecordModal" tabindex="-1" role="dialog" aria-labelledby="editRecordModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -383,6 +416,127 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+       document.addEventListener('DOMContentLoaded', function() {
+    const addRecordBtn = document.getElementById('addRecordBtn');
+    const multipleDmsCheckbox = document.getElementById('multipleDmsCheckbox');
+    const dmsCountField = document.getElementById('dmsCount');
+
+    if (addRecordBtn) {
+        addRecordBtn.addEventListener('click', function() {
+            // Abrir el modal de "Agregar Nuevo Registro"
+            $('#addRecordModal').modal('show');
+
+            // Limpiar el formulario
+            document.getElementById('addRecordForm').reset();
+            document.getElementById('reportsCheckboxGroup').innerHTML = ''; // Limpiar los checkboxes
+            document.getElementById('reportsContainer').style.display = 'none'; // Ocultar el contenedor de reportes
+
+            // Ocultar el campo de cantidad de DMS
+            dmsCountField.style.display = 'none';
+
+            // Cargar las opciones de DMS desde tabs.json
+            fetch('/get_tabs_json')
+                .then(response => response.json())
+                .then(data => {
+                    const dmsSelect = document.getElementById('dms');
+                    dmsSelect.innerHTML = ''; // Limpiar las opciones existentes
+
+                    // Agregar opción vacía por defecto
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Seleccione un DMS';
+                    dmsSelect.appendChild(defaultOption);
+
+                    if (Array.isArray(data)) {
+                        data.forEach(dms => {
+                            const option = document.createElement('option');
+                            option.value = dms;
+                            option.textContent = dms;
+                            dmsSelect.appendChild(option);
+                        });
+                    }
+
+                    // Seleccionar el DMS cargado y obtener los reportes
+                    dmsSelect.addEventListener('change', function() {
+                        const selectedDms = dmsSelect.value;
+
+                        if (selectedDms) {
+                            // Mostrar el contenedor de reportes
+                            document.getElementById('reportsContainer').style.display = 'block';
+
+                            // Cargar el archivo JSON específico del DMS seleccionado para obtener los reportes
+                            fetch(`/get_reportes_json?dms=${selectedDms}`)
+                                .then(response => response.json())
+                                .then(reportData => {
+                                    const reportsCheckboxGroup = document.getElementById('reportsCheckboxGroup');
+                                    reportsCheckboxGroup.innerHTML = ''; // Limpiar los checkboxes existentes
+
+                                    if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
+                                        reportData.reportes.forEach(reporte => {
+                                            const checkboxDiv = document.createElement('div');
+                                            checkboxDiv.className = 'form-check';
+
+                                            const checkbox = document.createElement('input');
+                                            checkbox.className = 'form-check-input';
+                                            checkbox.type = 'checkbox';
+                                            checkbox.id = `report_${reporte}`;
+                                            checkbox.value = reporte;
+
+                                            const label = document.createElement('label');
+                                            label.className = 'form-check-label';
+                                            label.htmlFor = `report_${reporte}`;
+                                            label.textContent = reporte;
+
+                                            checkboxDiv.appendChild(checkbox);
+                                            checkboxDiv.appendChild(label);
+
+                                            reportsCheckboxGroup.appendChild(checkboxDiv);
+                                        });
+                                    } else {
+                                        // Mostrar mensaje de que no hay reportes configurados
+                                        const noReportsMessage = document.createElement('p');
+                                        noReportsMessage.textContent = 'No hay modelos configurados para este DMS, revisa la configuración.';
+                                        noReportsMessage.className = 'text-warning';
+                                        reportsCheckboxGroup.appendChild(noReportsMessage);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error al cargar los reportes:', error);
+                                    Swal.fire('Error', 'No se pudieron cargar los reportes', 'error');
+                                });
+                        } else {
+                            // Ocultar el contenedor de reportes si no hay un DMS seleccionado
+                            document.getElementById('reportsContainer').style.display = 'none';
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al cargar las opciones de DMS:', error);
+                    Swal.fire('Error', 'No se pudieron cargar las opciones de DMS', 'error');
+                });
+        });
+
+        // Evento para mostrar u ocultar el campo de cantidad de DMS
+        multipleDmsCheckbox.addEventListener('change', function() {
+            if (multipleDmsCheckbox.checked) {
+                dmsCountField.style.display = 'block';
+                dmsCountField.setAttribute('min', '2'); 
+                dmsCountField.setAttribute('max', '5'); 
+                dmsCountField.value = 2;
+            } else {
+                dmsCountField.style.display = 'none';
+            }
+        });
+    } else {
+        console.error('El botón de "Agregar Registro" no fue encontrado.');
+    }
+});
+
+
+
+
+
+
         function toggleNav() {
             var sidebar = document.getElementById("mySidebar");
             var main = document.getElementById("main");
@@ -417,6 +571,56 @@
                     li[i].style.display = "none";
                 }
             }
+        });
+
+        document.getElementById('addRecordToTableBtn').addEventListener('click', function() {
+            const branchName = document.getElementById('new_branch_name').value.trim();
+            const branch = document.getElementById('new_branch').value.trim();
+            const dms = document.getElementById('new_dms').value.trim();
+            const reports = document.getElementById('new_reports').value.trim();
+
+            if (!branchName || !branch || !dms || !reports) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos incompletos',
+                    text: 'Por favor, complete todos los campos antes de agregar.'
+                });
+                return;
+            }
+
+            const tableBody = document.getElementById('clientDetailsBody');
+            let isDuplicate = false;
+            for (let i = 0; i < tableBody.rows.length; i++) {
+                const existingBranch = tableBody.rows[i].cells[1].querySelector('span').textContent;
+                if (existingBranch === branch) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+
+            if (isDuplicate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Branch duplicado',
+                    text: 'El número de Branch ya existe en la tabla. Por favor, ingrese un número de Branch diferente.'
+                });
+                return;
+            }
+
+            const id = generateUUID();
+
+            const row = document.createElement('tr');
+            row.dataset.id = id;
+            row.innerHTML = createEditableRow(branchName, branch, dms, reports);
+
+            tableBody.appendChild(row);
+            document.getElementById('clientDetailsTable').style.display = 'table';
+
+            addDeleteEventListeners();
+            addEditEventListeners();
+
+            document.getElementById('addRecordForm').reset();
+            $('#addRecordModal').modal('hide'); // Cierra el modal después de guardar el registro
         });
 
         // Función para abrir el formulario del cliente en un modal y cargar los datos existentes
@@ -650,7 +854,41 @@
         }
 
         document.getElementById('addRecordBtn').addEventListener('click', function() {
-            document.getElementById('formFields').style.display = 'block';
+            // Abrir el modal de "Agregar Nuevo Registro"
+            $('#addRecordModal').modal('show');
+
+            // Limpiar el formulario
+            document.getElementById('addRecordForm').reset();
+
+            // Cargar las opciones de DMS desde tabs.json
+            fetch('/get_tabs_json')  // Cambia '/get_tabs_json' si usas una ruta diferente
+                .then(response => response.json())
+                .then(data => {
+                    const dmsSelect = document.getElementById('dms');
+                    dmsSelect.innerHTML = ''; // Limpiar las opciones existentes
+
+                    if (Array.isArray(data)) {
+                        data.forEach(dms => {
+                            const option = document.createElement('option');
+                            option.value = dms;
+                            option.textContent = dms;
+                            dmsSelect.appendChild(option);
+                        });
+                    } else {
+                        console.error('El formato del archivo tabs.json no es el esperado.');
+                        Swal.fire('Error', 'El formato del archivo tabs.json no es correcto', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar las opciones de DMS:', error);
+                    Swal.fire('Error', 'No se pudieron cargar las opciones de DMS', 'error');
+                });
+        });
+
+
+
+        document.getElementById('saveNewRecordBtn').addEventListener('click', function() {
+            // Implementar lógica para guardar el nuevo registro
         });
 
         document.getElementById('addToTableBtn').addEventListener('click', function() {
@@ -733,7 +971,8 @@
                     branch_name: cells[0].querySelector('span').textContent,
                     branch: cells[1].querySelector('span').textContent,
                     dms: cells[2].querySelector('span').textContent,
-                    reports: cells[3].querySelector('span').textContent.split(', ')
+                    reports: Array.from(document.querySelectorAll('#reportsCheckboxGroup input[type="checkbox"]:checked'))
+                                .map(checkbox => checkbox.value) // Captura los valores seleccionados
                 };
                 registros.push(registro);
             }
@@ -775,6 +1014,9 @@
                 });
             });
         });
+
+
+
 
         addDeleteEventListeners();
         addEditEventListeners();

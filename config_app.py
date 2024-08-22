@@ -799,6 +799,38 @@ def duplicar_reporte():
         # Imprimir el error en la consola para depuración
         print(f"Error al duplicar el reporte: {e}")
         return jsonify({"success": False, "error": f"Error interno: {str(e)}"}), 500
+    
+@app.route('/get_tabs_json', methods=['GET'])
+def get_tabs_json():
+    try:
+        tabs_path = os.path.join('CLIENTS', 'dms', 'tabs.json')
+        if os.path.exists(tabs_path):
+            with open(tabs_path, 'r') as file:
+                tabs_data = json.load(file)
+            return jsonify(tabs_data)
+        else:
+            return jsonify({"error": "Archivo tabs.json no encontrado."}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/get_reportes_json', methods=['GET'])
+def get_reportes_json():
+    dms_name = request.args.get('dms')
+    if not dms_name:
+        return jsonify({"error": "DMS no especificado"}), 400
+    
+    filepath = os.path.join('CLIENTS', 'dms', f'{dms_name}.json')
+    
+    if not os.path.exists(filepath):
+        return jsonify({"error": "Archivo no encontrado"}), 404
+    
+    try:
+        with open(filepath, 'r') as json_file:
+            data = json.load(json_file)
+            return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == '__main__':
