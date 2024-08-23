@@ -515,6 +515,26 @@
         formGroup.appendChild(deleteLink);
     }
 
+    function saveCurrentDmsReports() {
+    const dmsSelects = document.querySelectorAll('select[name="dms"]');
+    dmsSelects.forEach(dmsSelect => {
+        const selectedDms = dmsSelect.value;
+        if (selectedDms) {
+            const reportsContainer = dmsSelect.closest('.form-group').nextElementSibling;
+            
+            // Verificar si el reportsContainer existe antes de intentar acceder a él
+            if (reportsContainer && reportsContainer.querySelectorAll('input[type="checkbox"]:checked')) {
+                const selectedReports = Array.from(reportsContainer.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(checkbox => checkbox.value);
+
+                // Guardar los reportes seleccionados para el DMS actual
+                dmsSelect.dataset.reports = selectedReports.join(','); // Guardamos los reportes en un atributo data del select
+            }
+        }
+    });
+}
+
+
     if (addRecordBtn) {
         addRecordBtn.addEventListener('click', function() {
             $('#addRecordModal').modal('show');  // Mostrar el modal solo cuando se hace clic en el botón "Agregar Registro"
@@ -621,6 +641,8 @@
         });
 
         addDmsBtn.addEventListener('click', function() {
+            saveCurrentDmsReports(); // Guardar los reportes del DMS actual antes de agregar uno nuevo
+
             const allDmsSelects = document.querySelectorAll('select[name="dms"]');
 
             // Verifica si hay selects vacíos antes de agregar un nuevo DMS
@@ -757,27 +779,18 @@ document.getElementById('saveRecordBtn').addEventListener('click', function () {
     let dmsList = [];
     let reportsList = [];
 
-    // Recopilar DMS y sus respectivos reportes
+    // Recopilar DMS y sus respectivos reportes guardados
     dmsSelects.forEach(dmsSelect => {
         if (dmsSelect.value) {
             dmsList.push(dmsSelect.value);
 
-            // Obtener el contenedor de reportes correspondiente al DMS actual
-            const reportsContainer = dmsSelect.closest('.form-group').nextElementSibling;
+            // Obtener los reportes guardados en el data attribute
+            const selectedReports = dmsSelect.dataset.reports ? dmsSelect.dataset.reports.split(',') : [];
+            reportsList.push(selectedReports);
 
-            if (reportsContainer && reportsContainer.querySelectorAll('input[type="checkbox"]').length > 0) { 
-                const selectedReports = Array.from(reportsContainer.querySelectorAll('input[type="checkbox"]:checked'))
-                                             .map(checkbox => checkbox.value);
-                reportsList.push(selectedReports);
-
-                // Depurar: Mostrar en la consola los reportes que se van a añadir para este DMS
-                console.log(`DMS seleccionado: ${dmsSelect.value}`);
-                console.log('Reportes seleccionados:', selectedReports);
-            } else {
-                reportsList.push([]); // Si no hay reportes, agregar un arreglo vacío
-                console.log(`DMS seleccionado: ${dmsSelect.value}`);
-                console.log('No se encontraron reportes para este DMS.');
-            }
+            // Depurar: Mostrar en la consola los reportes que se van a añadir para este DMS
+            console.log(`DMS seleccionado: ${dmsSelect.value}`);
+            console.log('Reportes seleccionados:', selectedReports);
         }
     });
 
@@ -871,8 +884,6 @@ function createEditableRow(branchName, branch, dmsList, reportsList) {
         </td>
     `;
 }
-
-
 
 function openClientForm(clientName) {
     // Configura el título del modal
