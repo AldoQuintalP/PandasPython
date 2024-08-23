@@ -2,7 +2,10 @@
     "name": "BProm",
     "reportes": [
         "VTAUSA",
-        "VTAUSA02"
+        "VTAUSA02",
+        "MACC",
+        "MACP01",
+        "INVNUE02"
     ],
     "columnas_esperadas": {
         "VTAUSA": {
@@ -25,6 +28,60 @@
             }
         },
         "VTAUSA02": {
+            "columnas": [
+                "Sucursal",
+                "CentroCosto",
+                "Naturaleza",
+                "SaldoInicial$",
+                "Saldo$",
+                "Debitos$",
+                "TipoCuenta",
+                "Triple corona777",
+                "Triple corona",
+                "Triple corona3"
+            ],
+            "formulas": {
+                "Cuenta": " Cuenta Cuenta",
+                "Fecha": " Cuenta Cuenta"
+            }
+        },
+        "MACC": {
+            "columnas": [
+                "Sucursal",
+                "CentroCosto",
+                "Naturaleza",
+                "SaldoInicial$",
+                "Saldo$",
+                "Debitos$",
+                "TipoCuenta",
+                "Triple corona777",
+                "Triple corona",
+                "Triple corona3"
+            ],
+            "formulas": {
+                "Cuenta": " Cuenta Cuenta",
+                "Fecha": " Cuenta Cuenta"
+            }
+        },
+        "MACP01": {
+            "columnas": [
+                "Sucursal",
+                "CentroCosto",
+                "Naturaleza",
+                "SaldoInicial$",
+                "Saldo$",
+                "Debitos$",
+                "TipoCuenta",
+                "Triple corona777",
+                "Triple corona",
+                "Triple corona3"
+            ],
+            "formulas": {
+                "Cuenta": " Cuenta Cuenta",
+                "Fecha": " Cuenta Cuenta"
+            }
+        },
+        "INVNUE02": {
             "columnas": [
                 "Sucursal",
                 "CentroCosto",
