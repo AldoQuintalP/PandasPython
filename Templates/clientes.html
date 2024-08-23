@@ -265,7 +265,9 @@
                         {% if files %}
                         <ul id="clientList">
                             {% for file in files %}
+                            {% if file != 'dms' %}
                             <li class="client-item" onclick="openClientForm('{{ file }}')">{{ file }}</li>
+                            {% endif %}
                             {% endfor %}
                         </ul>
                         {% else %}
@@ -312,7 +314,6 @@
                     <form id="clientForm" style="margin-top: 15px;">
                         <div id="formFields">
                             <input type="hidden" id="client_name" name="client_name">
-                            <!-- Los campos de formulario se han eliminado, ya que ahora se gestionan en el modal aparte -->
                         </div>
                         <button type="button" class="btn btn-primary" id="saveDataBtn" style="margin-top: 15px;">
                             <i class="fa-solid fa-floppy-disk"></i> Guardar
@@ -325,7 +326,7 @@
 
     <!-- Modal de "Agregar Nuevo Registro" -->
     <div class="modal fade" id="addRecordModal" tabindex="-1" role="dialog" aria-labelledby="addRecordModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm" id="addRecordModalDialog" role="document"> <!-- Inicialmente modal-sm -->
+        <div class="modal-dialog modal-sm" id="addRecordModalDialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addRecordModalLabel">Agregar Nuevo Registro</h5>
@@ -359,9 +360,10 @@
                                 <div class="form-group" id="reportsContainer" style="display: none;">
                                     <label for="reports">Selecciona los Reportes a Utilizar:</label>
                                     <div id="reportsCheckboxGroup">
-                                        <!-- Los checkboxes de reportes se cargarán aquí -->
+
                                     </div>
-                                </div>
+                                    <span id="deleteReport" class="text-danger" style="cursor: pointer; text-decoration: underline; display: none;">Eliminar</span>
+                                </div>                                
                                 <div class="form-group d-flex justify-content-between">
                                     <button type="button" class="btn btn-primary" id="saveRecordBtn">
                                         Guardar Registro
@@ -375,7 +377,7 @@
                         <div class="col-md-4" id="addedRecordsContainer" style="display: none;">
                             <h5>Registros Agregados</h5>
                             <div id="dmsContainer" style="border: 1px solid #ddd; padding: 10px; min-height: 200px;">
-                                <!-- Aquí se mostrarán los DMS adicionales -->
+                                 
                             </div>
                         </div>
                     </div>
@@ -434,7 +436,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-       document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
     const addRecordBtn = document.getElementById('addRecordBtn');
     const multipleDmsCheckbox = document.getElementById('multipleDmsCheckbox');
     const dmsContainer = document.getElementById('dmsContainer');
@@ -442,9 +444,81 @@
     const addedRecordsContainer = document.getElementById('addedRecordsContainer');
     const modalDialog = document.getElementById('addRecordModalDialog');
 
+    // Inicializa el modal con las opciones para evitar que se cierre al hacer clic fuera o presionando escape
+    $('#addRecordModal').modal({
+        backdrop: 'static',
+        keyboard: false,
+        show: false  
+    });
+
+    function handleDmsSelectionChange(selectElement) {
+        selectElement.addEventListener('change', function() {
+            const selectedOption = selectElement.value;
+            const allDmsSelects = document.querySelectorAll('select[name="dms"]');
+            const reportsContainer = selectElement.closest('.form-group').nextElementSibling;
+
+            let isDuplicate = false;
+
+            allDmsSelects.forEach(select => {
+                if (select !== selectElement && select.value === selectedOption) {
+                    isDuplicate = true;
+                }
+            });
+
+            if (isDuplicate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'DMS duplicado',
+                    text: 'Este DMS ya ha sido seleccionado en otro campo. Este campo será eliminado.'
+                }).then(() => {
+                    selectElement.closest('.form-group').remove(); // Elimina el select duplicado y su contenedor
+                });
+            } else {
+                allDmsSelects.forEach(select => {
+                    if (select !== selectElement) {
+                        const optionToRemove = select.querySelector(`option[value="${selectedOption}"]`);
+                        if (optionToRemove) {
+                            optionToRemove.remove();
+                        }
+                    }
+                });
+                if (reportsContainer && selectedOption) {
+                    reportsContainer.style.display = 'block'; // Muestra el contenedor de reportes si se selecciona un DMS válido
+                }
+            }
+        });
+    }
+
+    function disableDuplicateReports(reportCheckbox) {
+        const reportText = reportCheckbox.value.replace(/[0-9]/g, ''); // Elimina los números para obtener el texto base
+        const allReportCheckboxes = document.querySelectorAll('input[type="checkbox"][id^="report_"]');
+
+        allReportCheckboxes.forEach(checkbox => {
+            const checkboxText = checkbox.value.replace(/[0-9]/g, '');
+            if (checkboxText === reportText && checkbox !== reportCheckbox) {
+                checkbox.disabled = reportCheckbox.checked; // Inhabilita o habilita el checkbox según el estado del seleccionado
+            }
+        });
+    }
+
+    function addDeleteLink(formGroup) {
+        const deleteLink = document.createElement('span');
+        deleteLink.textContent = 'Eliminar';
+        deleteLink.className = 'text-danger mt-2';
+        deleteLink.style.cursor = 'pointer';
+        deleteLink.style.textDecoration = 'underline';
+        
+        deleteLink.addEventListener('click', function() {
+            formGroup.remove();
+        });
+
+        formGroup.appendChild(deleteLink);
+    }
+
     if (addRecordBtn) {
         addRecordBtn.addEventListener('click', function() {
-            $('#addRecordModal').modal('show');
+            $('#addRecordModal').modal('show');  // Mostrar el modal solo cuando se hace clic en el botón "Agregar Registro"
+
             document.getElementById('addRecordForm').reset();
             document.getElementById('reportsCheckboxGroup').innerHTML = '';
             document.getElementById('reportsContainer').style.display = 'none';
@@ -505,6 +579,10 @@
                                             checkboxDiv.appendChild(checkbox);
                                             checkboxDiv.appendChild(label);
 
+                                            checkbox.addEventListener('change', function() {
+                                                disableDuplicateReports(checkbox);
+                                            });
+
                                             reportsCheckboxGroup.appendChild(checkboxDiv);
                                         });
                                     } else {
@@ -543,6 +621,25 @@
         });
 
         addDmsBtn.addEventListener('click', function() {
+            const allDmsSelects = document.querySelectorAll('select[name="dms"]');
+
+            // Verifica si hay selects vacíos antes de agregar un nuevo DMS
+            let hasEmptySelect = false;
+            allDmsSelects.forEach(select => {
+                if (select.value === '') {
+                    hasEmptySelect = true;
+                }
+            });
+
+            if (hasEmptySelect) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campo vacío',
+                    text: 'Por favor, completa el DMS actual antes de agregar uno nuevo.'
+                });
+                return; // Detiene la ejecución si hay un select vacío
+            }
+
             const newDmsSelect = document.createElement('select');
             newDmsSelect.className = 'form-control mt-2';
             newDmsSelect.name = 'dms';
@@ -610,6 +707,10 @@
                                     checkboxDiv.appendChild(checkbox);
                                     checkboxDiv.appendChild(label);
 
+                                    checkbox.addEventListener('change', function() {
+                                        disableDuplicateReports(checkbox);
+                                    });
+
                                     newReportsCheckboxGroup.appendChild(checkboxDiv);
                                 });
                             } else {
@@ -628,42 +729,16 @@
                 }
             });
 
-            dmsContainer.appendChild(newDmsSelect);
-            dmsContainer.appendChild(newReportsContainer);
+            const formGroup = document.createElement('div');
+            formGroup.className = 'form-group';
+            formGroup.appendChild(newDmsSelect);
+            formGroup.appendChild(newReportsContainer);
+
+            // Agregar el enlace "Eliminar"
+            addDeleteLink(formGroup);
+
+            dmsContainer.appendChild(formGroup);
         });
-
-        function handleDmsSelectionChange(selectElement) {
-            selectElement.addEventListener('change', function() {
-                const selectedOption = selectElement.value;
-                const allDmsSelects = document.querySelectorAll('select[name="dms"]');
-
-                let isDuplicate = false;
-
-                allDmsSelects.forEach(select => {
-                    if (select !== selectElement && select.value === selectedOption) {
-                        isDuplicate = true;
-                    }
-                });
-
-                if (isDuplicate) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'DMS duplicado',
-                        text: 'Este DMS ya ha sido seleccionado en otro campo. Por favor, elige otro.'
-                    });
-                    selectElement.value = ''; // Restablecer el `select`
-                } else {
-                    allDmsSelects.forEach(select => {
-                        if (select !== selectElement) {
-                            const optionToRemove = select.querySelector(`option[value="${selectedOption}"]`);
-                            if (optionToRemove) {
-                                optionToRemove.remove();
-                            }
-                        }
-                    });
-                }
-            });
-        }
 
         document.querySelectorAll('select[name="dms"]').forEach(select => {
             handleDmsSelectionChange(select);
@@ -673,6 +748,12 @@
         console.error('El botón de "Agregar Registro" no fue encontrado.');
     }
 });
+
+
+
+
+
+
 
 
 

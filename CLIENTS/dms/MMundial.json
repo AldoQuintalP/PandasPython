@@ -1,0 +1,37 @@
+{
+    "name": "MMundial",
+    "reportes": [
+        "VTANUE01",
+        "VTANUE02"
+    ],
+    "columnas_esperadas": {
+        "VTANUE01": {
+            "columnas": [
+                "Fecha",
+                "Factura",
+                "FechaCierre"
+            ],
+            "formulas": {}
+        },
+        "VTANUE02": {
+            "columnas": [
+                "NumeroCliente",
+                "NombreCliente",
+                "TipoCartera",
+                "Factura",
+                "FechaFactura",
+                "FechaVencimiento",
+                "Saldo$",
+                "SaldoCorriente$",
+                "Saldo30$",
+                "Saldo60$",
+                "Saldo90$",
+                "Saldo120$",
+                "SaldoMas120$",
+                "TipoCliente",
+                "Sucursal"
+            ],
+            "formulas": {}
+        }
+    }
+}

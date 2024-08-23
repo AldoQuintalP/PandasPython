@@ -1,5 +1,66 @@
 {
     "name": "Intelisis",
-    "reportes": [],
-    "columnas_esperadas": {}
+    "reportes": [
+        "MACP",
+        "REFINV"
+    ],
+    "columnas_esperadas": {
+        "MACP": {
+            "columnas": [
+                "Fecha",
+                "Cuenta",
+                "CentroCosto",
+                "Descripcion",
+                "SaldoInicial$",
+                "Debitos$",
+                "Creditos$",
+                "Saldo$",
+                "TipoCuenta",
+                "Naturaleza",
+                "Sucursal"
+            ],
+            "formulas": {}
+        },
+        "REFINV": {
+            "columnas": [
+                "FechaPedido",
+                "NumeroPedido",
+                "TipoPedido",
+                "Status",
+                "DiasPedido",
+                "Venta$",
+                "Iva$",
+                "VentaTotal$",
+                "MontoAbono$",
+                "Vin",
+                "A\u00f1o",
+                "Marca",
+                "Modelo",
+                "Version",
+                "Clase",
+                "Catalogo",
+                "ColorPintura",
+                "CodigoColor",
+                "NumeroAsesorComercial",
+                "NombreAsesorComercial",
+                "RFC",
+                "NumeroCliente",
+                "TipoPersona",
+                "RazonSocial",
+                "PrimerNombreCliente",
+                "SegundoNombreCliente",
+                "PrimerApellidoCliente",
+                "SegundoApellidoCiente",
+                "Direccion",
+                "Telefono",
+                "Celular",
+                "Email",
+                "PermiteContactar",
+                "MotivoContacto",
+                "NuevoUsado",
+                "Sucursal"
+            ],
+            "formulas": {}
+        }
+    }
 }
