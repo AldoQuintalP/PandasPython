@@ -555,108 +555,156 @@
         }
     });
 
-    addDmsBtn.addEventListener('click', function() {
-        saveCurrentDmsReports(); // Guardar los reportes del DMS actual antes de agregar uno nuevo
+    let dmsRecords = []; // Array para almacenar DMS y sus reportes
 
-        const newDmsSelect = document.createElement('select');
-        newDmsSelect.className = 'form-control mt-2';
-        newDmsSelect.name = 'dms';
-        newDmsSelect.required = true;
+addDmsBtn.addEventListener('click', function() {
+    saveCurrentDmsReports(); // Guardar los reportes del DMS actual antes de agregar uno nuevo
+    
+    const newDmsSelect = document.createElement('select');
+    newDmsSelect.className = 'form-control mt-2';
+    newDmsSelect.name = 'dms';
+    newDmsSelect.required = true;
 
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = 'Seleccione un DMS';
-        defaultOption.disabled = true;
-        defaultOption.selected = true;
-        newDmsSelect.appendChild(defaultOption);
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Seleccione un DMS';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    newDmsSelect.appendChild(defaultOption);
 
-        fetch('/get_tabs_json')
-            .then(response => response.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    data.forEach(dms => {
-                        const option = document.createElement('option');
-                        option.value = dms;
-                        option.textContent = dms;
-                        newDmsSelect.appendChild(option);
-                    });
-                }
-
-                handleDmsSelectionChange(newDmsSelect);
-            });
-
-        const newReportsContainer = document.createElement('div');
-        newReportsContainer.className = 'form-group mt-2';
-        newReportsContainer.style.display = 'none';
-
-        const newReportsLabel = document.createElement('label');
-        newReportsLabel.textContent = 'Selecciona los Reportes a Utilizar:';
-        newReportsContainer.appendChild(newReportsLabel);
-
-        const newReportsCheckboxGroup = document.createElement('div');
-        newReportsContainer.appendChild(newReportsCheckboxGroup);
-
-        newDmsSelect.addEventListener('change', function() {
-            const selectedDms = newDmsSelect.value;
-
-            if (selectedDms) {
-                newReportsContainer.style.display = 'block';
-                fetch(`/get_reportes_json?dms=${selectedDms}`)
-                    .then(response => response.json())
-                    .then(reportData => {
-                        newReportsCheckboxGroup.innerHTML = '';
-
-                        if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
-                            reportData.reportes.forEach(reporte => {
-                                const checkboxDiv = document.createElement('div');
-                                checkboxDiv.className = 'form-check';
-
-                                const checkbox = document.createElement('input');
-                                checkbox.className = 'form-check-input';
-                                checkbox.type = 'checkbox';
-                                checkbox.id = `report_${reporte}`;
-                                checkbox.value = reporte;
-
-                                const label = document.createElement('label');
-                                label.className = 'form-check-label';
-                                label.htmlFor = `report_${reporte}`;
-                                label.textContent = reporte;
-
-                                checkboxDiv.appendChild(checkbox);
-                                checkboxDiv.appendChild(label);
-
-                                checkbox.addEventListener('change', function () {
-                                    disableDuplicateReports(checkbox);
-                                });
-
-                                newReportsCheckboxGroup.appendChild(checkboxDiv);
-                            });
-                        } else {
-                            const noReportsMessage = document.createElement('p');
-                            noReportsMessage.textContent = 'No hay modelos configurados para este DMS, revisa la configuración.';
-                            noReportsMessage.className = 'text-warning';
-                            newReportsCheckboxGroup.appendChild(noReportsMessage);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar los reportes:', error);
-                        Swal.fire('Error', 'No se pudieron cargar los reportes', 'error');
-                    });
-            } else {
-                newReportsContainer.style.display = 'none';
+    fetch('/get_tabs_json')
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                data.forEach(dms => {
+                    const option = document.createElement('option');
+                    option.value = dms;
+                    option.textContent = dms;
+                    newDmsSelect.appendChild(option);
+                });
             }
+
+            handleDmsSelectionChange(newDmsSelect);
         });
 
-        const formGroup = document.createElement('div');
-        formGroup.className = 'form-group';
-        formGroup.appendChild(newDmsSelect);
-        formGroup.appendChild(newReportsContainer);
+    const newReportsContainer = document.createElement('div');
+    newReportsContainer.className = 'form-group mt-2';
+    newReportsContainer.style.display = 'none';
 
-        // Agregar el enlace "Eliminar"
-        addDeleteLink(formGroup);
+    const newReportsLabel = document.createElement('label');
+    newReportsLabel.textContent = 'Selecciona los Reportes a Utilizar:';
+    newReportsContainer.appendChild(newReportsLabel);
+    
+    const newReportsCheckboxGroup = document.createElement('div');
+    newReportsContainer.appendChild(newReportsCheckboxGroup);
 
-        dmsContainer.appendChild(formGroup);
+    newDmsSelect.addEventListener('change', function() {
+        const selectedDms = newDmsSelect.value;
+
+        if (selectedDms) {
+            newReportsContainer.style.display = 'block';
+            fetch(`/get_reportes_json?dms=${selectedDms}`)
+                .then(response => response.json())
+                .then(reportData => {
+                    newReportsCheckboxGroup.innerHTML = '';
+
+                    if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
+                        reportData.reportes.forEach(reporte => {
+                            const checkboxDiv = document.createElement('div');
+                            checkboxDiv.className = 'form-check';
+
+                            const checkbox = document.createElement('input');
+                            checkbox.className = 'form-check-input';
+                            checkbox.type = 'checkbox';
+                            checkbox.id = `report_${reporte}`;
+                            checkbox.value = reporte;
+
+                            const label = document.createElement('label');
+                            label.className = 'form-check-label';
+                            label.htmlFor = `report_${reporte}`;
+                            label.textContent = reporte;
+
+                            checkboxDiv.appendChild(checkbox);
+                            checkboxDiv.appendChild(label);
+
+                            checkbox.addEventListener('change', function () {
+                                disableDuplicateReports(checkbox);
+                            });
+
+                            newReportsCheckboxGroup.appendChild(checkboxDiv);
+                        });
+                    } else {
+                        const noReportsMessage = document.createElement('p');
+                        noReportsMessage.textContent = 'No hay modelos configurados para este DMS, revisa la configuración.';
+                        noReportsMessage.className = 'text-warning';
+                        newReportsCheckboxGroup.appendChild(noReportsMessage);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar los reportes:', error);
+                    Swal.fire('Error', 'No se pudieron cargar los reportes', 'error');
+                });
+        } else {
+            newReportsContainer.style.display = 'none';
+        }
     });
+
+    const formGroup = document.createElement('div');
+    formGroup.className = 'form-group';
+    formGroup.appendChild(newDmsSelect);
+    formGroup.appendChild(newReportsContainer);
+
+    // Agregar el enlace "Eliminar"
+    addDeleteLink(formGroup);
+
+    // Agregar el DMS y sus reportes al array dmsRecords
+    const newRecord = {
+        dms: newDmsSelect.value,
+        reports: []  // Inicialmente vacío, se llenará al seleccionar los reportes
+    };
+    dmsRecords.push(newRecord);
+
+    newDmsSelect.addEventListener('change', function() {
+        const selectedDms = newDmsSelect.value;
+        const recordIndex = dmsRecords.findIndex(record => record.dms === '');
+        if (recordIndex !== -1) {
+            dmsRecords[recordIndex].dms = selectedDms;
+        }
+    });
+
+    newReportsCheckboxGroup.addEventListener('change', function() {
+        const recordIndex = dmsRecords.findIndex(record => record.dms === newDmsSelect.value);
+        if (recordIndex !== -1) {
+            dmsRecords[recordIndex].reports = Array.from(newReportsCheckboxGroup.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+        }
+    });
+
+    dmsContainer.appendChild(formGroup);
+});
+
+function updateAddedRecordsView() {
+    const dmsContainer = document.getElementById('dmsContainer');
+    dmsContainer.innerHTML = '';
+
+    dmsRecords.forEach(record => {
+        const dmsDiv = document.createElement('div');
+        dmsDiv.className = 'added-dms-record';
+
+        const dmsLabel = document.createElement('strong');
+        dmsLabel.textContent = `DMS: ${record.dms}`;
+        dmsDiv.appendChild(dmsLabel);
+
+        const reportsList = document.createElement('ul');
+        record.reports.forEach(report => {
+            const reportItem = document.createElement('li');
+            reportItem.textContent = report;
+            reportsList.appendChild(reportItem);
+        });
+        dmsDiv.appendChild(reportsList);
+
+        dmsContainer.appendChild(dmsDiv);
+    });
+}
 
     document.querySelectorAll('select[name="dms"]').forEach(select => {
         handleDmsSelectionChange(select);
@@ -713,154 +761,136 @@
     }
 
     function addDeleteLink(formGroup) {
-        const deleteLink = document.createElement('span');
-        deleteLink.textContent = 'Eliminar';
-        deleteLink.className = 'text-danger mt-2';
-        deleteLink.style.cursor = 'pointer';
-        deleteLink.style.textDecoration = 'underline';
-        
-        deleteLink.addEventListener('click', function() {
-            formGroup.remove();
-        });
-
-        formGroup.appendChild(deleteLink);
-    }
-
-    function saveCurrentDmsReports() {
-        const dmsSelects = document.querySelectorAll('select[name="dms"]');
-        dmsSelects.forEach(dmsSelect => {
-            const selectedDms = dmsSelect.value;
-            if (selectedDms) {
-                const reportsContainer = dmsSelect.closest('.form-group').nextElementSibling;
-
-                if (reportsContainer && reportsContainer.querySelectorAll('input[type="checkbox"]:checked').length > 0) {
-                    const selectedReports = Array.from(reportsContainer.querySelectorAll('input[type="checkbox"]:checked'))
-                        .map(checkbox => checkbox.value);
-
-                    // Guardar los reportes seleccionados para el DMS actual
-                    dmsSelect.dataset.reports = selectedReports.join(','); // Guardamos los reportes en un atributo data del select
-                } else {
-                    dmsSelect.dataset.reports = ''; // Si no hay reportes seleccionados, guardar como cadena vacía
-                }
-            }
-        });
-    }
-
-    document.getElementById('saveRecordBtn').addEventListener('click', function () {
-        saveCurrentDmsReports(); // Asegurarse de que los reportes actuales se guarden antes de procesar
-
-        const branchName = document.getElementById('branch_name').value.trim();
-        const branch = document.getElementById('branch').value.trim();
-        const dmsSelects = document.querySelectorAll('select[name="dms"]');
-
-        let dmsList = [];
-        let reportsList = [];
-
-        // Recopilar DMS y sus respectivos reportes guardados
-        dmsSelects.forEach(dmsSelect => {
-            if (dmsSelect.value) {
-                dmsList.push(dmsSelect.value);
-
-                // Obtener los reportes guardados en el data attribute
-                const selectedReports = dmsSelect.dataset.reports ? dmsSelect.dataset.reports.split(',') : [];
-                reportsList.push(selectedReports);
-
-                // Depurar: Mostrar en la consola los reportes que se van a añadir para este DMS
-                console.log(`DMS seleccionado: ${dmsSelect.value}`);
-                console.log('Reportes seleccionados:', selectedReports);
-            }
-        });
-
-        // Verificar que los campos branchName y branch estén completos
-        if (!branchName || !branch || dmsList.length === 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Campos incompletos',
-                text: 'Por favor, complete todos los campos antes de agregar.'
-            });
-            return;
-        }
-
-        const tableBody = document.getElementById('clientDetailsBody');
-        let isDuplicate = false;
-        for (let i = 0; i < tableBody.rows.length; i++) {
-            const existingBranch = tableBody.rows[i].cells[1].querySelector('span').textContent;
-            if (existingBranch === branch) {
-                isDuplicate = true;
-                break;
-            }
-        }
-
-        if (isDuplicate) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Branch duplicado',
-                text: 'El número de Branch ya existe en la tabla. Por favor, ingrese un número de Branch diferente.'
-            });
-            return;
-        }
-
-        console.log('No duplicate found, proceeding to add row.');
-
-        // Crear la nueva fila con los datos formateados
-        const row = document.createElement('tr');
-        row.innerHTML = createEditableRow(branchName, branch, dmsList, reportsList);
-        tableBody.appendChild(row);
-        document.getElementById('clientDetailsTable').style.display = 'table';
-
-        // Añadir eventos de eliminación y edición a los botones de la nueva fila
-        addDeleteEventListeners();
-        addEditEventListeners();
-
-        // Limpiar el formulario y cerrar el modal
-        document.getElementById('addRecordForm').reset();
-        $('#addRecordModal').modal('hide');
-        console.log('Registro agregado exitosamente.');
+    const deleteLink = document.createElement('span');
+    deleteLink.textContent = 'Eliminar';
+    deleteLink.className = 'text-danger mt-2';
+    deleteLink.style.cursor = 'pointer';
+    deleteLink.style.textDecoration = 'underline';
+    
+    deleteLink.addEventListener('click', function() {
+        const dmsId = formGroup.querySelector('select[name="dms"]').dataset.dmsId;
+        delete dmsReportsData[dmsId]; // Eliminar de la estructura
+        formGroup.remove();
     });
 
-    function createEditableRow(branchName, branch, dmsList, reportsList) {
-        let dmsFormatted = '';
-        let reportsFormatted = '';
+    formGroup.appendChild(deleteLink);
+}
 
-        // Asegurar que haya líneas de DMS y reportes correspondientes, aunque algunos puedan estar vacíos
-        for (let i = 0; i < dmsList.length; i++) {
-            if (dmsList[i]) {
-                dmsFormatted += `${dmsList[i]}<br>`;
-            } else {
-                dmsFormatted += `<br>`;  // Espacio en blanco si no hay más DMS
-            }
 
-            if (reportsList[i] && reportsList[i].length > 0) {
-                let reports = reportsList[i];
-                if (reports.length > 3) {
-                    reportsFormatted += `${reports.slice(0, 3).join(', ')} ...<br>`;
-                } else {
-                    reportsFormatted += `${reports.join(', ')}<br>`;
-                }
-            } else {
-                reportsFormatted += `<br>`;  // Espacio en blanco si no hay más reportes
-            }
+function saveCurrentDmsReports() {
+    const dmsSelects = document.querySelectorAll('select[name="dms"]');
+    dmsReportsData = []; // Asegurarse de que esté vacío antes de comenzar
+
+    dmsSelects.forEach(dmsSelect => {
+        const selectedDms = dmsSelect.value;
+        if (selectedDms) {
+            const reportsContainer = dmsSelect.closest('.form-group').nextElementSibling;
+            const selectedReports = reportsContainer 
+                ? Array.from(reportsContainer.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(checkbox => checkbox.value)
+                : [];
+
+            dmsReportsData.push({
+                dms: selectedDms,
+                reports: selectedReports
+            });
         }
+    });
+}
 
-        console.log('Fila a insertar en la tabla:');
-        console.log('DMS:', dmsFormatted);
-        console.log('Reportes:', reportsFormatted);
 
-        return `
-            <td><span>${branchName}</span></td>
-            <td><span>${branch}</span></td>
-            <td><span>${dmsFormatted}</span></td>
-            <td class="reportes-column"><span>${reportsFormatted}</span></td>
-            <td>
-                <button type="button" class="btn btn-link p-0 edit-btn">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button type="button" class="btn btn-link p-0 delete-btn">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
-            </td>
-        `;
+
+
+function addNewDmsField() {
+    const dmsId = generateUUID();
+    const newDmsSelect = document.createElement('select');
+    newDmsSelect.className = 'form-control mt-2';
+    newDmsSelect.name = 'dms';
+    newDmsSelect.dataset.dmsId = dmsId; // Asignar ID único
+    newDmsSelect.required = true;
+
+    // Resto del código para crear y agregar el select de DMS
+
+    dmsReportsData[dmsId] = { dms: '', reports: [] }; // Inicializar en la estructura
+}
+
+document.getElementById('saveRecordBtn').addEventListener('click', function () {
+    const branchName = document.getElementById('branch_name').value.trim();
+    const branch = document.getElementById('branch').value.trim();
+
+    if (!branchName || !branch || dmsRecords.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos incompletos',
+            text: 'Por favor, complete todos los campos antes de agregar.'
+        });
+        return;
     }
+
+    const tableBody = document.getElementById('clientDetailsBody');
+    let isDuplicate = false;
+    for (let i = 0; i < tableBody.rows.length; i++) {
+        const existingBranch = tableBody.rows[i].cells[1].querySelector('span').textContent;
+        if (existingBranch === branch) {
+            isDuplicate = true;
+            break;
+        }
+    }
+
+    if (isDuplicate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Branch duplicado',
+            text: 'El número de Branch ya existe en la tabla. Por favor, ingrese un número de Branch diferente.'
+        });
+        return;
+    }
+
+    const row = document.createElement('tr');
+    row.innerHTML = createEditableRow(branchName, branch, dmsRecords);
+    tableBody.appendChild(row);
+    document.getElementById('clientDetailsTable').style.display = 'table';
+
+    // Añadir eventos de eliminación y edición a los botones de la nueva fila
+    addDeleteEventListeners();
+    addEditEventListeners();
+
+    // Limpiar el formulario y el array dmsRecords
+    document.getElementById('addRecordForm').reset();
+    dmsRecords = [];
+    updateAddedRecordsView();
+    $('#addRecordModal').modal('hide');
+});
+
+
+function createEditableRow(branchName, branch, dmsRecords) {
+    let dmsFormatted = '';
+    let reportsFormatted = '';
+
+    dmsRecords.forEach(record => {
+        dmsFormatted += `${record.dms}<br>`;
+        reportsFormatted += record.reports.length > 0 
+            ? `${record.reports.join(', ')}<br>` 
+            : '<br>';
+    });
+
+    return `
+        <td><span>${branchName}</span></td>
+        <td><span>${branch}</span></td>
+        <td><span>${dmsFormatted}</span></td>
+        <td class="reportes-column"><span>${reportsFormatted}</span></td>
+        <td>
+            <button type="button" class="btn btn-link p-0 edit-btn">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button type="button" class="btn btn-link p-0 delete-btn">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </td>
+    `;
+}
+
+
 
     function addDeleteEventListeners() {
         const deleteButtons = document.querySelectorAll('.delete-btn');
@@ -911,15 +941,16 @@
 
         $('#editRecordModal').modal('show');
     }
+    
+    let dmsReportsData = {}; // Estructura para almacenar DMS y sus reportes asociados
 
     function generateUUID() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0,
-                v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
-    }
-
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
     // Inicializar los eventos
     addDeleteEventListeners();
     addEditEventListeners();
