@@ -706,6 +706,65 @@ function updateAddedRecordsView() {
     });
 }
 
+
+document.getElementById('saveDataBtn').addEventListener('click', function () {
+    const clientName = document.getElementById('client_name').value.trim();
+    const rows = document.querySelectorAll('#clientDetailsBody tr');
+    const registros = [];
+
+    rows.forEach(row => {
+        const sucursal = row.cells[0].innerText.trim();
+        const branch = row.cells[1].innerText.trim();
+        const dmsList = row.cells[2].innerHTML.split('<br>').map(dms => dms.replace(/<\/?span>/g, '').trim());
+        const reportsList = row.cells[3].innerHTML.split('<br>').map(reports => 
+            reports.replace(/<\/?span>/g, '').trim().split(',').map(report => report.trim())
+        );
+
+        const dms = {};
+        dmsList.forEach((dmsName, index) => {
+            if (dmsName && reportsList[index].length > 0 && reportsList[index][0] !== "") {
+                dms[dmsName] = reportsList[index];
+            }
+        });
+
+        registros.push({
+            sucursal: sucursal,
+            branch: branch,
+            dms: dms
+        });
+    });
+
+    const data = {
+        client_name: clientName,
+        registros: registros
+    };
+
+    fetch('/guardar_cliente', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            Swal.fire('Éxito', 'Los datos se guardaron correctamente.', 'success');
+            $('#clientFormModal').modal('hide');
+        } else {
+            Swal.fire('Error', result.error || 'Ocurrió un error al guardar los datos.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error al guardar los datos:', error);
+        Swal.fire('Error', 'No se pudieron guardar los datos.', 'error');
+    });
+});
+
+
+
+
+
     document.querySelectorAll('select[name="dms"]').forEach(select => {
         handleDmsSelectionChange(select);
     });

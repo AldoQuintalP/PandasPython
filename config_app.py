@@ -368,29 +368,26 @@ def guardar_cliente():
 
         client_config_path = os.path.join(client_folder, 'config.json')
 
+        # Si existe una configuración previa, cargarla
         if os.path.exists(client_config_path):
             with open(client_config_path, 'r') as f:
                 existing_config = json.load(f)
-                existing_branches = {reg['branch'] for reg in existing_config.get('registros', [])}
         else:
             existing_config = {'registros': []}
-            existing_branches = set()
 
-        nuevos_registros = [registro for registro in registros if registro['branch'] not in existing_branches]
+        # Añadir los nuevos registros a la configuración existente
+        existing_config['registros'].extend(registros)
 
-        if not nuevos_registros:
-            return jsonify({'success': False, 'error': 'No hay nuevos registros para agregar.'})
-
-        existing_config['registros'].extend(nuevos_registros)
-
+        # Guardar la configuración actualizada
         with open(client_config_path, 'w') as f:
             json.dump(existing_config, f, indent=4)
 
-        return jsonify({'success': True, 'added_records': nuevos_registros})
+        return jsonify({'success': True})
 
     except Exception as e:
         print(f"Error al guardar los datos del cliente: {e}")
         return jsonify({'success': False, 'error': str(e)})
+
 
 @app.route('/cliente_detalles/<client_name>', methods=['GET'])
 @login_required
