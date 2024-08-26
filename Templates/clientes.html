@@ -223,6 +223,15 @@
             transition: all 0.3s ease;
         }
 
+        .text-danger.delete-report {
+            color: red;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .text-danger.delete-report:hover {
+            color: darkred;
+        }
+
     </style>
 </head>
 
@@ -471,7 +480,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {});
     const addRecordBtn = document.getElementById('addRecordBtn');
     const multipleDmsCheckbox = document.getElementById('multipleDmsCheckbox');
     const dmsContainer = document.getElementById('dmsContainer');
@@ -1246,7 +1254,7 @@ function eliminarRegistroDelJson(branchName, branch) {
 
 
 
-    function loadDmsAndReportsForEditing(dmsData) {
+function loadDmsAndReportsForEditing(dmsData) {
     const dmsContainer = document.getElementById('edit_dms_container');
 
     if (!dmsData || typeof dmsData !== 'object') {
@@ -1292,50 +1300,188 @@ function eliminarRegistroDelJson(branchName, branch) {
         reportsLabel.textContent = 'Reportes Agregados:';
         reportsContainer.appendChild(reportsLabel);
 
-        // Agregar checkboxes para los reportes
-        fetch(`/get_reportes_json?dms=${dms}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data && Array.isArray(data.reportes)) {
-                    data.reportes.forEach(reporte => {
-                        const checkboxDiv = document.createElement('div');
-                        checkboxDiv.className = 'form-check';
+        // Función para manejar el cambio de estado de un checkbox
+        function handleReportCheckboxChange(checkbox, baseName) {
+            const allCheckboxes = reportsContainer.querySelectorAll('.form-check-input');
 
-                        const checkbox = document.createElement('input');
-                        checkbox.className = 'form-check-input';
-                        checkbox.type = 'checkbox';
-                        checkbox.id = `report_${reporte}`;
-                        checkbox.value = reporte;
-                        checkbox.checked = reports.includes(reporte);
+            allCheckboxes.forEach(cb => {
+                const cbBaseName = cb.value.replace(/[0-9]/g, '').trim();
 
-                        // Deshabilitar checkboxes si el nombre base coincide y está seleccionado
-                        const baseName = reporte.replace(/[0-9]/g, '');
-                        const isBaseNameSelected = reports.some(r => r.startsWith(baseName) && r !== reporte);
-
-                        if (isBaseNameSelected) {
-                            checkbox.disabled = true;
-                        }
-
-                        checkbox.addEventListener('change', function () {
-                            handleReportCheckboxChange(checkbox, baseName);
-                        });
-
-                        const label = document.createElement('label');
-                        label.className = 'form-check-label';
-                        label.htmlFor = `report_${reporte}`;
-                        label.textContent = reporte;
-
-                        checkboxDiv.appendChild(checkbox);
-                        checkboxDiv.appendChild(label);
-                        reportsContainer.appendChild(checkboxDiv);
-                    });
+                if (cbBaseName === baseName && cb !== checkbox) {
+                    cb.disabled = checkbox.checked; // Deshabilita o habilita según el estado del checkbox principal
                 }
-            })
-            .catch(error => console.error('Error al cargar los reportes:', error));
+            });
+        }
+
+        // Función para actualizar los checkboxes al cambiar el DMS
+        function updateReportsForDms(dms, selectedReports) {
+            reportsContainer.innerHTML = '';  // Limpiar los reportes previos
+
+            fetch(`/get_reportes_json?dms=${dms}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && Array.isArray(data.reportes)) {
+                        data.reportes.forEach(reporte => {
+                            const checkboxDiv = document.createElement('div');
+                            checkboxDiv.className = 'form-check';
+
+                            const checkbox = document.createElement('input');
+                            checkbox.className = 'form-check-input';
+                            checkbox.type = 'checkbox';
+                            checkbox.id = `report_${reporte}`;
+                            checkbox.value = reporte;
+                            checkbox.checked = selectedReports.includes(reporte);  // Marca solo los que están en el JSON
+
+                            // Verifica si el nombre base coincide y si el checkbox está marcado
+                            const baseName = reporte.replace(/[0-9]/g, '').trim();
+                            const isBaseNameSelected = selectedReports.some(r => r.startsWith(baseName) && r !== reporte);
+
+                            // Si hay un similar marcado, deshabilita este checkbox
+                            if (isBaseNameSelected) {
+                                checkbox.disabled = true;
+                            }
+
+                            checkbox.addEventListener('change', function () {
+                                handleReportCheckboxChange(checkbox, baseName);
+                            });
+
+                            const label = document.createElement('label');
+                            label.className = 'form-check-label';
+                            label.htmlFor = `report_${reporte}`;
+                            label.textContent = reporte;
+
+                            checkboxDiv.appendChild(checkbox);
+                            checkboxDiv.appendChild(label);
+                            reportsContainer.appendChild(checkboxDiv);
+                        });
+                    } else {
+                        const noReportsMessage = document.createElement('p');
+                        noReportsMessage.textContent = 'No hay reportes disponibles para este DMS.';
+                        noReportsMessage.className = 'text-warning';
+                        reportsContainer.appendChild(noReportsMessage);
+                    }
+                })
+                .catch(error => console.error('Error al cargar los reportes:', error));
+        }
+
+        // Inicializar los reportes para el DMS actual usando datos del JSON
+        updateReportsForDms(dms, reports);
+
+        // Agregar evento de cambio para actualizar los reportes en tiempo real
+        dmsSelect.addEventListener('change', function () {
+            const selectedDms = this.value;
+
+            // Validar si el DMS ya existe en el modal
+            const existingDmsSelects = dmsContainer.querySelectorAll('select[name="dms"]');
+            let isDuplicate = false;
+
+            existingDmsSelects.forEach(select => {
+                if (select !== dmsSelect && select.value === selectedDms) {
+                    isDuplicate = true;
+                }
+            });
+
+            if (isDuplicate) {
+                // Usar SweetAlert para mostrar una alerta
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'DMS duplicado',
+                    text: 'Este DMS ya ha sido seleccionado. Por favor, elige otro.',
+                    confirmButtonText: 'Aceptar'
+                });
+
+                dmsSelect.value = dms; // Restablecer al valor anterior
+            } else {
+                // Confirmar el cambio de DMS
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Cambiar el DMS modificará la configuración del archivo. ¿Deseas continuar?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, cambiar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        updateReportsForDms(selectedDms, []);  // Actualiza los reportes para el nuevo DMS
+                    } else {
+                        dmsSelect.value = dms; // Restablecer al valor anterior si se cancela
+                    }
+                });
+            }
+        });
 
         dmsContainer.appendChild(reportsContainer);
+
+        // Agregar botón de eliminar
+        const deleteLink = document.createElement('span');
+        deleteLink.className = 'text-danger delete-report mt-2';
+        deleteLink.style.cursor = 'pointer';
+        deleteLink.style.textDecoration = 'underline';
+        deleteLink.textContent = 'Eliminar';
+
+        // Prevenir el comportamiento predeterminado y manejar la eliminación
+        deleteLink.addEventListener('click', function (event) {
+            event.preventDefault(); // Evita cualquier redirección predeterminada
+            event.stopPropagation(); // Evita que el evento se propague
+
+            handleDeleteDms(dms, dmsSelect, reportsContainer, deleteLink);
+        });
+
+        dmsContainer.appendChild(deleteLink);
     });
 }
+
+
+// Función para manejar la eliminación de un DMS
+function handleDeleteDms(dms, dmsSelect, reportsContainer, deleteButton) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: `Eliminarás el DMS ${dms} y sus reportes asociados.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Eliminar del DOM
+            dmsSelect.remove();
+            reportsContainer.remove();
+            deleteButton.remove();
+
+            // Eliminar del JSON
+            const branchName = document.getElementById('edit_branch_name').value;
+            const branch = document.getElementById('edit_branch').value;
+            const clientName = document.getElementById('client_name').value;
+
+            fetch('/eliminar_dms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    dms: dms,
+                    client_name: clientName,
+                    branch_name: branchName,
+                    branch: branch
+                })
+            }).then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    Swal.fire('Eliminado', `El DMS ${dms} y sus reportes fueron eliminados.`, 'success');
+                } else {
+                    Swal.fire('Error', 'No se pudo eliminar el DMS.', 'error');
+                }
+            }).catch(error => {
+                console.error('Error al eliminar el DMS:', error);
+                Swal.fire('Error', 'No se pudo eliminar el DMS.', 'error');
+            });
+        }
+    });
+}
+
+
+
+
 
 // Función para manejar el cambio de estado de un checkbox de reporte
 function handleReportCheckboxChange(checkbox, baseName) {
@@ -1350,76 +1496,89 @@ function handleReportCheckboxChange(checkbox, baseName) {
 }
 
 
-function loadReportsForDms(dms, selectedReports, reportsCheckboxGroup) {
+document.addEventListener('DOMContentLoaded', function () {
+    const dmsSelect = document.getElementById('edit_dms');
+    const reportsCheckboxGroup = document.getElementById('edit_reportsCheckboxGroup');
+
+    if (dmsSelect) {
+        dmsSelect.addEventListener('change', function() {
+            const selectedDms = this.value;
+
+            if (selectedDms) {
+                // Limpia los reportes previos completamente antes de cargar los nuevos
+                clearReports(reportsCheckboxGroup);
+
+                // Carga y muestra los reportes del nuevo DMS seleccionado
+                loadReportsForDms(selectedDms, reportsCheckboxGroup);
+            } else {
+                // Si no hay DMS seleccionado, limpia el contenedor de reportes
+                clearReports(reportsCheckboxGroup);
+            }
+        });
+    } else {
+        console.error('El select de DMS no se encontró en el DOM.');
+    }
+});
+
+// Función para limpiar completamente el contenedor de reportes
+function clearReports(reportsCheckboxGroup) {
+    reportsCheckboxGroup.innerHTML = '';
+}
+
+// Función para cargar y mostrar los reportes asociados a un DMS
+function loadReportsForDms(dms, reportsCheckboxGroup) {
+    clearReports(reportsCheckboxGroup);
+
     fetch(`/get_reportes_json?dms=${encodeURIComponent(dms)}`)
         .then(response => response.json())
         .then(data => {
-            reportsCheckboxGroup.innerHTML = ''; // Limpiar reportes previos
-
             if (data.reportes && data.reportes.length > 0) {
-                const selectedBaseNames = [];
-
                 data.reportes.forEach(reporte => {
-                    const checkboxDiv = document.createElement('div');
-                    checkboxDiv.className = 'form-check';
+                    const reportDiv = document.createElement('div');
+                    reportDiv.className = 'form-check';
 
-                    const checkbox = document.createElement('input');
-                    checkbox.className = 'form-check-input';
-                    checkbox.type = 'checkbox';
-                    checkbox.id = `edit_report_${dms}_${reporte}`;
-                    checkbox.value = reporte;
+                    // Crear el botón de eliminar como enlace
+                    const deleteLink = document.createElement('span');
+                    deleteLink.className = 'text-danger delete-report';
+                    deleteLink.style.cursor = 'pointer';
+                    deleteLink.style.textDecoration = 'underline';
+                    deleteLink.textContent = 'Eliminar';
+                    deleteLink.onclick = function() {
+                        reportDiv.remove(); // Elimina todo el div que contiene el botón "Eliminar"
+                    };
 
-                    const label = document.createElement('label');
-                    label.className = 'form-check-label';
-                    label.htmlFor = checkbox.id;
-                    label.textContent = reporte;
-
-                    const baseName = reporte.replace(/[0-9]/g, '').trim();
-
-                    if (selectedReports.includes(reporte)) {
-                        checkbox.checked = true;
-                        selectedBaseNames.push(baseName);
-                    }
-
-                    if (selectedBaseNames.includes(baseName) && !checkbox.checked) {
-                        checkbox.disabled = true;
-                    }
-
-                    checkbox.addEventListener('change', function () {
-                        if (!checkbox.checked) {
-                            const allCheckboxes = reportsCheckboxGroup.querySelectorAll('.form-check-input');
-                            allCheckboxes.forEach(cb => {
-                                const cbBaseName = cb.value.replace(/[0-9]/g, '').trim();
-                                if (cbBaseName === baseName) {
-                                    cb.disabled = false;
-                                }
-                            });
-                            const index = selectedBaseNames.indexOf(baseName);
-                            if (index > -1) {
-                                selectedBaseNames.splice(index, 1);
-                            }
-                        } else {
-                            selectedBaseNames.push(baseName);
-                            const allCheckboxes = reportsCheckboxGroup.querySelectorAll('.form-check-input');
-                            allCheckboxes.forEach(cb => {
-                                const cbBaseName = cb.value.replace(/[0-9]/g, '').trim();
-                                if (cbBaseName === baseName && cb !== checkbox) {
-                                    cb.disabled = true;
-                                }
-                            });
-                        }
-                    });
-
-                    checkboxDiv.appendChild(checkbox);
-                    checkboxDiv.appendChild(label);
-                    reportsCheckboxGroup.appendChild(checkboxDiv);
+                    // Añadir solo el botón de eliminar al contenedor
+                    reportDiv.appendChild(deleteLink);
+                    reportsCheckboxGroup.appendChild(reportDiv);
                 });
+            } else {
+                const noReportsMessage = document.createElement('p');
+                noReportsMessage.textContent = 'No hay reportes disponibles para este DMS.';
+                noReportsMessage.className = 'text-warning';
+                reportsCheckboxGroup.appendChild(noReportsMessage);
             }
         })
         .catch(error => {
             console.error('Error al cargar los reportes:', error);
+            reportsCheckboxGroup.innerHTML = '<p class="text-danger">Error al cargar los reportes.</p>';
         });
 }
+
+
+
+
+// Agregar evento de cambio al select de DMS en el modal de edición
+document.getElementById('edit_dms').addEventListener('change', function() {
+    const selectedDms = this.value;
+    const reportsCheckboxGroup = document.getElementById('edit_reportsCheckboxGroup'); // Este es el contenedor de reportes en el modal de edición
+
+    if (selectedDms) {
+        loadReportsForDms(selectedDms, reportsCheckboxGroup);
+    } else {
+        reportsCheckboxGroup.innerHTML = ''; // Limpiar si no hay DMS seleccionado
+    }
+});
+
 
 
 
