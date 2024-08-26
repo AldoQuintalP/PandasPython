@@ -813,16 +813,52 @@ function saveCurrentDmsReports() {
 
 
 function addNewDmsField() {
-    const dmsId = generateUUID();
+    const formGroup = document.createElement('div');
+    formGroup.className = 'form-group';
+
     const newDmsSelect = document.createElement('select');
     newDmsSelect.className = 'form-control mt-2';
     newDmsSelect.name = 'dms';
-    newDmsSelect.dataset.dmsId = dmsId; // Asignar ID único
     newDmsSelect.required = true;
 
-    // Resto del código para crear y agregar el select de DMS
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Seleccione un DMS';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    newDmsSelect.appendChild(defaultOption);
 
-    dmsReportsData[dmsId] = { dms: '', reports: [] }; // Inicializar en la estructura
+    // Colocar fetch para cargar DMS en newDmsSelect
+    fetch('/get_tabs_json')
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                data.forEach(dms => {
+                    const option = document.createElement('option');
+                    option.value = dms;
+                    option.textContent = dms;
+                    newDmsSelect.appendChild(option);
+                });
+            }
+        });
+
+    const newReportsContainer = document.createElement('div');
+    newReportsContainer.className = 'form-group mt-2';
+    newReportsContainer.style.display = 'none';
+
+    const newReportsLabel = document.createElement('label');
+    newReportsLabel.textContent = 'Selecciona los Reportes a Utilizar:';
+    newReportsContainer.appendChild(newReportsLabel);
+
+    const newReportsCheckboxGroup = document.createElement('div');
+    newReportsContainer.appendChild(newReportsCheckboxGroup);
+
+    formGroup.appendChild(newDmsSelect);
+    formGroup.appendChild(newReportsContainer);
+
+    addDeleteLink(formGroup);
+
+    dmsContainer.appendChild(formGroup);
 }
 
 document.getElementById('saveRecordBtn').addEventListener('click', function () {
@@ -978,6 +1014,7 @@ function createEditableRow(branchName, branch, dmsRecords) {
     document.getElementById('branch_name').value = branchName;
     document.getElementById('branch').value = branch;
     document.getElementById('reportsCheckboxGroup').innerHTML = ''; // Limpiar los reportes seleccionados previamente
+    dmsContainer.innerHTML = ''; // Limpiar cualquier campo DMS adicional
 
     dms.forEach((dmsValue, index) => {
         if (index === 0) {  // Si es el primer DMS, úsalo en el campo que ya existe
@@ -1012,37 +1049,44 @@ function createEditableRow(branchName, branch, dmsRecords) {
         } else {  // Para los DMS adicionales, crea nuevos campos
             addNewDmsField();  // Añade un nuevo campo de DMS
 
-            const newDmsSelect = dmsContainer.lastChild.querySelector('select[name="dms"]');
-            newDmsSelect.value = dmsValue;
+            const lastFormGroup = dmsContainer.lastChild.querySelector('.form-group');
+            if (lastFormGroup) {
+                const newDmsSelect = lastFormGroup.querySelector('select[name="dms"]');
+                if (newDmsSelect) {
+                    newDmsSelect.value = dmsValue;
 
-            const newReportsCheckboxGroup = dmsContainer.lastChild.querySelector('.form-group.mt-2 > div');
-            fetch(`/get_reportes_json?dms=${dmsValue}`)
-                .then(response => response.json())
-                .then(reportData => {
-                    if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
-                        reportData.reportes.forEach(reporte => {
-                            const checkboxDiv = document.createElement('div');
-                            checkboxDiv.className = 'form-check';
+                    const newReportsCheckboxGroup = lastFormGroup.querySelector('.form-group.mt-2 > div');
+                    if (newReportsCheckboxGroup) {
+                        fetch(`/get_reportes_json?dms=${dmsValue}`)
+                            .then(response => response.json())
+                            .then(reportData => {
+                                if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
+                                    reportData.reportes.forEach(reporte => {
+                                        const checkboxDiv = document.createElement('div');
+                                        checkboxDiv.className = 'form-check';
 
-                            const checkbox = document.createElement('input');
-                            checkbox.className = 'form-check-input';
-                            checkbox.type = 'checkbox';
-                            checkbox.id = `report_${reporte}`;
-                            checkbox.value = reporte;
-                            checkbox.checked = reports.includes(reporte);
+                                        const checkbox = document.createElement('input');
+                                        checkbox.className = 'form-check-input';
+                                        checkbox.type = 'checkbox';
+                                        checkbox.id = `report_${reporte}`;
+                                        checkbox.value = reporte;
+                                        checkbox.checked = reports.includes(reporte);
 
-                            const label = document.createElement('label');
-                            label.className = 'form-check-label';
-                            label.htmlFor = `report_${reporte}`;
-                            label.textContent = reporte;
+                                        const label = document.createElement('label');
+                                        label.className = 'form-check-label';
+                                        label.htmlFor = `report_${reporte}`;
+                                        label.textContent = reporte;
 
-                            checkboxDiv.appendChild(checkbox);
-                            checkboxDiv.appendChild(label);
+                                        checkboxDiv.appendChild(checkbox);
+                                        checkboxDiv.appendChild(label);
 
-                            newReportsCheckboxGroup.appendChild(checkboxDiv);
-                        });
+                                        newReportsCheckboxGroup.appendChild(checkboxDiv);
+                                    });
+                                }
+                            });
                     }
-                });
+                }
+            }
         }
     });
 
@@ -1052,6 +1096,7 @@ function createEditableRow(branchName, branch, dmsRecords) {
         saveChanges(row);
     };
 }
+
 
 function saveChanges(row) {
     const branchName = document.getElementById('branch_name').value.trim();
@@ -1082,6 +1127,7 @@ function saveChanges(row) {
     // Cierra el modal
     $('#addRecordModal').modal('hide');
 }
+
 
     
     let dmsReportsData = {}; // Estructura para almacenar DMS y sus reportes asociados
