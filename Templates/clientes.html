@@ -682,31 +682,6 @@ addDmsBtn.addEventListener('click', function() {
     dmsContainer.appendChild(formGroup);
 });
 
-function updateAddedRecordsView() {
-    const dmsContainer = document.getElementById('dmsContainer');
-    dmsContainer.innerHTML = '';
-
-    dmsRecords.forEach(record => {
-        const dmsDiv = document.createElement('div');
-        dmsDiv.className = 'added-dms-record';
-
-        const dmsLabel = document.createElement('strong');
-        dmsLabel.textContent = `DMS: ${record.dms}`;
-        dmsDiv.appendChild(dmsLabel);
-
-        const reportsList = document.createElement('ul');
-        record.reports.forEach(report => {
-            const reportItem = document.createElement('li');
-            reportItem.textContent = report;
-            reportsList.appendChild(reportItem);
-        });
-        dmsDiv.appendChild(reportsList);
-
-        dmsContainer.appendChild(dmsDiv);
-    });
-}
-
-
 document.getElementById('saveDataBtn').addEventListener('click', function () {
     const clientName = document.getElementById('client_name').value.trim();
     const rows = document.querySelectorAll('#clientDetailsBody tr');
@@ -762,8 +737,29 @@ document.getElementById('saveDataBtn').addEventListener('click', function () {
 });
 
 
+function updateAddedRecordsView() {
+    const dmsContainer = document.getElementById('dmsContainer');
+    dmsContainer.innerHTML = '';
 
+    dmsRecords.forEach(record => {
+        const dmsDiv = document.createElement('div');
+        dmsDiv.className = 'added-dms-record';
 
+        const dmsLabel = document.createElement('strong');
+        dmsLabel.textContent = `DMS: ${record.dms}`;
+        dmsDiv.appendChild(dmsLabel);
+
+        const reportsList = document.createElement('ul');
+        record.reports.forEach(report => {
+            const reportItem = document.createElement('li');
+            reportItem.textContent = report;
+            reportsList.appendChild(reportItem);
+        });
+        dmsDiv.appendChild(reportsList);
+
+        dmsContainer.appendChild(dmsDiv);
+    });
+}
 
     document.querySelectorAll('select[name="dms"]').forEach(select => {
         handleDmsSelectionChange(select);
@@ -1073,7 +1069,6 @@ function createEditableRow(branchName, branch, dmsRecords) {
     document.getElementById('branch_name').value = branchName;
     document.getElementById('branch').value = branch;
     document.getElementById('reportsCheckboxGroup').innerHTML = ''; // Limpiar los reportes seleccionados previamente
-    dmsContainer.innerHTML = ''; // Limpiar cualquier campo DMS adicional
 
     dms.forEach((dmsValue, index) => {
         if (index === 0) {  // Si es el primer DMS, úsalo en el campo que ya existe
@@ -1108,44 +1103,37 @@ function createEditableRow(branchName, branch, dmsRecords) {
         } else {  // Para los DMS adicionales, crea nuevos campos
             addNewDmsField();  // Añade un nuevo campo de DMS
 
-            const lastFormGroup = dmsContainer.lastChild.querySelector('.form-group');
-            if (lastFormGroup) {
-                const newDmsSelect = lastFormGroup.querySelector('select[name="dms"]');
-                if (newDmsSelect) {
-                    newDmsSelect.value = dmsValue;
+            const newDmsSelect = dmsContainer.lastChild.querySelector('select[name="dms"]');
+            newDmsSelect.value = dmsValue;
 
-                    const newReportsCheckboxGroup = lastFormGroup.querySelector('.form-group.mt-2 > div');
-                    if (newReportsCheckboxGroup) {
-                        fetch(`/get_reportes_json?dms=${dmsValue}`)
-                            .then(response => response.json())
-                            .then(reportData => {
-                                if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
-                                    reportData.reportes.forEach(reporte => {
-                                        const checkboxDiv = document.createElement('div');
-                                        checkboxDiv.className = 'form-check';
+            const newReportsCheckboxGroup = dmsContainer.lastChild.querySelector('.form-group.mt-2 > div');
+            fetch(`/get_reportes_json?dms=${dmsValue}`)
+                .then(response => response.json())
+                .then(reportData => {
+                    if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
+                        reportData.reportes.forEach(reporte => {
+                            const checkboxDiv = document.createElement('div');
+                            checkboxDiv.className = 'form-check';
 
-                                        const checkbox = document.createElement('input');
-                                        checkbox.className = 'form-check-input';
-                                        checkbox.type = 'checkbox';
-                                        checkbox.id = `report_${reporte}`;
-                                        checkbox.value = reporte;
-                                        checkbox.checked = reports.includes(reporte);
+                            const checkbox = document.createElement('input');
+                            checkbox.className = 'form-check-input';
+                            checkbox.type = 'checkbox';
+                            checkbox.id = `report_${reporte}`;
+                            checkbox.value = reporte;
+                            checkbox.checked = reports.includes(reporte);
 
-                                        const label = document.createElement('label');
-                                        label.className = 'form-check-label';
-                                        label.htmlFor = `report_${reporte}`;
-                                        label.textContent = reporte;
+                            const label = document.createElement('label');
+                            label.className = 'form-check-label';
+                            label.htmlFor = `report_${reporte}`;
+                            label.textContent = reporte;
 
-                                        checkboxDiv.appendChild(checkbox);
-                                        checkboxDiv.appendChild(label);
+                            checkboxDiv.appendChild(checkbox);
+                            checkboxDiv.appendChild(label);
 
-                                        newReportsCheckboxGroup.appendChild(checkboxDiv);
-                                    });
-                                }
-                            });
+                            newReportsCheckboxGroup.appendChild(checkboxDiv);
+                        });
                     }
-                }
-            }
+                });
         }
     });
 
@@ -1155,7 +1143,6 @@ function createEditableRow(branchName, branch, dmsRecords) {
         saveChanges(row);
     };
 }
-
 
 function saveChanges(row) {
     const branchName = document.getElementById('branch_name').value.trim();
@@ -1186,7 +1173,6 @@ function saveChanges(row) {
     // Cierra el modal
     $('#addRecordModal').modal('hide');
 }
-
 
     
     let dmsReportsData = {}; // Estructura para almacenar DMS y sus reportes asociados
