@@ -324,6 +324,32 @@
         </div>
     </div>
 
+    <!-- Modal de Edición -->
+<div class="modal fade" id="editRecordModal" tabindex="-1" role="dialog" aria-labelledby="editRecordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editRecordModalLabel">Editar Registro</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Contenedor para DMS y reportes -->
+                <div id="edit_dms_container"></div>
+                <!-- Otros campos de formulario aquí -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveEditBtn">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+
     <!-- Modal de "Agregar Nuevo Registro" -->
     <div class="modal fade" id="addRecordModal" tabindex="-1" role="dialog" aria-labelledby="addRecordModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm" id="addRecordModalDialog" role="document">
@@ -737,6 +763,55 @@ document.getElementById('saveDataBtn').addEventListener('click', function () {
 });
 
 
+document.getElementById('saveEditBtn').addEventListener('click', function () {
+    const branchName = document.getElementById('edit_branch_name').value.trim();
+    const branch = document.getElementById('edit_branch').value.trim();
+    const dms = document.getElementById('edit_dms').value.trim();
+    const reportes = Array.from(document.querySelectorAll('#edit_reportsCheckboxGroup input[type="checkbox"]:checked')).map(cb => cb.value);
+
+    const clientName = document.getElementById('client_name').value.trim();
+
+    // Guardar los cambios en el servidor
+    fetch('/actualizar_registro', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            client_name: clientName,
+            branch_name: branchName,
+            branch: branch,
+            dms: dms,
+            reportes: reportes
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            Swal.fire('Éxito', 'Los cambios se guardaron correctamente.', 'success');
+            $('#editRecordModal').modal('hide');
+
+            // Actualizar la tabla
+            const tableBody = document.getElementById('clientDetailsBody');
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                if (row.cells[0].querySelector('span').textContent.trim() === branchName) {
+                    row.cells[1].querySelector('span').textContent = branch;
+                    row.cells[2].innerHTML = `<span>${dms}</span><br>`;
+                    row.cells[3].innerHTML = `<span>${reportes.join(', ')}</span><br>`;
+                }
+            });
+        } else {
+            Swal.fire('Error', result.error || 'No se pudieron guardar los cambios.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error al guardar los cambios:', error);
+        Swal.fire('Error', 'No se pudieron guardar los cambios.', 'error');
+    });
+});
+
+
 function updateAddedRecordsView() {
     const dmsContainer = document.getElementById('dmsContainer');
     dmsContainer.innerHTML = '';
@@ -983,7 +1058,46 @@ document.getElementById('saveRecordBtn').addEventListener('click', function () {
     dmsRecords = [];
     updateAddedRecordsView();
     $('#addRecordModal').modal('hide');
+
+    // Guardar el registro en el JSON
+    guardarRegistroEnJson(branchName, branch, filteredDmsRecords);
 });
+
+function guardarRegistroEnJson(branchName, branch, dmsRecords) {
+    const clientName = document.getElementById('client_name').value.trim();
+
+    const data = {
+        client_name: clientName,
+        registros: [{
+            sucursal: branchName,
+            branch: branch,
+            dms: dmsRecords.reduce((acc, record) => {
+                acc[record.dms] = record.reports;
+                return acc;
+            }, {})
+        }]
+    };
+
+    fetch('/guardar_cliente', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            Swal.fire('Éxito', 'Los datos se guardaron correctamente.', 'success');
+        } else {
+            Swal.fire('Error', result.error || 'Ocurrió un error al guardar los datos.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error al guardar los datos:', error);
+        Swal.fire('Error', 'No se pudieron guardar los datos.', 'error');
+    });
+}
 
 
 
@@ -1032,23 +1146,59 @@ function createEditableRow(branchName, branch, dmsRecords) {
     }
 
     function handleDeleteClick(event) {
-        const row = event.target.closest('tr');
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: "No podrás revertir esto!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, eliminarlo!',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                row.remove();
-                Swal.fire('Eliminado!', 'El registro ha sido eliminado.', 'success');
-            }
-        });
-    }
+    const row = event.target.closest('tr');
+    const branchName = row.cells[0].querySelector('span').textContent.trim();
+    const branch = row.cells[1].querySelector('span').textContent.trim();
+
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "No podrás revertir esto!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminarlo!',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Eliminar el registro del JSON en el servidor
+            eliminarRegistroDelJson(branchName, branch)
+                .then(() => {
+                    // Si la eliminación del servidor fue exitosa, eliminar la fila de la tabla
+                    row.remove();
+                    Swal.fire('Eliminado!', 'El registro ha sido eliminado.', 'success');
+                })
+                .catch((error) => {
+                    console.error('Error al eliminar el registro:', error);
+                    Swal.fire('Error', 'No se pudo eliminar el registro.', 'error');
+                });
+        }
+    });
+}
+
+
+function eliminarRegistroDelJson(branchName, branch) {
+    const clientName = document.getElementById('client_name').value.trim();
+
+    return fetch('/eliminar_registro', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            client_name: clientName,
+            branch_name: branchName,
+            branch: branch
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (!result.success) {
+            throw new Error(result.error || 'Error al eliminar el registro.');
+        }
+    });
+}
+
 
     function addEditEventListeners() {
         const editButtons = document.querySelectorAll('.edit-btn');
@@ -1059,90 +1209,214 @@ function createEditableRow(branchName, branch, dmsRecords) {
 
     function handleEditClick(event) {
     const row = event.target.closest('tr');
-    const branchName = row.cells[0].querySelector('span').textContent;
-    const branch = row.cells[1].querySelector('span').textContent;
-    const dms = row.cells[2].querySelector('span').innerHTML.split('<br>').filter(dms => dms.trim() !== '');
-    const reports = row.cells[3].querySelector('span').innerHTML.split('<br>').filter(report => report.trim() !== '');
+    const clientName = document.getElementById('client_name').value;
+    const branchName = row.cells[0].querySelector('span').textContent.trim();
+    const branch = row.cells[1].querySelector('span').textContent.trim();
 
-    // Abre el modal para editar y llena los campos con los datos existentes
-    $('#addRecordModal').modal('show');
-    document.getElementById('branch_name').value = branchName;
-    document.getElementById('branch').value = branch;
-    document.getElementById('reportsCheckboxGroup').innerHTML = ''; // Limpiar los reportes seleccionados previamente
+    fetch(`/obtener_registro?client_name=${encodeURIComponent(clientName)}&branch_name=${encodeURIComponent(branchName)}&branch=${encodeURIComponent(branch)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.registro) {
+                const dmsData = data.registro.dms;
+                
+                if (!dmsData || typeof dmsData !== 'object') {
+                    console.error("DMS data is invalid:", dmsData);
+                    return;
+                }
 
-    dms.forEach((dmsValue, index) => {
-        if (index === 0) {  // Si es el primer DMS, úsalo en el campo que ya existe
-            document.getElementById('dms').value = dmsValue;
-            fetch(`/get_reportes_json?dms=${dmsValue}`)
-                .then(response => response.json())
-                .then(reportData => {
-                    if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
-                        reportData.reportes.forEach(reporte => {
-                            const checkboxDiv = document.createElement('div');
-                            checkboxDiv.className = 'form-check';
+                // Llamada a la función que carga los DMS y reportes para editar
+                loadDmsAndReportsForEditing(dmsData);
 
-                            const checkbox = document.createElement('input');
-                            checkbox.className = 'form-check-input';
-                            checkbox.type = 'checkbox';
-                            checkbox.id = `report_${reporte}`;
-                            checkbox.value = reporte;
-                            checkbox.checked = reports.includes(reporte);
+                // Abrir el modal de edición (asumiendo que tienes una función para esto)
+                $('#editRecordModal').modal('show');
+            } else {
+                console.error("Error al obtener los datos del registro:", data.error || "Datos no encontrados");
+            }
+        })
+        .catch(error => console.error('Error al obtener los datos del registro:', error));
+}
 
-                            const label = document.createElement('label');
-                            label.className = 'form-check-label';
-                            label.htmlFor = `report_${reporte}`;
-                            label.textContent = reporte;
 
-                            checkboxDiv.appendChild(checkbox);
-                            checkboxDiv.appendChild(label);
+    function loadDmsAndReportsForEditing(dmsData) {
+    const dmsContainer = document.getElementById('edit_dms_container');
 
-                            document.getElementById('reportsCheckboxGroup').appendChild(checkboxDiv);
-                        });
+    if (!dmsData || typeof dmsData !== 'object') {
+        console.error("DMS data is invalid:", dmsData);
+        return; // Salir de la función si los datos de DMS no son válidos
+    }
+
+    // Limpiar el contenedor antes de agregar los elementos
+    dmsContainer.innerHTML = '';
+
+    Object.keys(dmsData).forEach(dms => {
+        const reports = dmsData[dms];
+        
+        // Crear un nuevo select para el DMS
+        const dmsSelect = document.createElement('select');
+        dmsSelect.className = 'form-control mt-2';
+        dmsSelect.name = 'dms';
+        dmsSelect.required = true;
+        
+        // Agregar opciones al select basado en los tabs disponibles (por ejemplo, del archivo tabs.json)
+        fetch('/get_tabs_json')
+            .then(response => response.json())
+            .then(tabs => {
+                tabs.forEach(tab => {
+                    const option = document.createElement('option');
+                    option.value = tab;
+                    option.textContent = tab;
+                    if (tab === dms) {
+                        option.selected = true;
                     }
+                    dmsSelect.appendChild(option);
                 });
-        } else {  // Para los DMS adicionales, crea nuevos campos
-            addNewDmsField();  // Añade un nuevo campo de DMS
+            })
+            .catch(error => console.error('Error al cargar los DMS:', error));
 
-            const newDmsSelect = dmsContainer.lastChild.querySelector('select[name="dms"]');
-            newDmsSelect.value = dmsValue;
+        dmsContainer.appendChild(dmsSelect);
 
-            const newReportsCheckboxGroup = dmsContainer.lastChild.querySelector('.form-group.mt-2 > div');
-            fetch(`/get_reportes_json?dms=${dmsValue}`)
-                .then(response => response.json())
-                .then(reportData => {
-                    if (reportData && Array.isArray(reportData.reportes) && reportData.reportes.length > 0) {
-                        reportData.reportes.forEach(reporte => {
-                            const checkboxDiv = document.createElement('div');
-                            checkboxDiv.className = 'form-check';
+        // Crear un contenedor para los reportes
+        const reportsContainer = document.createElement('div');
+        reportsContainer.className = 'form-group mt-2';
 
-                            const checkbox = document.createElement('input');
-                            checkbox.className = 'form-check-input';
-                            checkbox.type = 'checkbox';
-                            checkbox.id = `report_${reporte}`;
-                            checkbox.value = reporte;
-                            checkbox.checked = reports.includes(reporte);
+        const reportsLabel = document.createElement('label');
+        reportsLabel.textContent = 'Reportes Agregados:';
+        reportsContainer.appendChild(reportsLabel);
 
-                            const label = document.createElement('label');
-                            label.className = 'form-check-label';
-                            label.htmlFor = `report_${reporte}`;
-                            label.textContent = reporte;
+        // Agregar checkboxes para los reportes
+        fetch(`/get_reportes_json?dms=${dms}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && Array.isArray(data.reportes)) {
+                    data.reportes.forEach(reporte => {
+                        const checkboxDiv = document.createElement('div');
+                        checkboxDiv.className = 'form-check';
 
-                            checkboxDiv.appendChild(checkbox);
-                            checkboxDiv.appendChild(label);
+                        const checkbox = document.createElement('input');
+                        checkbox.className = 'form-check-input';
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `report_${reporte}`;
+                        checkbox.value = reporte;
+                        checkbox.checked = reports.includes(reporte);
 
-                            newReportsCheckboxGroup.appendChild(checkboxDiv);
+                        // Deshabilitar checkboxes si el nombre base coincide y está seleccionado
+                        const baseName = reporte.replace(/[0-9]/g, '');
+                        const isBaseNameSelected = reports.some(r => r.startsWith(baseName) && r !== reporte);
+
+                        if (isBaseNameSelected) {
+                            checkbox.disabled = true;
+                        }
+
+                        checkbox.addEventListener('change', function () {
+                            handleReportCheckboxChange(checkbox, baseName);
                         });
-                    }
-                });
+
+                        const label = document.createElement('label');
+                        label.className = 'form-check-label';
+                        label.htmlFor = `report_${reporte}`;
+                        label.textContent = reporte;
+
+                        checkboxDiv.appendChild(checkbox);
+                        checkboxDiv.appendChild(label);
+                        reportsContainer.appendChild(checkboxDiv);
+                    });
+                }
+            })
+            .catch(error => console.error('Error al cargar los reportes:', error));
+
+        dmsContainer.appendChild(reportsContainer);
+    });
+}
+
+// Función para manejar el cambio de estado de un checkbox de reporte
+function handleReportCheckboxChange(checkbox, baseName) {
+    const allCheckboxes = document.querySelectorAll(`input[type="checkbox"][id^="report_"]`);
+
+    allCheckboxes.forEach(cb => {
+        const cbBaseName = cb.value.replace(/[0-9]/g, '');
+        if (cbBaseName === baseName && cb !== checkbox) {
+            cb.disabled = checkbox.checked;
         }
     });
-
-    // Cambiar el comportamiento del botón de guardar
-    document.getElementById('saveRecordBtn').textContent = 'Guardar Cambios';
-    document.getElementById('saveRecordBtn').onclick = function() {
-        saveChanges(row);
-    };
 }
+
+
+function loadReportsForDms(dms, selectedReports, reportsCheckboxGroup) {
+    fetch(`/get_reportes_json?dms=${encodeURIComponent(dms)}`)
+        .then(response => response.json())
+        .then(data => {
+            reportsCheckboxGroup.innerHTML = ''; // Limpiar reportes previos
+
+            if (data.reportes && data.reportes.length > 0) {
+                const selectedBaseNames = [];
+
+                data.reportes.forEach(reporte => {
+                    const checkboxDiv = document.createElement('div');
+                    checkboxDiv.className = 'form-check';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.className = 'form-check-input';
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `edit_report_${dms}_${reporte}`;
+                    checkbox.value = reporte;
+
+                    const label = document.createElement('label');
+                    label.className = 'form-check-label';
+                    label.htmlFor = checkbox.id;
+                    label.textContent = reporte;
+
+                    const baseName = reporte.replace(/[0-9]/g, '').trim();
+
+                    if (selectedReports.includes(reporte)) {
+                        checkbox.checked = true;
+                        selectedBaseNames.push(baseName);
+                    }
+
+                    if (selectedBaseNames.includes(baseName) && !checkbox.checked) {
+                        checkbox.disabled = true;
+                    }
+
+                    checkbox.addEventListener('change', function () {
+                        if (!checkbox.checked) {
+                            const allCheckboxes = reportsCheckboxGroup.querySelectorAll('.form-check-input');
+                            allCheckboxes.forEach(cb => {
+                                const cbBaseName = cb.value.replace(/[0-9]/g, '').trim();
+                                if (cbBaseName === baseName) {
+                                    cb.disabled = false;
+                                }
+                            });
+                            const index = selectedBaseNames.indexOf(baseName);
+                            if (index > -1) {
+                                selectedBaseNames.splice(index, 1);
+                            }
+                        } else {
+                            selectedBaseNames.push(baseName);
+                            const allCheckboxes = reportsCheckboxGroup.querySelectorAll('.form-check-input');
+                            allCheckboxes.forEach(cb => {
+                                const cbBaseName = cb.value.replace(/[0-9]/g, '').trim();
+                                if (cbBaseName === baseName && cb !== checkbox) {
+                                    cb.disabled = true;
+                                }
+                            });
+                        }
+                    });
+
+                    checkboxDiv.appendChild(checkbox);
+                    checkboxDiv.appendChild(label);
+                    reportsCheckboxGroup.appendChild(checkboxDiv);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error al cargar los reportes:', error);
+        });
+}
+
+
+
+
+
+
 
 function saveChanges(row) {
     const branchName = document.getElementById('branch_name').value.trim();

@@ -829,6 +829,59 @@ def get_reportes_json():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/guardar_registro', methods=['POST'])
+def guardar_registro():
+    new_record = request.json
+    try:
+        with open('clientes.json', 'r+') as file:
+            data = json.load(file)
+            data['registros'].append(new_record)
+            file.seek(0)
+            json.dump(data, file, indent=4)
+        return jsonify(success=True)
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify(success=False, error=str(e))
+
+
+@app.route('/obtener_registro', methods=['GET'])
+@login_required
+def obtener_registro():
+    try:
+        # Obtener los parámetros de la solicitud GET
+        client_name = request.args.get('client_name')
+        branch_name = request.args.get('branch_name')
+        branch = request.args.get('branch')
+
+        # Asegurarse de que los parámetros requeridos están presentes
+        if not client_name or not branch_name or not branch:
+            return jsonify(success=False, error="Faltan parámetros requeridos"), 400
+
+        # Construir la ruta al archivo config.json del cliente
+        client_config_path = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config', 'config.json')
+
+        # Verificar si el archivo config.json existe
+        if not os.path.exists(client_config_path):
+            return jsonify(success=False, error="Archivo de configuración no encontrado"), 404
+
+        # Cargar el contenido del archivo config.json
+        with open(client_config_path, 'r') as f:
+            client_config = json.load(f)
+
+        # Buscar el registro que coincide con la sucursal y branch especificados
+        for registro in client_config.get('registros', []):
+            if registro['sucursal'] == branch_name and registro['branch'] == branch:
+                return jsonify(success=True, registro=registro)
+
+        # Si no se encuentra el registro, devolver un error
+        return jsonify(success=False, error="Registro no encontrado"), 404
+
+    except Exception as e:
+        # Imprimir el error en la consola para ayudar en la depuración
+        print(f"Error en /obtener_registro: {str(e)}")
+        return jsonify(success=False, error="Error interno del servidor"), 500
+
+
 
 if __name__ == '__main__':
     with app.app_context():
