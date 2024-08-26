@@ -325,27 +325,36 @@
     </div>
 
     <!-- Modal de Edición -->
-<div class="modal fade" id="editRecordModal" tabindex="-1" role="dialog" aria-labelledby="editRecordModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editRecordModalLabel">Editar Registro</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Contenedor para DMS y reportes -->
-                <div id="edit_dms_container"></div>
-                <!-- Otros campos de formulario aquí -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="saveEditBtn">Guardar Cambios</button>
+    <div class="modal fade" id="editRecordModal" tabindex="-1" role="dialog" aria-labelledby="editRecordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRecordModalLabel">Editar Registro</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editRecordForm">
+                        <div class="form-group">
+                            <label for="edit_branch_name">Nombre de Sucursal</label>
+                            <input type="text" class="form-control" id="edit_branch_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_branch">Branch</label>
+                            <input type="text" class="form-control" id="edit_branch" required>
+                        </div>
+                        <!-- Contenedor para DMS y reportes -->
+                        <div id="edit_dms_container"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveEditBtn">Guardar Cambios</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     
 
@@ -1219,15 +1228,14 @@ function eliminarRegistroDelJson(branchName, branch) {
             if (data.success && data.registro) {
                 const dmsData = data.registro.dms;
                 
-                if (!dmsData || typeof dmsData !== 'object') {
-                    console.error("DMS data is invalid:", dmsData);
-                    return;
-                }
+                // Cargar los valores de Sucursal y Branch en los campos correspondientes
+                document.getElementById('edit_branch_name').value = branchName;
+                document.getElementById('edit_branch').value = branch;
 
-                // Llamada a la función que carga los DMS y reportes para editar
+                // Cargar los DMS y reportes para editar
                 loadDmsAndReportsForEditing(dmsData);
 
-                // Abrir el modal de edición (asumiendo que tienes una función para esto)
+                // Abrir el modal de edición
                 $('#editRecordModal').modal('show');
             } else {
                 console.error("Error al obtener los datos del registro:", data.error || "Datos no encontrados");
@@ -1235,6 +1243,7 @@ function eliminarRegistroDelJson(branchName, branch) {
         })
         .catch(error => console.error('Error al obtener los datos del registro:', error));
 }
+
 
 
     function loadDmsAndReportsForEditing(dmsData) {

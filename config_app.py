@@ -880,6 +880,38 @@ def obtener_registro():
         # Imprimir el error en la consola para ayudar en la depuración
         print(f"Error en /obtener_registro: {str(e)}")
         return jsonify(success=False, error="Error interno del servidor"), 500
+    
+@app.route('/eliminar_dms', methods=['POST'])
+@login_required
+def eliminar_dms():
+    try:
+        data = request.get_json()
+        client_name = data.get('client_name')
+        branch_name = data.get('branch_name')
+        branch = data.get('branch')
+        dms_to_delete = data.get('dms')
+
+        client_config_path = os.path.join(os.getcwd(), 'CLIENTS', client_name, 'Config', 'config.json')
+
+        if os.path.exists(client_config_path):
+            with open(client_config_path, 'r') as f:
+                client_config = json.load(f)
+
+            for registro in client_config.get('registros', []):
+                if registro['branch'] == branch and registro['sucursal'] == branch_name:
+                    if dms_to_delete in registro['dms']:
+                        del registro['dms'][dms_to_delete]  # Eliminar el DMS y sus reportes
+
+            with open(client_config_path, 'w') as f:
+                json.dump(client_config, f, indent=4)
+
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'Archivo de configuración no encontrado'})
+
+    except Exception as e:
+        print(f"Error al eliminar el DMS y sus reportes: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo eliminar el DMS y sus reportes.'})
 
 
 
