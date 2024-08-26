@@ -769,10 +769,8 @@ function updateAddedRecordsView() {
     selectElement.addEventListener('change', function() {
         const selectedOption = selectElement.value;
         const allDmsSelects = document.querySelectorAll('select[name="dms"]');
-        const reportsContainer = selectElement.closest('.form-group').nextElementSibling;
 
         let isDuplicate = false;
-
         allDmsSelects.forEach(select => {
             if (select !== selectElement && select.value === selectedOption) {
                 isDuplicate = true;
@@ -785,13 +783,11 @@ function updateAddedRecordsView() {
                 title: 'DMS duplicado',
                 text: 'Este DMS ya ha sido seleccionado en otro campo. Este campo será eliminado.'
             }).then(() => {
-                // Eliminar el DMS duplicado del array dmsRecords
-                dmsRecords = dmsRecords.filter(record => record.dms !== selectedOption);
-
-                // Eliminar del DOM
+                // Eliminar del DOM solo la copia del DMS repetido
                 selectElement.closest('.form-group').remove();
             });
         } else {
+            // Remover la opción seleccionada de los demás selects para evitar duplicados
             allDmsSelects.forEach(select => {
                 if (select !== selectElement) {
                     const optionToRemove = select.querySelector(`option[value="${selectedOption}"]`);
@@ -800,12 +796,10 @@ function updateAddedRecordsView() {
                     }
                 }
             });
-            if (reportsContainer && selectedOption) {
-                reportsContainer.style.display = 'block'; // Muestra el contenedor de reportes si se selecciona un DMS válido
-            }
         }
     });
 }
+
 
     function disableDuplicateReports(reportCheckbox) {
         const reportText = reportCheckbox.value.replace(/[0-9]/g, ''); // Elimina los números para obtener el texto base
@@ -995,21 +989,25 @@ document.getElementById('saveRecordBtn').addEventListener('click', function () {
 
 
 function createEditableRow(branchName, branch, dmsRecords) {
+    if (!Array.isArray(dmsRecords)) {
+        dmsRecords = [];
+    }
+
     let dmsFormatted = '';
     let reportsFormatted = '';
 
     dmsRecords.forEach(record => {
-        dmsFormatted += `${record.dms}<br>`;
+        dmsFormatted += `<span>${record.dms}</span><br>`;
         reportsFormatted += record.reports.length > 0 
-            ? `${record.reports.join(', ')}<br>` 
+            ? `<span>${record.reports.join(', ')}</span><br>` 
             : '<br>';
     });
 
     return `
         <td><span>${branchName}</span></td>
         <td><span>${branch}</span></td>
-        <td><span>${dmsFormatted}</span></td>
-        <td class="reportes-column"><span>${reportsFormatted}</span></td>
+        <td>${dmsFormatted}</td>
+        <td class="reportes-column">${reportsFormatted}</td>
         <td>
             <button type="button" class="btn btn-link p-0 edit-btn">
                 <i class="fa-solid fa-pen-to-square"></i>
@@ -1020,6 +1018,8 @@ function createEditableRow(branchName, branch, dmsRecords) {
         </td>
     `;
 }
+
+
 
 
 
@@ -1201,33 +1201,41 @@ function openClientForm(clientName) {
 
     // Realiza una solicitud para obtener los detalles del cliente y cargarlos en el modal
     fetch(`/cliente_detalles/${clientName}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.data) {
-                const clientData = data.data;
-                const tableBody = document.getElementById('clientDetailsBody');
-                const registros = clientData.registros || [];
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.data) {
+            const clientData = data.data;
+            const tableBody = document.getElementById('clientDetailsBody');
+            const registros = clientData.registros || [];
 
-                registros.forEach(registro => {
-                    const row = document.createElement('tr');
-                    row.dataset.id = registro.id;
-                    row.innerHTML = createEditableRow(
-                        registro.branch_name || '',
-                        registro.branch || '',
-                        registro.dms || '',
-                        Array.isArray(registro.reports) ? registro.reports.join(', ') : registro.reports || ''
-                    );
-                    tableBody.appendChild(row);
-                });
+            registros.forEach(registro => {
+                const dmsObject = registro.dms; // Este es un objeto con DMS como claves y reportes como arrays
+                const dmsRecords = [];
 
-                document.getElementById('clientDetailsTable').style.display = 'table';
-                addDeleteEventListeners();
-                addEditEventListeners();
-            }
-        })
-        .catch(error => {
-            console.error('Error al cargar los detalles del cliente:', error);
-        });
+                // Convertir el objeto DMS en un array de objetos { dms, reports }
+                for (const [dms, reports] of Object.entries(dmsObject)) {
+                    dmsRecords.push({ dms, reports });
+                }
+
+                // Crear una única fila agrupando todos los DMS y reportes
+                const row = document.createElement('tr');
+                row.innerHTML = createEditableRow(
+                    registro.sucursal || '',
+                    registro.branch || '',
+                    dmsRecords  // Pasamos todos los DMS y reportes juntos
+                );
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById('clientDetailsTable').style.display = 'table';
+            addDeleteEventListeners();
+            addEditEventListeners();
+        }
+    })
+    .catch(error => {
+        console.error('Error al cargar los detalles del cliente:', error);
+    });
+
 
     // Muestra el modal "Detalles del Cliente"
     $('#clientFormModal').modal('show');
