@@ -950,10 +950,11 @@ document.getElementById('saveDataBtn').addEventListener('click', function () {
     rows.forEach(row => {
         const sucursal = row.cells[0].innerText.trim();
         const branch = row.cells[1].innerText.trim();
-        const dmsList = row.cells[2].innerHTML.split('<br>').map(dms => dms.replace(/<\/?span>/g, '').trim());
-        const reportsList = row.cells[3].innerHTML.split('<br>').map(reports => 
-            reports.replace(/<\/?span>/g, '').trim().split(',').map(report => report.trim())
+        const dmsList = (row.cells[2].innerHTML || '').split('<br>').map(dms => dms.replace(/<\/?span>/g, '').trim());
+        const reportsList = (row.cells[3].innerHTML || '').split('<br>').map(reports => 
+            (reports.replace(/<\/?span>/g, '').trim().split(',').map(report => report.trim())) || []
         );
+
 
         const dms = {};
         dmsList.forEach((dmsName, index) => {
@@ -1000,24 +1001,40 @@ document.getElementById('saveDataBtn').addEventListener('click', function () {
 document.getElementById('saveEditBtn').addEventListener('click', function () {
     const branchName = document.getElementById('edit_branch_name').value.trim();
     const branch = document.getElementById('edit_branch').value.trim();
-    const dmsSelects = document.querySelectorAll('select[name="dms"]');
+    const dmsSelects = document.querySelectorAll('select[name="dms"]');  // Asegúrate de seleccionar todos los elementos con el name="dms"
 
     let dmsData = {};  // Objeto para almacenar DMS y sus reportes
 
     dmsSelects.forEach(dmsSelect => {
-        const selectedDms = dmsSelect.value;
-        if (selectedDms) {
-            // Buscar el contenedor de reportes de manera más robusta
-            const reportsContainer = dmsSelect.closest('.form-group').nextElementSibling;
-            if (reportsContainer && reportsContainer.classList.contains('form-group')) {
-                const selectedReports = Array.from(reportsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+    const selectedDms = dmsSelect.value || ''; // Asegúrate de que selectedDms nunca sea undefined o null
+    console.log("selectedDms:", selectedDms);
 
-                dmsData[selectedDms] = selectedReports;
-            } else {
-                console.warn('No se encontró el contenedor de reportes para el DMS:', selectedDms);
-            }
+    if (!selectedDms) {
+        console.warn("selectedDms está vacío o no definido.");
+        return; // Salir de esta iteración si no hay un DMS seleccionado
+    }
+
+    const formGroup = dmsSelect.closest('.form-group');
+    console.log("formGroup:", formGroup);
+
+    if (formGroup) {
+        const reportsContainer = formGroup.nextElementSibling;
+        console.log("reportsContainer:", reportsContainer);
+
+        if (reportsContainer) {
+            const selectedReports = Array.from(reportsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+            dmsData[selectedDms] = selectedReports;
+        } else {
+            console.warn("No se encontró el contenedor de reportes para el DMS seleccionado.");
         }
-    });
+    } else {
+        console.warn("No se encontró el form-group para el DMS seleccionado.");
+    }
+});
+
+console.log("dmsData:", dmsData);
+
+
 
     const clientName = document.getElementById('client_name').value.trim();
 
@@ -1028,8 +1045,6 @@ document.getElementById('saveEditBtn').addEventListener('click', function () {
         branch: branch,
         dms: dmsData
     };
-
-    console.log("Datos enviados:", JSON.stringify(data)); // Log para depurar
 
     fetch('/actualizar_registro', {
         method: 'POST',

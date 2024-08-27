@@ -9,7 +9,8 @@ from ext import db  # Importar db desde ext.py
 from forms import RegistrationForm, LoginForm
 from models import User  # Import the User model after db is initialized
 
-app = Flask(__name__)
+# Configura Flask con la ruta para archivos estáticos
+app = Flask(__name__, static_url_path='/static')
 
 # Cargar la configuración desde un archivo JSON específico
 def cargar_config(tab_name):
@@ -912,6 +913,60 @@ def eliminar_dms():
     except Exception as e:
         print(f"Error al eliminar el DMS y sus reportes: {e}")
         return jsonify({'success': False, 'error': 'No se pudo eliminar el DMS y sus reportes.'})
+    
+
+@app.route('/home')
+@login_required
+def home():
+    return render_template('home.html')
+
+
+@app.route('/search_client_folder')
+@login_required
+def search_client_folder():
+    client_code = request.args.get('client')
+    client_number = request.args.get('number')
+    client_folder = os.path.join('CLIENTS', f'{client_code}{client_number}')
+
+    if os.path.exists(client_folder):
+        return jsonify({"exists": True})
+    else:
+        return jsonify({"exists": False})
+    
+
+@app.route('/validar_cliente', methods=['POST'])
+def validar_cliente():
+    data = request.get_json()
+    client_number = data.get('clientNumber')[0:3].lstrip('0')  # Eliminar ceros a la izquierda
+    print(f'Numero de cliente: {client_number}')
+    branch_code = data.get('clientNumber')[3:5]
+    print(f'Numero de Branch: {branch_code}')
+
+    # Buscar la carpeta del cliente en la carpeta CLIENTS
+    client_folder = os.path.join('CLIENTS', client_number)
+
+    if os.path.exists(client_folder):
+        config_path = os.path.join(client_folder, 'Config', 'config.json')
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                config_data = json.load(f)
+                branch_exists = False
+
+                # Recorrer todos los registros para verificar si el branch existe
+                for registro in config_data.get('registros', []):
+                    if registro['branch'] == branch_code:
+                        branch_exists = True
+                        break
+                
+                # Cliente existe, verificar si la sucursal (branch) también existe
+                return jsonify({'clientExists': True, 'branchExists': branch_exists})
+        
+        # Si la carpeta del cliente existe pero no se encuentra el archivo config.json o el branch
+        return jsonify({'clientExists': True, 'branchExists': False})
+
+    # Si no existe la carpeta del cliente
+    return jsonify({'clientExists': False, 'branchExists': False})
+
 
 
 
