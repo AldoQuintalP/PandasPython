@@ -2,7 +2,8 @@
     "name": "Intelisis",
     "reportes": [
         "MACP",
-        "REFINV"
+        "REFINV",
+        "VTANUE"
     ],
     "columnas_esperadas": {
         "MACP": {
@@ -59,6 +60,16 @@
                 "MotivoContacto",
                 "NuevoUsado",
                 "Sucursal"
+            ],
+            "formulas": {}
+        },
+        "VTANUE": {
+            "columnas": [
+                "Fecha",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
             ],
             "formulas": {}
         }
