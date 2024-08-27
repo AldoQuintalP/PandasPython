@@ -358,9 +358,9 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <!-- Nuevo botón agregado aquí -->
-                    <button type="button" class="btn btn-info" id="newButton">
-                        Nuevo Botón
+                    <!-- Botón para agregar un nuevo DMS -->
+                    <button type="button" class="btn btn-info" id="addDmsButton">
+                        <i class="fa-solid fa-plus-circle"></i> Agregar DMS
                     </button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="saveEditBtn">Guardar Cambios</button>
@@ -368,6 +368,7 @@
             </div>
         </div>
     </div>
+
 
 
     
@@ -729,6 +730,162 @@ addDmsBtn.addEventListener('click', function() {
 
     dmsContainer.appendChild(formGroup);
 });
+
+
+document.getElementById('addDmsButton').addEventListener('click', function () {
+    // Crear un nuevo select para DMS
+    const dmsContainer = document.getElementById('edit_dms_container');
+    const formGroup = document.createElement('div');
+    formGroup.className = 'form-group mt-3';
+
+    const dmsSelect = document.createElement('select');
+    dmsSelect.className = 'form-control';
+    dmsSelect.name = 'dms';
+
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Seleccione un DMS';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    dmsSelect.appendChild(defaultOption);
+
+    // Fetch para cargar los DMS disponibles
+    fetch('/get_tabs_json')
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                data.forEach(dms => {
+                    const option = document.createElement('option');
+                    option.value = dms;
+                    option.textContent = dms;
+
+                    // Deshabilitar los DMS ya seleccionados en el modal
+                    const allDmsSelects = document.querySelectorAll('select[name="dms"]');
+                    allDmsSelects.forEach(select => {
+                        if (select.value === dms) {
+                            option.disabled = true;
+                        }
+                    });
+
+                    dmsSelect.appendChild(option);
+                });
+            }
+        });
+
+    formGroup.appendChild(dmsSelect);
+    dmsContainer.appendChild(formGroup);
+
+    const reportsContainer = document.createElement('div');
+    reportsContainer.className = 'form-group mt-2';
+    reportsContainer.style.display = 'none'; // Oculto inicialmente
+
+    const reportsLabel = document.createElement('label');
+    reportsLabel.textContent = 'Selecciona los Reportes a Utilizar:';
+    reportsContainer.appendChild(reportsLabel);
+
+    const reportsCheckboxGroup = document.createElement('div');
+    reportsContainer.appendChild(reportsCheckboxGroup);
+    dmsContainer.appendChild(reportsContainer);
+
+    dmsSelect.addEventListener('change', function () {
+        const selectedDms = this.value;
+
+        if (selectedDms) {
+            reportsContainer.style.display = 'block';
+
+            fetch(`/get_reportes_json?dms=${selectedDms}`)
+                .then(response => response.json())
+                .then(reportData => {
+                    reportsCheckboxGroup.innerHTML = '';
+
+                    if (reportData && Array.isArray(reportData.reportes)) {
+                        reportData.reportes.forEach(reporte => {
+                            const baseName = getBaseName(reporte);
+
+                            const checkboxDiv = document.createElement('div');
+                            checkboxDiv.className = 'form-check';
+
+                            const checkbox = document.createElement('input');
+                            checkbox.className = 'form-check-input';
+                            checkbox.type = 'checkbox';
+                            checkbox.id = `report_${reporte}`;
+                            checkbox.value = reporte;
+
+                            // Al cargar, inhabilita los checkboxes si ya existe alguno marcado con el mismo baseName
+                            if (isBaseNameSelected(baseName)) {
+                                checkbox.disabled = true;
+                            }
+
+                            checkbox.addEventListener('change', function () {
+                                handleCheckboxChange(checkbox, baseName);
+                            });
+
+                            const label = document.createElement('label');
+                            label.className = 'form-check-label';
+                            label.htmlFor = `report_${reporte}`;
+                            label.textContent = reporte;
+
+                            checkboxDiv.appendChild(checkbox);
+                            checkboxDiv.appendChild(label);
+                            reportsCheckboxGroup.appendChild(checkboxDiv);
+                        });
+                    } else {
+                        const noReportsMessage = document.createElement('p');
+                        noReportsMessage.textContent = 'No hay reportes disponibles para este DMS.';
+                        noReportsMessage.className = 'text-warning';
+                        reportsCheckboxGroup.appendChild(noReportsMessage);
+                    }
+                })
+                .catch(error => console.error('Error al cargar los reportes:', error));
+        } else {
+            reportsContainer.style.display = 'none';
+        }
+    });
+});
+
+// Función para obtener el nombre base de un reporte (sin los números al final)
+function getBaseName(reportName) {
+    return reportName.replace(/[0-9]/g, '').trim();
+}
+
+// Función para verificar si ya existe un checkbox con el mismo nombre base marcado
+function isBaseNameSelected(baseName) {
+    const allCheckboxes = document.querySelectorAll('.form-check-input:checked');
+    return Array.from(allCheckboxes).some(cb => getBaseName(cb.value) === baseName);
+}
+
+// Función para manejar el cambio de estado de un checkbox
+function handleCheckboxChange(checkbox, baseName) {
+    const allCheckboxes = document.querySelectorAll('.form-check-input');
+
+    if (checkbox.checked) {
+        // Si se marca, inhabilita todos los otros checkboxes con el mismo baseName
+        allCheckboxes.forEach(cb => {
+            if (getBaseName(cb.value) === baseName) {
+                cb.disabled = true;
+            }
+        });
+        checkbox.disabled = false; // Mantener el checkbox actual habilitado
+    } else {
+        // Si se desmarca, habilita todos los checkboxes con el mismo baseName
+        allCheckboxes.forEach(cb => {
+            if (getBaseName(cb.value) === baseName) {
+                cb.disabled = false;
+            }
+        });
+    }
+}
+
+// Cuando la página se carga por primera vez, deshabilita los checkboxes basados en la selección inicial
+document.addEventListener('DOMContentLoaded', function () {
+    const allCheckboxes = document.querySelectorAll('.form-check-input');
+    allCheckboxes.forEach(checkbox => {
+        const baseName = getBaseName(checkbox.value);
+        handleCheckboxChange(checkbox, baseName);
+    });
+});
+
+
 
 document.getElementById('saveDataBtn').addEventListener('click', function () {
     const clientName = document.getElementById('client_name').value.trim();
