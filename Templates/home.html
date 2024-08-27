@@ -143,10 +143,12 @@
                         <h2>Procesamiento de Archivos</h2>
                     </div>
                     <div class="card-body">
-                        <div id="upload-container" class="upload-container">
-                            <p>Arrastra un archivo .zip aquí o haz clic para seleccionar uno</p>
-                            <input type="file" id="fileInput" accept=".zip">
-                        </div>
+                        <div id="alertContainer" class="alert alert-danger" style="display: none;"></div>
+                            <div id="upload-container" class="upload-container">
+                                <p>Arrastra un archivo .zip aquí o haz clic para seleccionar uno</p>
+                                <input type="file" id="fileInput" accept=".zip">
+                            </div>
+
                         <div id="fileInfo" style="margin-top: 20px;"></div>
                     
                         <!-- Barra de progreso, oculta por defecto -->
@@ -200,64 +202,28 @@
                 toggleBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i> Ocultar Menú';
             }
         }
-
+    
         document.getElementById('upload-container').addEventListener('click', function() {
             document.getElementById('fileInput').click();
         });
-
+    
         document.getElementById('fileInput').addEventListener('change', function(event) {
-            handleFile(event.target.files[0]);
-        });
+    const file = event.target.files[0];
+    if (file && file.name.endsWith('.zip')) {
+        resetTaskList();
+        const fileName = file.name;
+        const clientNumber = fileName.slice(0, 7).replace(/^0+/, ''); // Eliminando ceros a la izquierda
+        const branchCode = fileName.slice(3, 5);
+        const diaZip = fileName.slice(6, 8); // Obtener los últimos dos dígitos del ZIP para el día
 
-        function validarTareas(clientExists, branchExists, fechaValida) {
-            const tareaCliente = document.getElementById('tareaCliente');
-            const tareaSucursal = document.getElementById('tareaSucursal');
-            const tareaFecha = document.getElementById('tareaFecha');
+        const currentDate = new Date();
+        const currentDay = String(currentDate.getDate()).padStart(2, '0');
 
-            if (tareaCliente) {
-                if (clientExists) {
-                    tareaCliente.innerHTML = '<i class="fa fa-check-circle text-success"></i> El cliente se encuentra registrado';
-                } else {
-                    tareaCliente.innerHTML = '<i class="fa fa-times-circle text-danger"></i> El cliente no está registrado';
-                }
-                tareaCliente.classList.add('visible');
-            }
+        const fechaValida = (diaZip === currentDay);
 
-            if (tareaSucursal) {
-                if (branchExists) {
-                    tareaSucursal.innerHTML = '<i class="fa fa-check-circle text-success"></i> La sucursal se encuentra registrada';
-                } else {
-                    tareaSucursal.innerHTML = '<i class="fa fa-times-circle text-danger"></i> La sucursal no está registrada';
-                }
-                tareaSucursal.classList.add('visible');
-            }
+        startProgressBar();
 
-            if (tareaFecha) {
-                if (fechaValida) {
-                    tareaFecha.innerHTML = '<i class="fa fa-check-circle text-success"></i> El paquete es del día de hoy';
-                } else {
-                    tareaFecha.innerHTML = '<i class="fa fa-exclamation-circle text-warning" title="No es del día de hoy"></i> El paquete no es del día de hoy';
-                }
-                tareaFecha.classList.add('visible');
-            }
-        }
-
-        function handleFile(file) {
-            if (file && file.name.endsWith('.zip')) {
-                resetTaskList();
-                const fileName = file.name;
-                const clientNumber = fileName.slice(0, 7).replace(/^0+/, ''); // Eliminando ceros a la izquierda
-                const branchCode = fileName.slice(3, 5);
-                const diaZip = fileName.slice(6, 8); // Obtener los últimos dos dígitos del ZIP para el día
-
-                const currentDate = new Date();
-                const currentDay = String(currentDate.getDate()).padStart(2, '0');
-
-                const fechaValida = (diaZip === currentDay);
-
-                startProgressBar();
-
-                setTimeout(() => {
+        setTimeout(() => {
             fetch("{{ url_for('validar_cliente') }}", {
                 method: "POST",
                 headers: {
@@ -267,41 +233,74 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Actualizar la barra de progreso
+                const progressBar = document.getElementById('progressBar');
                 progressBar.style.width = '100%';
                 setTimeout(() => {
                     validarTareas(data.clientExists, data.branchExists, fechaValida);
 
-                    // Mostrar alertas después de la validación
-                    if (!data.clientExists || !data.branchExists) { // Cambia esta línea para exigir ambas verificaciones
-                        Swal.fire('Error', `No se encontró el cliente o la sucursal en el sistema.`, 'error');
-                    }  else {
-                        Swal.fire('Éxito', 'El archivo se ha validado correctamente.', 'success');
+                    if (!data.clientExists || !data.branchExists) {
+                        showAlert('danger', 'No se pudo cargar el archivo debido a fallos en las validaciones.');
+                    } else {
+                        // Si pasa todas las validaciones, se envía el archivo al servidor
+                        uploadFileToServer(file);
                     }
-                }, 500);  // Dar tiempo para la transición de la barra de progreso
+                }, 500);
             })
             .catch(() => {
-                Swal.fire('Error', 'Hubo un problema al verificar el archivo. Intenta de nuevo.', 'error');
+                showAlert('danger', 'Hubo un problema al verificar el archivo. Intenta de nuevo.');
             });
-        }, 2000);  // Duración de la animación de la barra de progreso (2 segundos)
+        }, 2000);
+    } else {
+        showAlert('danger', 'Por favor, sube un archivo .zip válido.');
+    }
+});
 
-            } else {
-                Swal.fire('Error', 'Por favor, sube un archivo .zip válido.', 'error');
+    
+        function validarTareas(clientExists, branchExists, fechaValida) {
+            const tareaCliente = document.getElementById('tareaCliente');
+            const tareaSucursal = document.getElementById('tareaSucursal');
+            const tareaFecha = document.getElementById('tareaFecha');
+    
+            if (tareaCliente) {
+                if (clientExists) {
+                    tareaCliente.innerHTML = '<i class="fa fa-check-circle text-success"></i> El cliente se encuentra registrado';
+                } else {
+                    tareaCliente.innerHTML = '<i class="fa fa-times-circle text-danger"></i> El cliente no está registrado';
+                }
+                tareaCliente.classList.add('visible');
+            }
+    
+            if (tareaSucursal) {
+                if (branchExists) {
+                    tareaSucursal.innerHTML = '<i class="fa fa-check-circle text-success"></i> La sucursal se encuentra registrada';
+                } else {
+                    tareaSucursal.innerHTML = '<i class="fa fa-times-circle text-danger"></i> La sucursal no está registrada';
+                }
+                tareaSucursal.classList.add('visible');
+            }
+    
+            if (tareaFecha) {
+                if (fechaValida) {
+                    tareaFecha.innerHTML = '<i class="fa fa-check-circle text-success"></i> El paquete es del día de hoy';
+                } else {
+                    tareaFecha.innerHTML = '<i class="fa fa-exclamation-circle text-warning" title="No es del día de hoy"></i> El paquete no es del día de hoy';
+                }
+                tareaFecha.classList.add('visible');
             }
         }
-
+    
         function resetTaskList() {
             document.getElementById('tareaCliente').classList.remove('failed', 'visible');
             document.getElementById('tareaSucursal').classList.remove('failed', 'visible');
             document.getElementById('tareaFecha').classList.remove('failed', 'visible');
         }
-
+    
         function startProgressBar() {
             const progressBar = document.getElementById('progressBar');
             const progressContainer = document.getElementById('progressContainer');
             progressContainer.style.display = 'block';
             progressBar.style.width = '0%';
-
+    
             let width = 0;
             const interval = setInterval(() => {
                 width += 10;
@@ -312,29 +311,47 @@
                 }
             }, 200); // Cada incremento toma 200ms, completando en 2 segundos
         }
+    
+        function uploadFileToServer(file) {
+            const formData = new FormData();
+            formData.append('file', file);
 
-        function revealTaskItems() {
-            const taskItems = document.querySelectorAll('.task-item');
-            taskItems.forEach((item, index) => {
-                setTimeout(() => {
-                    item.classList.add('visible');
-                }, index * 100); // Cambia a 1000ms para asegurar un intervalo claro entre tareas
+            fetch('/upload_file', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', 'El archivo se cargó correctamente a la carpeta work.');
+                } else {
+                    showAlert('danger', 'No se pudo cargar el archivo a la carpeta work.');
+                }
+            })
+            .catch(() => {
+                showAlert('danger', 'Hubo un problema al cargar el archivo al servidor.');
             });
         }
 
-
-        function checkValidationResults() {
-            const tareaCliente = document.getElementById('tareaCliente').classList.contains('visible');
-            const tareaSucursal = document.getElementById('tareaSucursal').classList.contains('visible');
-            const tareaFecha = document.getElementById('tareaFecha').classList.contains('visible');
-
-            if (!tareaCliente || !tareaSucursal || !tareaFecha) {
-                Swal.fire('Error', 'Algunas validaciones no se completaron correctamente.', 'error');
-            } else {
-                Swal.fire('Éxito', 'El archivo pasó todas las validaciones.', 'success');
+    
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alertContainer');
+            if (alertContainer) {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-${type}" role="alert">
+                        ${message}
+                    </div>
+                `;
+                setTimeout(() => {
+                    alertContainer.innerHTML = '';
+                    if (type === 'danger') {
+                        location.reload();
+                    }
+                }, 3000);
             }
         }
     </script>
+    
 </body>
 {% endblock %}
 </html>

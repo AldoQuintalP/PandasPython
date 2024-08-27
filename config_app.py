@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, f
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import json
 import os
 import uuid
@@ -966,6 +967,28 @@ def validar_cliente():
 
     # Si no existe la carpeta del cliente
     return jsonify({'clientExists': False, 'branchExists': False})
+
+@app.route('/upload_file', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify(success=False), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify(success=False), 400
+
+    if file and file.filename.endswith('.zip'):
+        filename = secure_filename(file.filename)
+        db_config = cargar_db_config()
+        workng_dir = db_config.get('workng_dir', '')
+
+        if not os.path.exists(workng_dir):
+            return jsonify(success=False, error='Directorio de trabajo no encontrado'), 400
+
+        file.save(os.path.join(workng_dir, filename))
+        return jsonify(success=True), 200
+    else:
+        return jsonify(success=False), 400
 
 
 
