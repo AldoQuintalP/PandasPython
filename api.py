@@ -27,7 +27,9 @@ workng_dir = config.get('workng_dir')
 sandbx = config.get('sandbx')
 reportes = config.get('reportes', [])
 db_config = config.get('db', {})
+print(db_config)
 columnas_esperadas = config.get('columnas_esperadas', {})
+print(f'Columnas esperadas: {columnas_esperadas}')
 
 if not workng_dir or not sandbx or not reportes or not db_config:
     logging.error("Configuración incompleta en 'config.json'.")
