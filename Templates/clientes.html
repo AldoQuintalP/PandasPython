@@ -591,6 +591,31 @@
             });
     });
 
+
+    function updateCheckboxStates(baseName, isChecked, currentCheckbox) {
+    const allCheckboxes = document.querySelectorAll(`input[type="checkbox"]`);
+
+    allCheckboxes.forEach(checkbox => {
+        const checkboxBaseName = checkbox.value.replace(/[0-9]/g, '').trim();
+
+        // Si el nombre base coincide y no es el checkbox actual
+        if (checkboxBaseName === baseName && checkbox !== currentCheckbox) {
+            checkbox.disabled = isChecked;  // Deshabilita solo si está marcado como True
+        }
+    });
+}
+
+document.addEventListener('change', function (event) {
+    if (event.target.matches('input[type="checkbox"]')) {
+        const checkbox = event.target;
+        const baseName = checkbox.value.replace(/[0-9]/g, '').trim();
+        const isChecked = checkbox.checked;
+
+        updateCheckboxStates(baseName, isChecked, checkbox);
+    }
+});
+
+
     multipleDmsCheckbox.addEventListener('change', function() {
         if (multipleDmsCheckbox.checked) {
             addDmsBtn.style.display = 'inline-block'; // Mostrar el botón de "+"
@@ -1131,7 +1156,7 @@ function addNewDmsField() {
     defaultOption.selected = true;
     newDmsSelect.appendChild(defaultOption);
 
-    // Colocar fetch para cargar DMS en newDmsSelect
+    // Fetch para cargar DMS en newDmsSelect
     fetch('/get_tabs_json')
         .then(response => response.json())
         .then(data => {
@@ -1156,13 +1181,34 @@ function addNewDmsField() {
     const newReportsCheckboxGroup = document.createElement('div');
     newReportsContainer.appendChild(newReportsCheckboxGroup);
 
+    // Aquí agregamos la palabra "Eliminar" debajo de los reportes
+    const deleteLink = document.createElement('span');
+    deleteLink.className = 'text-danger delete-report mt-2';
+    deleteLink.style.cursor = 'pointer';
+    deleteLink.style.textDecoration = 'underline';
+    deleteLink.textContent = 'Eliminar';
+
+    // Evento para eliminar el DMS
+    deleteLink.addEventListener('click', function() {
+        formGroup.remove();
+    });
+
+    // Agregar el botón "Eliminar" debajo del contenedor de reportes
+    newReportsContainer.appendChild(deleteLink);
+
     formGroup.appendChild(newDmsSelect);
     formGroup.appendChild(newReportsContainer);
 
-    addDeleteLink(formGroup);
-
     dmsContainer.appendChild(formGroup);
 }
+
+// Añadir una función para inicializar la adición de nuevos DMS
+document.getElementById('addDmsButton').addEventListener('click', function() {
+    addNewDmsField();
+});
+
+
+
 
 document.getElementById('saveRecordBtn').addEventListener('click', function () {
     saveCurrentDmsReports(); // Asegurarse de que todos los DMS y reportes estén guardados
@@ -1316,6 +1362,7 @@ function createEditableRow(branchName, branch, dmsRecords) {
 
 
 
+    // Añadir evento para manejar la eliminación de registros
     function addDeleteEventListeners() {
         const deleteButtons = document.querySelectorAll('.delete-btn');
         deleteButtons.forEach(button => {
