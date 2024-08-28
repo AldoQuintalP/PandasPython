@@ -1119,7 +1119,7 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
         });
     });
 
-    unction abrirModalConfiguracionColumnas(columnas) {
+    function abrirModalConfiguracionColumnas(columnas) {
         const configureColumnsTableBody = document.getElementById('configureColumnsTableBody');
         configureColumnsTableBody.innerHTML = '';
 
@@ -1180,7 +1180,6 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
             Swal.fire('Error', 'No se pudieron cargar los tipos de datos.', 'error');
         });
     }
-
 
     document.getElementById('saveColumnsConfigBtn').addEventListener('click', function() {
         const formData = [];
