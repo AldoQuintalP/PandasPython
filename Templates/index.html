@@ -657,33 +657,35 @@
         </div>
     </div>
 
-    <!-- Modal para definir columnas del reporte -->
-    <div class="modal fade" id="defineColumnsModal" tabindex="-1" role="dialog" aria-labelledby="defineColumnsModalLabel" aria-hidden="true">
+    <!-- Nuevo Modal para configurar las columnas -->
+    <div class="modal fade" id="configureColumnsModal" tabindex="-1" role="dialog" aria-labelledby="configureColumnsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="defineColumnsModalLabel">Definir Columnas del Reporte</h5>
+                    <h5 class="modal-title" id="configureColumnsModalLabel">Configurar Columnas del Reporte</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Data type</th>
-                                <th>Length/Precision</th>
-                            </tr>
-                        </thead>
-                        <tbody id="columnsTableBody">
-                            <!-- Aquí se añadirán dinámicamente las filas para cada columna -->
-                        </tbody>
-                    </table>
+                    <form id="configureColumnsForm">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Data Type</th>
+                                    <th>Length/Precision</th>
+                                </tr>
+                            </thead>
+                            <tbody id="configureColumnsTableBody">
+                                <!-- Las filas se añadirán dinámicamente aquí -->
+                            </tbody>
+                        </table>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="saveColumnsBtn">Guardar Columnas</button>
+                    <button type="button" class="btn btn-primary" id="saveColumnsConfigBtn">Guardar Configuración</button>
                 </div>
             </div>
         </div>
@@ -1091,34 +1093,112 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
         }
 
         document.getElementById('save-report-btn').addEventListener('click', function() {
-            var form = document.getElementById('addReportForm');
-            var tabName = document.querySelector('.nav-tabs .nav-link.active').textContent.trim(); // Obtener el nombre de la pestaña activa
-            document.getElementById('tab_name').value = tabName; // Establecer el nombre de la pestaña en el formulario
-
-            fetch('/add-reporte', {
-                method: 'POST',
-                body: new URLSearchParams(new FormData(form)),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire('Éxito', 'Reporte agregado correctamente', 'success')
-                    .then(() => {
-                        // Recargar la página para mostrar el reporte agregado
-                        // location.reload();
-
-                        // Después de guardar el reporte, abrir el modal para definir columnas
-                        abrirDefinirColumnasModal(data.nombre_reporte);
-                    });
-                } else {
-                    Swal.fire('Error', data.error, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire('Error', 'No se pudo agregar el reporte', 'error');
-            });
+        var form = document.getElementById('addReportForm');
+        var tabName = document.querySelector('.nav-tabs .nav-link.active').textContent.trim(); // Obtener el nombre de la pestaña activa
+        document.getElementById('tab_name').value = tabName; // Establecer el nombre de la pestaña en el formulario
+        
+        fetch('/add-reporte', {
+            method: 'POST',
+            body: new URLSearchParams(new FormData(form)),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire('Éxito', 'Reporte agregado correctamente', 'success')
+                .then(() => {
+                    $('#addReportModal').modal('hide'); // Cierra el modal de agregar reporte
+                    abrirModalConfiguracionColumnas(form.columnas.value.split(',').map(col => col.trim())); // Abre el nuevo modal
+                });
+            } else {
+                Swal.fire('Error', data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'No se pudo agregar el reporte', 'error');
         });
+    });
+
+    unction abrirModalConfiguracionColumnas(columnas) {
+        const configureColumnsTableBody = document.getElementById('configureColumnsTableBody');
+        configureColumnsTableBody.innerHTML = '';
+
+        // Cargar tipos de datos desde database.json
+        fetch('/get_tipos_datos')
+        .then(response => response.json())
+        .then(tiposDatos => {
+            // Crear filas para cada columna
+            columnas.forEach(columna => {
+                const tr = document.createElement('tr');
+
+                const nameTd = document.createElement('td');
+                nameTd.textContent = columna;
+                tr.appendChild(nameTd);
+
+                const dataTypeTd = document.createElement('td');
+                const select = document.createElement('select');
+                select.className = 'form-control data-type-select';
+
+                tiposDatos.forEach(tipo => {
+                    const option = document.createElement('option');
+                    option.value = tipo.tipo;
+                    option.textContent = tipo.tipo;
+                    select.appendChild(option);
+                });
+
+                dataTypeTd.appendChild(select);
+                tr.appendChild(dataTypeTd);
+
+                const lengthTd = document.createElement('td');
+                const lengthInput = document.createElement('input');
+                lengthInput.type = 'number';
+                lengthInput.className = 'form-control length-input';
+                lengthInput.min = 0;
+                lengthInput.max = 255;
+                lengthInput.value = 25;
+
+                // Desbloquear el campo Length/Precision si el tipo de dato es "character varying"
+                lengthInput.disabled = select.value !== 'character varying';
+                
+                lengthTd.appendChild(lengthInput);
+                tr.appendChild(lengthTd);
+
+                configureColumnsTableBody.appendChild(tr);
+
+                // Evento para cambiar la habilitación del campo Length/Precision según el tipo de dato seleccionado
+                select.addEventListener('change', function() {
+                    lengthInput.disabled = (this.value !== 'character varying');
+                    lengthInput.value = (this.value === 'character varying') ? 25 : '';
+                });
+            });
+
+            // Mostrar el modal
+            $('#configureColumnsModal').modal('show');
+        })
+        .catch(error => {
+            console.error('Error al cargar los tipos de datos:', error);
+            Swal.fire('Error', 'No se pudieron cargar los tipos de datos.', 'error');
+        });
+    }
+
+
+    document.getElementById('saveColumnsConfigBtn').addEventListener('click', function() {
+        const formData = [];
+        const rows = document.querySelectorAll('#configureColumnsTableBody tr');
+
+        rows.forEach(row => {
+            const name = row.cells[0].textContent;
+            const dataType = row.cells[1].querySelector('select').value;
+            const length = row.cells[2].querySelector('input').value;
+            formData.push({ name, dataType, length });
+        });
+
+        console.log('Datos de configuración de columnas:', formData);
+        // Aquí puedes enviar formData al servidor si lo necesitas.
+        $('#configureColumnsModal').modal('hide');
+        Swal.fire('Éxito', 'Configuración de columnas guardada correctamente', 'success');
+    });
+
 
         document.querySelector('form').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -1578,150 +1658,6 @@ function duplicarReporte(tab, reporte) {
         });
 
 
-        function abrirDefinirColumnasModal(nombreReporte) {
-    const columnsTableBody = document.getElementById('columnsTableBody');
-    columnsTableBody.innerHTML = ''; // Limpiar el contenido anterior
-
-    // Obtener las columnas del formulario de reporte
-    const columnas = document.getElementById('nuevo_reporte_columnas').value.split(',').map(col => col.trim());
-
-    // Cargar los tipos de datos desde el JSON
-    fetch('/get_tipos_datos')
-        .then(response => response.json())
-        .then(tiposDatos => {
-            columnas.forEach(col => {
-                const row = document.createElement('tr');
-
-                const nameCell = document.createElement('td');
-                const dataTypeCell = document.createElement('td');
-                const lengthCell = document.createElement('td');
-
-                // Crear input para el nombre
-                const nameInput = document.createElement('input');
-                nameInput.type = 'text';
-                nameInput.className = 'form-control';
-                nameInput.value = col;
-                nameCell.appendChild(nameInput);
-
-                // Crear select para el tipo de dato
-                const dataTypeSelect = document.createElement('select');
-                dataTypeSelect.className = 'form-control';
-                tiposDatos.forEach(tipo => {
-                    const option = document.createElement('option');
-                    option.value = tipo.tipo;
-                    option.textContent = tipo.tipo;
-                    dataTypeSelect.appendChild(option);
-                });
-
-                // Crear input para la longitud/precisión
-                const lengthInput = document.createElement('input');
-                lengthInput.type = 'number';
-                lengthInput.className = 'form-control';
-                lengthInput.value = '25'; // Valor por defecto
-                lengthInput.disabled = dataTypeSelect.value !== 'character varying'; // Deshabilitar por defecto si no es varchar
-                lengthInput.inputmode = 'numeric'; // Solo permite entrada de números
-                lengthInput.min = '0';  // Valor mínimo
-                lengthInput.max = '255'; // Valor máximo
-
-                // Validar que solo se ingresen números
-                lengthInput.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^0-9]/g, ''); // Eliminar cualquier carácter no numérico
-                });
-
-                // Evento para habilitar/deshabilitar el campo de longitud según el tipo de dato
-                dataTypeSelect.addEventListener('change', function() {
-                    if (dataTypeSelect.value === 'character varying') {
-                        lengthInput.disabled = false;
-                    } else {
-                        lengthInput.disabled = true;
-                        lengthInput.value = ''; // Limpiar el valor si no es character varying
-                    }
-                });
-
-                dataTypeCell.appendChild(dataTypeSelect);
-                lengthCell.appendChild(lengthInput);
-
-                row.appendChild(nameCell);
-                row.appendChild(dataTypeCell);
-                row.appendChild(lengthCell);
-                columnsTableBody.appendChild(row);
-            });
-
-            // Abrir el modal solo después de cargar todos los datos
-            $('#defineColumnsModal').modal('show');
-        })
-        .catch(error => {
-            console.error('Error al cargar los tipos de datos:', error);
-            Swal.fire('Error', 'No se pudieron cargar los tipos de datos', 'error');
-        });
-}
-
-// Evento para guardar las columnas
-document.getElementById('saveColumnsBtn').addEventListener('click', function() {
-    const columnsTableBody = document.getElementById('columnsTableBody');
-    const rows = columnsTableBody.querySelectorAll('tr');
-    
-    const columnas = [];
-    const dataTypes = {};
-
-    rows.forEach(row => {
-        const nameInput = row.querySelector('input[type="text"]');
-        const dataTypeSelect = row.querySelector('select');
-        const lengthInput = row.querySelector('input[type="number"]');
-
-        const columnName = nameInput.value.trim();
-        const dataType = dataTypeSelect.value.trim();
-        const length = lengthInput.value.trim();
-
-        columnas.push(columnName);
-
-        // Guardar tipo de dato con o sin longitud según corresponda
-        if (dataType === 'character varying') {
-            dataTypes[columnName] = `${dataType}(${length})`;
-        } else {
-            dataTypes[columnName] = dataType;
-        }
-    });
-
-    // Nombre del reporte y DMS del modal
-    const nombreReporte = document.getElementById('defineColumnsModal').getAttribute('data-reporte');
-    const dmsName = document.getElementById('defineColumnsModal').getAttribute('data-dms');
-
-    // Realizar la petición para guardar la información en el JSON
-    fetch('/save_columns', {
-        method: 'POST',
-        body: JSON.stringify({
-            dms_name: dmsName,
-            reporte: nombreReporte,
-            columnas: columnas,
-            data_types: dataTypes
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            Swal.fire('Éxito', 'Columnas guardadas correctamente', 'success')
-            .then(() => {
-                $('#defineColumnsModal').modal('hide');
-            });
-        } else {
-            Swal.fire('Error', data.error, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire('Error', 'No se pudieron guardar las columnas', 'error');
-    });
-});
-
-// Asegúrate de limpiar los datos al cerrar el modal
-$('#defineColumnsModal').on('hidden.bs.modal', function () {
-    const columnsTableBody = document.getElementById('columnsTableBody');
-    columnsTableBody.innerHTML = ''; // Limpiar el contenido anterior
-});
 
     </script>
 </body>

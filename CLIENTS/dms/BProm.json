@@ -37,7 +37,16 @@
         "VTANUE09",
         "VTANUE",
         "VTANUE11",
-        "VTANUE12"
+        "VTANUE12",
+        "VTANUE13",
+        "VTANUE15",
+        "VTANUE14",
+        "VTANUE22",
+        "VTANUE34",
+        "VTANUE44",
+        "VTANUE55",
+        "VTANUE46",
+        "VTANUE51"
     ],
     "columnas_esperadas": {
         "MACC01": {
@@ -982,6 +991,105 @@
             "formulas": {}
         },
         "VTANUE12": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE13": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE15": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE14": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE22": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE34": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE44": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE55": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE46": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE51": {
             "columnas": [
                 "Fecha",
                 "FechaInicial",
