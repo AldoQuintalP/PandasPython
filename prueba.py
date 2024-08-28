@@ -56,6 +56,17 @@ def encontrar_zip(carpeta):
             return os.path.join(carpeta, archivo)
     raise FileNotFoundError("No se encontró ningún archivo ZIP en la carpeta de trabajo.")
 
+# Función para inferir el tipo de dato de una columna
+def inferir_tipo_dato(serie):
+    """
+    Esta función intenta inferir el tipo de dato SQL basado en el contenido de la columna de un DataFrame.
+    Por simplicidad, aquí siempre devuelve 'VARCHAR(255)', pero podría ser extendida para detectar tipos
+    como INTEGER, FLOAT, etc.
+    """
+    # Aquí podrías implementar lógica para detectar diferentes tipos de datos
+    return 'VARCHAR(255)'
+
+
 # Extraer información del archivo ZIP
 def extraer_info_zip(nombre_zip):
     nombre_sin_ext = os.path.splitext(os.path.basename(nombre_zip))[0]
@@ -130,6 +141,7 @@ def procesar_archivo_zip():
     # Obtener la información
     try:
         workng = encontrar_zip(workng_dir)
+        print(f'Encontrar el zip : {workng}')
         cliente, sucursal, fecha_actual = extraer_info_zip(workng)
         cliente = cliente.lstrip('0')
     except FileNotFoundError as e:
@@ -191,8 +203,10 @@ def procesar_archivo_zip():
     # Iterar sobre cada reporte y realizar las operaciones de creación de tabla e inserción
     for reporte in reportes:
         print(f'Sucursal: {sucursal}')
-        nombre_tabla = f"{reporte}{sucursal}"
-        ruta_archivo = os.path.join(sandbx, f'{reporte}{sucursal}.txt')
+        print(f'Reporte: {filtrar_letras(reporte)}')
+        nombre_tabla = f"{filtrar_letras(reporte)}{sucursal}"
+        ruta_archivo = os.path.join(sandbx, f'{filtrar_letras(reporte)}{sucursal}.txt')
+        print(f'Ruta_aarchivo: {ruta_archivo}')
 
         # Verificar existencia del archivo TXT
         if not os.path.isfile(ruta_archivo):
@@ -400,5 +414,4 @@ def renombrar_columnas(headers):
 # Ejemplo de uso
 procesar_archivo_zip()
 
-# Limpiar la carpeta Sandbx
-limpiar_carpeta(sandbx)
+
