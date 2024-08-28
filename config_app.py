@@ -570,6 +570,7 @@ def database():
 
     return render_template('database.html', config=db_config)
 
+
 # Ruta al archivo donde se guardan las pestañas
 tabs_file = os.path.join(os.getcwd(), 'CLIENTS', 'dms', 'tabs.json')
 
@@ -756,41 +757,53 @@ def add_columna():
         return jsonify({'success': False, 'error': 'No se pudo agregar la columna.'})
 
 @app.route('/duplicar-reporte', methods=['POST'])
+@login_required
 def duplicar_reporte():
     try:
         tab_name = request.form.get('tab_name')
         reporte = request.form.get('reporte')
         nuevo_reporte = request.form.get('nuevo_reporte')
+        dms_destino = request.form.get('dms_destino')
 
-        if not tab_name or not reporte or not nuevo_reporte:
+        if not tab_name or not reporte or not nuevo_reporte or not dms_destino:
             return jsonify({"success": False, "error": "Faltan parámetros"}), 400
 
-        # Ruta del archivo JSON correspondiente a la pestaña
-        json_file_path = f"CLIENTS/dms/{tab_name}.json"
+        # Ruta del archivo JSON del DMS origen
+        origen_json_file_path = f"CLIENTS/dms/{tab_name}.json"
+        
+        # Ruta del archivo JSON del DMS destino
+        destino_json_file_path = f"CLIENTS/dms/{dms_destino}.json"
 
-        # Verifica que el archivo JSON exista
-        if not os.path.exists(json_file_path):
-            return jsonify({"success": False, "error": "Archivo de configuración no encontrado"}), 404
+        # Verifica que ambos archivos JSON existan
+        if not os.path.exists(origen_json_file_path):
+            return jsonify({"success": False, "error": "Archivo de configuración de origen no encontrado"}), 404
 
-        # Cargar la configuración actual
-        with open(json_file_path, 'r') as file:
-            config_data = json.load(file)
+        if not os.path.exists(destino_json_file_path):
+            return jsonify({"success": False, "error": "Archivo de configuración de destino no encontrado"}), 404
+
+        # Cargar la configuración del DMS origen
+        with open(origen_json_file_path, 'r') as file:
+            origen_config_data = json.load(file)
 
         # Verifica si el reporte original existe
-        if reporte not in config_data.get('reportes', []):
+        if reporte not in origen_config_data.get('reportes', []):
             return jsonify({"success": False, "error": "El reporte original no existe"}), 404
 
-        # Verifica si el nuevo reporte ya existe
-        if nuevo_reporte in config_data.get('reportes', []):
-            return jsonify({"success": False, "error": "El nuevo nombre de reporte ya existe"}), 400
+        # Cargar la configuración del DMS destino
+        with open(destino_json_file_path, 'r') as file:
+            destino_config_data = json.load(file)
 
-        # Duplicar el reporte
-        config_data['reportes'].append(nuevo_reporte)
-        config_data['columnas_esperadas'][nuevo_reporte] = config_data['columnas_esperadas'][reporte]
+        # Verifica si el nuevo reporte ya existe en el DMS destino
+        if nuevo_reporte in destino_config_data.get('reportes', []):
+            return jsonify({"success": False, "error": "El nuevo nombre de reporte ya existe en el DMS destino"}), 400
 
-        # Guardar los cambios en el archivo JSON
-        with open(json_file_path, 'w') as file:
-            json.dump(config_data, file, indent=4)
+        # Duplicar el reporte en el DMS destino
+        destino_config_data['reportes'].append(nuevo_reporte)
+        destino_config_data['columnas_esperadas'][nuevo_reporte] = origen_config_data['columnas_esperadas'][reporte]
+
+        # Guardar los cambios en el archivo JSON del DMS destino
+        with open(destino_json_file_path, 'w') as file:
+            json.dump(destino_config_data, file, indent=4)
 
         return jsonify({"success": True}), 200
 
@@ -798,6 +811,7 @@ def duplicar_reporte():
         # Imprimir el error en la consola para depuración
         print(f"Error al duplicar el reporte: {e}")
         return jsonify({"success": False, "error": f"Error interno: {str(e)}"}), 500
+
     
 @app.route('/get_tabs_json', methods=['GET'])
 def get_tabs_json():
@@ -989,6 +1003,221 @@ def upload_file():
         return jsonify(success=True), 200
     else:
         return jsonify(success=False), 400
+
+
+@app.route('/filtrar_reportes/<tab_name>', methods=['GET'])
+def filtrar_reportes(tab_name):
+    query = request.args.get('query', '').lower()
+    
+    # Cargar el archivo JSON correspondiente a la pestaña
+    file_path = os.path.join(os.path.join(os.getcwd(), 'clients', 'dms'), f'{tab_name}.json')
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+    
+    # Filtrar reportes basados en la query
+    reportes_filtrados = [reporte for reporte in data['reportes'] if query in reporte.lower()]
+    
+    return jsonify(reportes_filtrados)
+
+
+@app.route('/agregar_tipo_dato', methods=['POST'])
+@login_required
+def agregar_tipo_datos():
+    try:
+        # Obtener los datos del formulario
+        tipo = request.form.get('tipo')
+        descripcion = request.form.get('descripcion')
+
+        if not tipo or not descripcion:
+            return jsonify({'success': False, 'error': 'Tipo y descripción son obligatorios.'})
+
+        # Cargar la configuración de la base de datos desde database.json
+        db_config = cargar_db_config()
+
+        # Verificar si el tipo de dato ya existe
+        tipos_datos = db_config.get('tipos_datos', [])
+        if any(dato['tipo'] == tipo for dato in tipos_datos):
+            return jsonify({'success': False, 'error': 'El tipo de datos ya existe.'})
+
+        # Agregar el nuevo tipo de dato
+        tipos_datos.append({'tipo': tipo, 'descripcion': descripcion})
+        db_config['tipos_datos'] = tipos_datos
+
+        # Guardar los cambios en el archivo database.json
+        with open('database.json', 'w') as f:
+            json.dump(db_config, f, indent=4)
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        print(f"Error al agregar el tipo de datos: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo agregar el tipo de datos.'})
+
+
+@app.route('/guardar_tipo_dato', methods=['POST'])
+@login_required
+def guardar_tipo_dato():
+    try:
+        # Obtener los datos del request
+        data = request.get_json()
+        tipo = data.get('tipo')
+        descripcion = data.get('descripcion')
+
+        # Verifica si tipo y descripción están presentes
+        if not tipo or not descripcion:
+            return jsonify({'success': False, 'error': 'Tipo y descripción son obligatorios.'}), 400
+
+        # Ruta del archivo database.json
+        db_config_path = 'database.json'
+        
+        # Cargar la configuración actual desde el archivo database.json
+        if os.path.exists(db_config_path):
+            with open(db_config_path, 'r') as f:
+                db_config = json.load(f)
+        else:
+            return jsonify({'success': False, 'error': 'El archivo de configuración no existe.'}), 404
+
+        # Verificar si la llave "tipos_datos" existe, sino, crearla
+        if 'tipos_datos' not in db_config:
+            db_config['tipos_datos'] = []
+
+        # Agregar el nuevo tipo y descripción al array de "tipos_datos"
+        db_config['tipos_datos'].append({'tipo': tipo, 'descripcion': descripcion})
+
+        # Guardar la configuración actualizada en el archivo database.json
+        with open(db_config_path, 'w') as f:
+            json.dump(db_config, f, indent=4)
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        print(f"Error al guardar el tipo de dato: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo guardar el tipo de dato.'}), 500
+
+
+@app.route('/eliminar_tipo_dato', methods=['POST'])
+@login_required
+def eliminar_tipo_dato():
+    try:
+        data = request.get_json()
+        tipo = data.get('tipo')
+
+        if not tipo:
+            return jsonify({'success': False, 'error': 'Tipo es obligatorio.'}), 400
+
+        db_config_path = 'database.json'
+
+        # Cargar la configuración actual desde el archivo database.json
+        if os.path.exists(db_config_path):
+            with open(db_config_path, 'r') as f:
+                db_config = json.load(f)
+        else:
+            return jsonify({'success': False, 'error': 'El archivo de configuración no existe.'}), 404
+
+        # Filtrar los tipos de datos para eliminar el que se desea
+        tipos_datos = db_config.get('tipos_datos', [])
+        db_config['tipos_datos'] = [td for td in tipos_datos if td['tipo'] != tipo]
+
+        # Guardar la configuración actualizada en el archivo database.json
+        with open(db_config_path, 'w') as f:
+            json.dump(db_config, f, indent=4)
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        print(f"Error al eliminar el tipo de dato: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo eliminar el tipo de dato.'}), 500
+
+
+@app.route('/editar_tipo_dato', methods=['POST'])
+@login_required
+def editar_tipo_dato():
+    try:
+        data = request.get_json()
+        old_tipo = data.get('oldTipo')
+        new_tipo = data.get('newTipo')
+        new_descripcion = data.get('newDescripcion')
+
+        if not old_tipo or not new_tipo or not new_descripcion:
+            return jsonify({'success': False, 'error': 'Todos los campos son obligatorios.'}), 400
+
+        db_config_path = 'database.json'
+
+        # Cargar la configuración actual desde el archivo database.json
+        if os.path.exists(db_config_path):
+            with open(db_config_path, 'r') as f:
+                db_config = json.load(f)
+        else:
+            return jsonify({'success': False, 'error': 'El archivo de configuración no existe.'}), 404
+
+        # Actualizar el tipo de dato
+        tipos_datos = db_config.get('tipos_datos', [])
+        for td in tipos_datos:
+            if td['tipo'] == old_tipo:
+                td['tipo'] = new_tipo
+                td['descripcion'] = new_descripcion
+                break
+
+        # Guardar la configuración actualizada en el archivo database.json
+        with open(db_config_path, 'w') as f:
+            json.dump(db_config, f, indent=4)
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        print(f"Error al editar el tipo de dato: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo editar el tipo de dato.'}), 500
+
+
+@app.route('/get_tipos_datos', methods=['GET'])
+@login_required
+def get_tipos_datos():
+    db_config = cargar_db_config()
+    return jsonify(db_config.get('tipos_datos', []))
+
+
+@app.route('/save_columns', methods=['POST'])
+@login_required
+def save_columns():
+    try:
+        data = request.json
+        dms_name = data.get('dms_name')
+        reporte = data.get('reporte')
+        columnas = data.get('columnas')
+        data_types = data.get('data_types')
+
+        if not dms_name or not reporte or not columnas or not data_types:
+            return jsonify({'success': False, 'error': 'Faltan datos para guardar las columnas.'})
+
+        # Ruta al archivo JSON del DMS
+        dms_path = os.path.join('CLIENTS', 'dms', f'{dms_name}.json')
+
+        if not os.path.exists(dms_path):
+            return jsonify({'success': False, 'error': 'El archivo del DMS no existe.'})
+
+        # Cargar el contenido del archivo JSON
+        with open(dms_path, 'r') as file:
+            dms_data = json.load(file)
+
+        # Actualizar el reporte con las nuevas columnas y tipos de datos
+        if reporte in dms_data['reportes']:
+            dms_data['columnas_esperadas'][reporte] = {
+                'columnas': columnas,
+                'formulas': {},  # Mantener las fórmulas existentes
+                'data_types': data_types  # Añadir los tipos de datos
+            }
+
+            # Guardar los cambios en el archivo JSON
+            with open(dms_path, 'w') as file:
+                json.dump(dms_data, file, indent=4)
+
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'El reporte no existe en el DMS.'})
+
+    except Exception as e:
+        print(f"Error al guardar las columnas: {e}")
+        return jsonify({'success': False, 'error': 'No se pudieron guardar las columnas.'})
 
 
 

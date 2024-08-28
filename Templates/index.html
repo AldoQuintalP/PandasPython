@@ -288,6 +288,52 @@
             opacity: 0.5;
             background-color: #e9ecef;
         }
+        /* Estilo para el contenedor del buscador con lupa */
+        .search-container {
+            max-width: 300px; /* Limita el ancho del campo de búsqueda */
+            border-radius: 25px; /* Hace que los bordes sean redondeados */
+            overflow: hidden; /* Asegura que los elementos hijos sigan la forma redondeada */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Añade una sombra suave */
+        }
+
+        /* Estilo del campo de búsqueda */
+        .search-input {
+            border: none;
+            padding: 0.5rem 1rem; /* Espacio interno para el texto */
+            font-size: 1rem; /* Ajusta el tamaño de la fuente */
+        }
+
+        /* Estilo para el icono de lupa */
+        .input-group-text {
+            background-color: #fff; /* Fondo blanco para la lupa */
+            border: none; /* Eliminar bordes */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem; /* Espacio alrededor de la lupa */
+        }
+
+        /* Botón de agregar reporte */
+        .btn-success {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Espacio de separación entre el título y los reportes */
+        .mt-4 {
+            margin-top: 2rem; /* Añade espacio encima del listado de reportes */
+        }
+
+        /* Título de reportes con márgenes ajustados */
+        h3.mb-0 {
+            margin-bottom: 0.5rem; /* Un pequeño margen debajo del título */
+            font-weight: bold; /* Hace el texto del título un poco más destacado */
+        }
+
+
 
     </style>
 </head>
@@ -339,43 +385,54 @@
                         <div class="tab-content" id="myTabContent">
                             {% for tab in tabs %}
                             <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="tab-{{ loop.index }}" role="tabpanel" aria-labelledby="tab-{{ loop.index }}-tab">
-                                <h3>Reportes en {{ tab }}</h3>
-                                {% if tab_data[tab].reportes %}
-                                <ul class="list-group">
-                                    {% for reporte in tab_data[tab].reportes %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div style="flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                            <strong>{{ reporte }}</strong>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h3 class="mb-0">Reportes en {{ tab }}</h3>
+                                    <div class="d-flex align-items-center">
+                                        <!-- Buscador estilizado con lupa -->
+                                        <div class="input-group search-container">
+                                            <input type="text" class="form-control search-input" id="search-{{ loop.index }}" placeholder="Buscar reportes..." onkeyup="filtrarReportes('{{ tab }}', '{{ loop.index }}')">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                            </div>
                                         </div>
-                                        <div class="btn-group ml-auto" role="group" style="white-space: nowrap;">
-                                            <!-- Botón de Editar -->
-                                            <button class="edit-btn btn btn-warning" onclick="abrirEditarColumnasModal('{{ tab }}', '{{ reporte }}')">
-                                                <i class="fa fa-edit"></i> Editar
-                                            </button>
-                                            <button class="function-btn btn btn-success" onclick="selectColumn('{{ tab }}', '{{ reporte }}')">
-                                                <i class="fa fa-calculator"></i> Función
-                                            </button>
-                                            <button class="trash-btn btn btn-danger" onclick="eliminarReporte('{{ tab }}', '{{ reporte }}')">
-                                                <i class="fa fa-trash-alt"></i> Eliminar
-                                            </button>
-                                            <button class="duplicate-btn btn btn-info" onclick="duplicarReporte('{{ tab }}', '{{ reporte }}')">
-                                                <i class="fa fa-copy"></i> Duplicar
-                                            </button>
-                                        </div>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                                {% else %}
-                                <p>No hay reportes guardados en esta pestaña.</p>
-                                {% endif %}
-                                <div class="btn-container">
-                                    <div class="btn-left-container">
-                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addReportModal">
-                                            <i class="fa-regular fa-file-lines"></i> Agregar Reporte
+                                        <!-- Botón de agregar reporte -->
+                                        <button type="button" class="btn btn-success ml-3" data-toggle="modal" data-target="#addReportModal">
+                                            <i class="fa fa-plus"></i> Agregar Reporte
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                                <!-- Agrega un espacio de separación entre el título y la lista de reportes -->
+                                <div class="mt-4">
+                                    {% if tab_data[tab].reportes %}
+                                    <ul class="list-group" id="reporte-list-{{ loop.index }}">
+                                        {% for reporte in tab_data[tab].reportes %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center reporte-item">
+                                            <div style="flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                <strong>{{ reporte }}</strong>
+                                            </div>
+                                            <div class="btn-group ml-auto" role="group" style="white-space: nowrap;">
+                                                <!-- Botones de acciones -->
+                                                <button class="edit-btn btn btn-warning" onclick="abrirEditarColumnasModal('{{ tab }}', '{{ reporte }}')">
+                                                    <i class="fa fa-edit"></i> Editar
+                                                </button>
+                                                <button class="function-btn btn btn-success" onclick="selectColumn('{{ tab }}', '{{ reporte }}')">
+                                                    <i class="fa fa-calculator"></i> Función
+                                                </button>
+                                                <button class="trash-btn btn btn-danger" onclick="eliminarReporte('{{ tab }}', '{{ reporte }}')">
+                                                    <i class="fa fa-trash-alt"></i> Eliminar
+                                                </button>
+                                                <button class="duplicate-btn btn btn-info" onclick="duplicarReporte('{{ tab }}', '{{ reporte }}')">
+                                                    <i class="fa fa-copy"></i> Duplicar
+                                                </button>
+                                            </div>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% else %}
+                                    <p>No hay reportes guardados en esta pestaña.</p>
+                                    {% endif %}
+                                </div>
+                            </div>                                                                                
                             {% endfor %}
                         </div>                        
                     </div>
@@ -595,6 +652,38 @@
                             <button type="button" id="save-report-btn" class="btn btn-primary">Guardar Reporte</button>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para definir columnas del reporte -->
+    <div class="modal fade" id="defineColumnsModal" tabindex="-1" role="dialog" aria-labelledby="defineColumnsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="defineColumnsModalLabel">Definir Columnas del Reporte</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Data type</th>
+                                <th>Length/Precision</th>
+                            </tr>
+                        </thead>
+                        <tbody id="columnsTableBody">
+                            <!-- Aquí se añadirán dinámicamente las filas para cada columna -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="saveColumnsBtn">Guardar Columnas</button>
                 </div>
             </div>
         </div>
@@ -831,6 +920,45 @@ function eliminarColumna(tab, reporte, columna) {
     });
 }
 
+function filtrarReportes(tabName, tabIndex) {
+    const input = document.getElementById('search-' + tabIndex).value.toLowerCase();
+    const ul = document.getElementById('reporte-list-' + tabIndex);
+    
+    fetch(`/filtrar_reportes/${tabName}?query=${input}`)
+        .then(response => response.json())
+        .then(data => {
+            ul.innerHTML = ''; // Limpiar la lista existente
+            
+            // Añadir los reportes filtrados a la lista
+            data.forEach(reporte => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center reporte-item';
+                li.innerHTML = `
+                    <div style="flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        <strong>${reporte}</strong>
+                    </div>
+                    <div class="btn-group ml-auto" role="group" style="white-space: nowrap;">
+                        <!-- Botones de acciones -->
+                        <button class="edit-btn btn btn-warning" onclick="abrirEditarColumnasModal('${tabName}', '${reporte}')">
+                            <i class="fa fa-edit"></i> Editar
+                        </button>
+                        <button class="function-btn btn btn-success" onclick="selectColumn('${tabName}', '${reporte}')">
+                            <i class="fa fa-calculator"></i> Función
+                        </button>
+                        <button class="trash-btn btn btn-danger" onclick="eliminarReporte('${tabName}', '${reporte}')">
+                            <i class="fa fa-trash-alt"></i> Eliminar
+                        </button>
+                        <button class="duplicate-btn btn btn-info" onclick="duplicarReporte('${tabName}', '${reporte}')">
+                            <i class="fa fa-copy"></i> Duplicar
+                        </button>
+                    </div>
+                `;
+                ul.appendChild(li);
+            });
+        });
+}
+
+
 // Botón para abrir el modal de agregar nueva columna
 document.getElementById('addNewColumnBtn').addEventListener('click', function() {
     $('#addNewColumnModal').modal('show');
@@ -966,7 +1094,7 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
             var form = document.getElementById('addReportForm');
             var tabName = document.querySelector('.nav-tabs .nav-link.active').textContent.trim(); // Obtener el nombre de la pestaña activa
             document.getElementById('tab_name').value = tabName; // Establecer el nombre de la pestaña en el formulario
-            
+
             fetch('/add-reporte', {
                 method: 'POST',
                 body: new URLSearchParams(new FormData(form)),
@@ -977,7 +1105,10 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
                     Swal.fire('Éxito', 'Reporte agregado correctamente', 'success')
                     .then(() => {
                         // Recargar la página para mostrar el reporte agregado
-                        location.reload();
+                        // location.reload();
+
+                        // Después de guardar el reporte, abrir el modal para definir columnas
+                        abrirDefinirColumnasModal(data.nombre_reporte);
                     });
                 } else {
                     Swal.fire('Error', data.error, 'error');
@@ -1311,55 +1442,93 @@ function openFunctionModal(tab, reporte, columnaSeleccionada) {
 }
 
 function duplicarReporte(tab, reporte) {
-    Swal.fire({
-        title: 'Duplicar Reporte',
-        text: `Estás a punto de duplicar el reporte "${reporte}". Por favor, ingresa un nuevo nombre:`,
-        input: 'text',
-        inputPlaceholder: 'Nuevo nombre del reporte',
-        showCancelButton: true,
-        confirmButtonText: 'Duplicar',
-        cancelButtonText: 'Cancelar',
-        preConfirm: (nuevoNombreReporte) => {
-            if (!nuevoNombreReporte) {
-                Swal.showValidationMessage('El nombre del nuevo reporte no puede estar vacío');
-                return false;
-            }
-            return fetch('/duplicar-reporte', {
-                method: 'POST',
-                body: new URLSearchParams({
-                    tab_name: tab,
-                    reporte: reporte,
-                    nuevo_reporte: nuevoNombreReporte
-                }),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error en la solicitud');
-                }
-                return response.json(); // Asegúrate de que el servidor devuelve JSON
-            })
-            .then(data => {
-                if (!data.success) {
-                    throw new Error(data.error || 'Error desconocido');
-                }
-                return data;
-            })
-            .catch(error => {
-                Swal.showValidationMessage(`Request failed: ${error}`);
+    // Obtener los tabs disponibles desde el servidor
+    fetch('/get_tabs_json')
+        .then(response => response.json())
+        .then(tabs => {
+            let optionsHtml = '';
+
+            // Crear las opciones para el select
+            tabs.forEach(tabName => {
+                const selected = tabName === tab ? 'selected' : '';  // Seleccionar por defecto el tab actual
+                optionsHtml += `<option value="${tabName}" ${selected}>${tabName}</option>`;
             });
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
+
             Swal.fire({
-                title: '¡Éxito!',
-                text: 'El reporte ha sido duplicado correctamente',
-                icon: 'success'
-            }).then(() => {
-                location.reload();  // Recargar la página para ver el nuevo reporte
+                title: 'Duplicar Reporte',
+                html: `
+                    <div style="text-align: left; font-size: 14px;">
+                        <p style="margin-bottom: 10px;">Estás a punto de duplicar el reporte <strong>"${reporte}"</strong>.</p>
+                        
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <label for="nuevo_nombre_reporte" style="flex: 1;">Nuevo nombre del reporte:</label>
+                            <input type="text" id="nuevo_nombre_reporte" class="swal2-input" placeholder="Nuevo nombre del reporte" style="width: 60%; font-size: 14px;">
+                        </div>
+
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <label for="dms_select" style="flex: 1;">Selecciona el DMS de destino:</label>
+                            <select id="dms_select" class="swal2-input" style="width: 60%; font-size: 14px;">
+                                ${optionsHtml}
+                            </select>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Duplicar',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const nuevoNombreReporte = document.getElementById('nuevo_nombre_reporte').value.trim();
+                    const dmsDestino = document.getElementById('dms_select').value;
+
+                    if (!nuevoNombreReporte) {
+                        Swal.showValidationMessage('El nombre del nuevo reporte no puede estar vacío');
+                        return false;
+                    }
+
+                    return { nuevoNombreReporte, dmsDestino };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const { nuevoNombreReporte, dmsDestino } = result.value;
+
+                    // Hacer la petición para duplicar el reporte
+                    fetch('/duplicar-reporte', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            tab_name: tab,
+                            reporte: reporte,
+                            nuevo_reporte: nuevoNombreReporte,
+                            dms_destino: dmsDestino
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('¡Éxito!', 'El reporte ha sido duplicado correctamente', 'success')
+                            .then(() => {
+                                location.reload();  // Recargar la página para ver el nuevo reporte
+                            });
+                        } else {
+                            Swal.fire('Error', data.error, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'No se pudo duplicar el reporte', 'error');
+                    });
+                }
             });
-        }
-    });
+        })
+        .catch(error => {
+            console.error('Error al obtener los tabs:', error);
+            Swal.fire('Error', 'No se pudieron cargar las opciones de DMS', 'error');
+        });
 }
+
+
 
 
 
@@ -1409,6 +1578,150 @@ function duplicarReporte(tab, reporte) {
         });
 
 
+        function abrirDefinirColumnasModal(nombreReporte) {
+    const columnsTableBody = document.getElementById('columnsTableBody');
+    columnsTableBody.innerHTML = ''; // Limpiar el contenido anterior
+
+    // Obtener las columnas del formulario de reporte
+    const columnas = document.getElementById('nuevo_reporte_columnas').value.split(',').map(col => col.trim());
+
+    // Cargar los tipos de datos desde el JSON
+    fetch('/get_tipos_datos')
+        .then(response => response.json())
+        .then(tiposDatos => {
+            columnas.forEach(col => {
+                const row = document.createElement('tr');
+
+                const nameCell = document.createElement('td');
+                const dataTypeCell = document.createElement('td');
+                const lengthCell = document.createElement('td');
+
+                // Crear input para el nombre
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.className = 'form-control';
+                nameInput.value = col;
+                nameCell.appendChild(nameInput);
+
+                // Crear select para el tipo de dato
+                const dataTypeSelect = document.createElement('select');
+                dataTypeSelect.className = 'form-control';
+                tiposDatos.forEach(tipo => {
+                    const option = document.createElement('option');
+                    option.value = tipo.tipo;
+                    option.textContent = tipo.tipo;
+                    dataTypeSelect.appendChild(option);
+                });
+
+                // Crear input para la longitud/precisión
+                const lengthInput = document.createElement('input');
+                lengthInput.type = 'number';
+                lengthInput.className = 'form-control';
+                lengthInput.value = '25'; // Valor por defecto
+                lengthInput.disabled = dataTypeSelect.value !== 'character varying'; // Deshabilitar por defecto si no es varchar
+                lengthInput.inputmode = 'numeric'; // Solo permite entrada de números
+                lengthInput.min = '0';  // Valor mínimo
+                lengthInput.max = '255'; // Valor máximo
+
+                // Validar que solo se ingresen números
+                lengthInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, ''); // Eliminar cualquier carácter no numérico
+                });
+
+                // Evento para habilitar/deshabilitar el campo de longitud según el tipo de dato
+                dataTypeSelect.addEventListener('change', function() {
+                    if (dataTypeSelect.value === 'character varying') {
+                        lengthInput.disabled = false;
+                    } else {
+                        lengthInput.disabled = true;
+                        lengthInput.value = ''; // Limpiar el valor si no es character varying
+                    }
+                });
+
+                dataTypeCell.appendChild(dataTypeSelect);
+                lengthCell.appendChild(lengthInput);
+
+                row.appendChild(nameCell);
+                row.appendChild(dataTypeCell);
+                row.appendChild(lengthCell);
+                columnsTableBody.appendChild(row);
+            });
+
+            // Abrir el modal solo después de cargar todos los datos
+            $('#defineColumnsModal').modal('show');
+        })
+        .catch(error => {
+            console.error('Error al cargar los tipos de datos:', error);
+            Swal.fire('Error', 'No se pudieron cargar los tipos de datos', 'error');
+        });
+}
+
+// Evento para guardar las columnas
+document.getElementById('saveColumnsBtn').addEventListener('click', function() {
+    const columnsTableBody = document.getElementById('columnsTableBody');
+    const rows = columnsTableBody.querySelectorAll('tr');
+    
+    const columnas = [];
+    const dataTypes = {};
+
+    rows.forEach(row => {
+        const nameInput = row.querySelector('input[type="text"]');
+        const dataTypeSelect = row.querySelector('select');
+        const lengthInput = row.querySelector('input[type="number"]');
+
+        const columnName = nameInput.value.trim();
+        const dataType = dataTypeSelect.value.trim();
+        const length = lengthInput.value.trim();
+
+        columnas.push(columnName);
+
+        // Guardar tipo de dato con o sin longitud según corresponda
+        if (dataType === 'character varying') {
+            dataTypes[columnName] = `${dataType}(${length})`;
+        } else {
+            dataTypes[columnName] = dataType;
+        }
+    });
+
+    // Nombre del reporte y DMS del modal
+    const nombreReporte = document.getElementById('defineColumnsModal').getAttribute('data-reporte');
+    const dmsName = document.getElementById('defineColumnsModal').getAttribute('data-dms');
+
+    // Realizar la petición para guardar la información en el JSON
+    fetch('/save_columns', {
+        method: 'POST',
+        body: JSON.stringify({
+            dms_name: dmsName,
+            reporte: nombreReporte,
+            columnas: columnas,
+            data_types: dataTypes
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire('Éxito', 'Columnas guardadas correctamente', 'success')
+            .then(() => {
+                $('#defineColumnsModal').modal('hide');
+            });
+        } else {
+            Swal.fire('Error', data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudieron guardar las columnas', 'error');
+    });
+});
+
+// Asegúrate de limpiar los datos al cerrar el modal
+$('#defineColumnsModal').on('hidden.bs.modal', function () {
+    const columnsTableBody = document.getElementById('columnsTableBody');
+    columnsTableBody.innerHTML = ''; // Limpiar el contenido anterior
+});
 
     </script>
 </body>

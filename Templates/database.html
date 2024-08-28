@@ -177,9 +177,12 @@
         <div class="content">
             <div class="container">
                 <div class="card mb-4 shadow-lg p-3 mb-5 bg-body-tertiary rounded">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h2>Configuración de Base de Datos</h2>
-                    </div>
+                        <a href="#" class="btn btn-secondary" id="catalogoTipoDatosBtn">
+                            <i class="fa-solid fa-file-code"></i> Catálogo Tipo de Datos
+                        </a>                   
+                    </div>                    
                     <div class="card-body">
                         <form method="POST">
                             <div class="form-group">
@@ -218,6 +221,68 @@
         </div>
     </div>
 
+    <div class="modal fade" id="catalogoTipoDatosModal" tabindex="-1" role="dialog" aria-labelledby="catalogoTipoDatosModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="catalogoTipoDatosModalLabel">Catálogo de Tipos de Datos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Aquí puedes poner una lista o tabla para mostrar los tipos de datos -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th> 
+                            </tr>
+                        </thead>
+                        <tbody id="tiposDatosTableBody">
+                            <!-- Aquí se insertarán dinámicamente los registros -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="addTipoDatosBtn">Agregar Tipo de Datos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="addTipoDatosModal" tabindex="-1" role="dialog" aria-labelledby="addTipoDatosModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTipoDatosModalLabel">Agregar Tipo de Datos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTipoDatosForm">
+                        <div class="form-group">
+                            <label for="tipo">Tipo:</label>
+                            <input type="text" id="tipo" name="tipo" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="descripcion">Descripción:</label>
+                            <textarea id="descripcion" name="descripcion" class="form-control" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="saveTipoDatosBtn">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
     <!-- Incluye jQuery, Popper.js y Bootstrap JS desde un CDN -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
@@ -227,43 +292,215 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
         function toggleNav() {
-            var sidebar = document.getElementById("mySidebar");
-            var main = document.getElementById("main");
-            var toggleBtn = document.querySelector('.togglebtn');
-            
-            if (sidebar.classList.contains("expanded")) {
-                sidebar.classList.remove("expanded");
-                main.style.marginLeft = '50px';
-                main.style.overflow = 'auto';
-                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
-            } else {
-                sidebar.classList.add("expanded");
-                main.style.marginLeft = '250px';
-                main.style.overflow = 'hidden';
-                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i> Ocultar Menú';
-            }
-        }
+        var sidebar = document.getElementById("mySidebar");
+        var main = document.getElementById("main");
+        var toggleBtn = document.querySelector('.togglebtn');
 
-        document.getElementById('save-db-config-btn').addEventListener('click', function() {
-            var form = document.querySelector('form');
-            var data = new FormData(form);
-            fetch('/save-db-config', {
+        if (sidebar.classList.contains("expanded")) {
+            sidebar.classList.remove("expanded");
+            main.style.marginLeft = '50px';
+            main.style.overflow = 'auto';
+            toggleBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
+        } else {
+            sidebar.classList.add("expanded");
+            main.style.marginLeft = '250px';
+            main.style.overflow = 'hidden';
+            toggleBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i> Ocultar Menú';
+        }
+    }
+
+    document.getElementById('save-db-config-btn').addEventListener('click', function() {
+        var form = document.querySelector('form');
+        var data = new FormData(form);
+        fetch('/save-db-config', {
+            method: 'POST',
+            body: data,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire('Éxito', 'Configuración de base de datos guardada correctamente', 'success');
+            } else {
+                Swal.fire('Error', data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'No se pudo guardar la configuración de la base de datos', 'error');
+        });
+    });
+
+
+    // Abrir el modal de "Catálogo Tipo de Datos"
+    document.getElementById('catalogoTipoDatosBtn').addEventListener('click', function() {
+        $('#catalogoTipoDatosModal').modal('show');
+    });
+
+    document.getElementById('addTipoDatosBtn').addEventListener('click', function() {
+        $('#addTipoDatosModal').modal('show');  // Abre un segundo modal si es necesario
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // Manejo del evento click en el botón "Guardar" dentro del modal "Agregar Tipo de Datos"
+    document.getElementById('saveTipoDatosBtn').addEventListener('click', function(event) {
+        event.preventDefault();  // Evita el comportamiento por defecto del botón
+
+        var tipo = document.getElementById('tipo').value;
+        var descripcion = document.getElementById('descripcion').value;
+
+        if(tipo && descripcion) {
+            // Realiza la petición POST para guardar el nuevo tipo de dato en el archivo database.json
+            fetch('/guardar_tipo_dato', {
                 method: 'POST',
-                body: data,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tipo: tipo, descripcion: descripcion })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    Swal.fire('Éxito', 'Configuración de base de datos guardada correctamente', 'success');
+                    // Inserta el nuevo tipo en la tabla visual dentro del modal
+                    var tableBody = document.getElementById('tiposDatosTableBody');
+                    var newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${tipo}</td>
+                        <td>${descripcion}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm edit-btn">
+                                <i class="fa-solid fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm delete-btn">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>`;
+                    tableBody.appendChild(newRow);
+
+                    // Asocia los eventos de edición y eliminación a los nuevos botones
+                    newRow.querySelector('.edit-btn').addEventListener('click', function() {
+                        editarRegistro(newRow, tipo, descripcion);
+                    });
+                    newRow.querySelector('.delete-btn').addEventListener('click', function() {
+                        eliminarRegistro(newRow, tipo);
+                    });
+
+                    // Cierra el modal y resetea el formulario
+                    $('#addTipoDatosModal').modal('hide');
+                    document.getElementById('addTipoDatosForm').reset();
                 } else {
-                    Swal.fire('Error', data.error, 'error');
+                    Swal.fire('Error', 'Error al guardar el tipo de dato: ' + data.error, 'error');
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire('Error', 'No se pudo guardar la configuración de la base de datos', 'error');
-            });
+            .catch(error => console.error('Error:', error));
+        } else {
+            Swal.fire('Error', 'Por favor, complete todos los campos.', 'warning');
+        }
+    });
+
+    // Función para eliminar un registro con SweetAlert
+    function eliminarRegistro(row, tipo) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "No podrás revertir esto",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminarlo'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('/eliminar_tipo_dato', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tipo: tipo })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        row.remove();  // Elimina la fila de la tabla
+                        Swal.fire('Eliminado', 'El tipo de dato ha sido eliminado.', 'success');
+                    } else {
+                        Swal.fire('Error', 'Error al eliminar el tipo de dato: ' + data.error, 'error');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
         });
+    }
+
+    // Función para editar un registro
+    function editarRegistro(row, tipo, descripcion) {
+        Swal.fire({
+            title: 'Editar Tipo de Dato',
+            html: `
+                <input id="edit-tipo" class="swal2-input" value="${tipo}">
+                <input id="edit-descripcion" class="swal2-input" value="${descripcion}">
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Guardar',
+            preConfirm: () => {
+                const newTipo = document.getElementById('edit-tipo').value;
+                const newDescripcion = document.getElementById('edit-descripcion').value;
+
+                if (!newTipo || !newDescripcion) {
+                    Swal.showValidationMessage('Ambos campos son obligatorios');
+                    return false;
+                }
+
+                return { newTipo: newTipo, newDescripcion: newDescripcion };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Realizar la petición para actualizar el tipo de dato
+                fetch('/editar_tipo_dato', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        oldTipo: tipo,
+                        newTipo: result.value.newTipo,
+                        newDescripcion: result.value.newDescripcion
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        row.querySelector('td:nth-child(1)').innerText = result.value.newTipo;
+                        row.querySelector('td:nth-child(2)').innerText = result.value.newDescripcion;
+                        Swal.fire('Actualizado', 'El tipo de dato ha sido actualizado.', 'success');
+                    } else {
+                        Swal.fire('Error', 'Error al actualizar el tipo de dato: ' + data.error, 'error');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
+    }
+
+    // Asociar los eventos de edición y eliminación a los botones ya presentes
+    document.querySelectorAll('.edit-btn').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            var row = event.target.closest('tr');
+            var tipo = row.querySelector('td:nth-child(1)').innerText;
+            var descripcion = row.querySelector('td:nth-child(2)').innerText;
+            editarRegistro(row, tipo, descripcion);
+        });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            var row = event.target.closest('tr');
+            var tipo = row.querySelector('td:nth-child(1)').innerText; // Suponiendo que el tipo está en la primera columna
+            eliminarRegistro(row, tipo);
+        });
+    });
+});
+
+
     </script>
     {% endblock %}
 </body>

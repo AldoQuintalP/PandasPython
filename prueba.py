@@ -31,6 +31,8 @@ def cargar_reportes(cliente_numero):
         for reportes_lista in dms_data.values():
             reportes.extend(reportes_lista)
     
+    reportes = [''.join(filter(str.isalpha, reporte)) for reporte in reportes]
+    
     return reportes
 
 def obtener_columnas_esperadas(dms_name, reporte_name):
@@ -180,8 +182,14 @@ def procesar_archivo_zip():
     except Exception as e:
         logging.error(f"Se produjo un error al descomprimir el archivo: {e}")
 
+    # Limpiamos números de la variable reportes
+    # Cleaning the list
+    
+
     # Renombrar los archivos extraídos
     for archivo in os.listdir(sandbx):
+        print(f'Archivo : {archivo}')
+        
         for reporte in reportes:
             if archivo.startswith(reporte):
                 nuevo_nombre_base = filtrar_letras(archivo)
@@ -236,13 +244,18 @@ def procesar_archivo_zip():
         data = [row.split('|') for row in raw_data_clean.strip().split('\n')]
 
         # Usar encabezados esperados del archivo de configuración
-        encabezados_esperados = columnas_esperadas.get(reporte, [])
+        encabezados_esperados = columnas_esperadas.get(reporte + sucursal, [])
+        print(f'Encabezados esperados : {encabezados_esperados}')
         headers = encabezados_esperados
         rows = data
+        #print(f'rows : ......... {rows}')
+        
 
         # Comparar las columnas actuales con las esperadas
         columnas = data[0]
-        columnas_esperadas_reporte = set(columnas_esperadas.get(reporte, []))
+        print(f'Columnas reporte: {columnas}')
+        columnas_esperadas_reporte = set(columnas_esperadas.get(reporte + sucursal, []))
+        print(f'Columnas esperadas: {columnas_esperadas_reporte}')
         # Verificar si al menos una columna coincide
         if columnas_esperadas_reporte.intersection(columnas):
             rows = data[1:] 
@@ -252,6 +265,7 @@ def procesar_archivo_zip():
 
         # Asegurarse de que los nombres de las columnas sean únicos agregando sufijos
         headers = renombrar_columnas(headers)
+        print(f'Headers: {headers}')
 
         # Ajustar el número de columnas en las filas
         max_columns = len(headers)

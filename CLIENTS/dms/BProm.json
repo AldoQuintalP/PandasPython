@@ -26,7 +26,18 @@
         "REFSER01",
         "REFOEP01",
         "VTAPER01",
-        "REFPED01"
+        "REFPED01",
+        "CASA01",
+        "VTANUE02",
+        "VTANUE03",
+        "VTANUE04",
+        "VTANUE05",
+        "VTANUE06",
+        "VTANUE08",
+        "VTANUE09",
+        "VTANUE",
+        "VTANUE11",
+        "VTANUE12"
     ],
     "columnas_esperadas": {
         "MACC01": {
@@ -852,6 +863,132 @@
                 "NumeroDespachador",
                 "NombreDespachador",
                 "Sucursal"
+            ],
+            "formulas": {}
+        },
+        "CASA01": {
+            "columnas": [
+                "Fecha",
+                "Cuenta",
+                "CentroCosto",
+                "Descripcion",
+                "SaldoInicial$",
+                "Debitos$",
+                "Creditos$",
+                "Saldo$",
+                "TipoCuenta",
+                "Naturaleza",
+                "Sucursal"
+            ],
+            "formulas": {}
+        },
+        "VTANUE02": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE03": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE04": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE05": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE06": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE08": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE09": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE11": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE12": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
             ],
             "formulas": {}
         }

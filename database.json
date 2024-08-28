@@ -1,8 +1,22 @@
 {
     "host": "localhost",
     "usuario": "postgres",
-    "contrasena": "abcd1234",
+    "contrasena": "odoo",
     "base_de_datos": "Simdata",
     "workng_dir": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\2-Workng",
-    "sandbx": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\3-Sandbx"
+    "sandbx": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\3-Sandbx",
+    "tipos_datos": [
+        {
+            "tipo": "character varying",
+            "descripcion": "Permite almacenar una cadena de datos (caracteres, n\u00fameros y caracteres especiales) con longitud variable. No reserva el espacio de la longitud m\u00e1xima definida, ya que ocupa espacio del tama\u00f1o real de los datos. La longitud m\u00e1xima es de 255."
+        },
+        {
+            "tipo": "INT",
+            "descripcion": "Permite n\u00fameros desde -2147483648 hasta 2147483647."
+        },
+        {
+            "tipo": "DATE",
+            "descripcion": "Permite almacenar una fecha con el formato YYYY-MM-DD (4 d\u00edgitos para el a\u00f1o, 2 d\u00edgitos para el mes y 2 d\u00edgitos para el d\u00eda)."
+        }
+    ]
 }

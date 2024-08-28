@@ -3,7 +3,8 @@
     "reportes": [
         "MACP",
         "REFINV",
-        "VTANUE"
+        "VTANUE",
+        "CASA01"
     ],
     "columnas_esperadas": {
         "MACP": {
@@ -70,6 +71,22 @@
                 "Costo",
                 "Venta",
                 "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "CASA01": {
+            "columnas": [
+                "Fecha",
+                "Cuenta",
+                "CentroCosto",
+                "Descripcion",
+                "SaldoInicial$",
+                "Debitos$",
+                "Creditos$",
+                "Saldo$",
+                "TipoCuenta",
+                "Naturaleza",
+                "Sucursal"
             ],
             "formulas": {}
         }
