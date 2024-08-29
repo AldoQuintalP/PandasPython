@@ -23,30 +23,7 @@
         "REFCOM01",
         "REFINV01",
         "REFMOS01",
-        "REFSER01",
-        "REFOEP01",
-        "VTAPER01",
-        "REFPED01",
-        "CASA01",
-        "VTANUE02",
-        "VTANUE03",
-        "VTANUE04",
-        "VTANUE05",
-        "VTANUE06",
-        "VTANUE08",
-        "VTANUE09",
-        "VTANUE",
-        "VTANUE11",
-        "VTANUE12",
-        "VTANUE13",
-        "VTANUE15",
-        "VTANUE14",
-        "VTANUE22",
-        "VTANUE34",
-        "VTANUE44",
-        "VTANUE55",
-        "VTANUE46",
-        "VTANUE51"
+        "REFSER01"
     ],
     "columnas_esperadas": {
         "MACC01": {
@@ -63,7 +40,53 @@
                 "Naturaleza",
                 "Sucursal"
             ],
-            "formulas": {}
+            "formulas": {},
+            "data_types": {
+                "Fecha": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Cuenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CentroCosto": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "SaldoInicial$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Debitos$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Creditos$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Saldo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "TipoCuenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Naturaleza": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Sucursal": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
         },
         "MACP01": {
             "columnas": [
@@ -79,7 +102,53 @@
                 "Naturaleza",
                 "Sucursal"
             ],
-            "formulas": {}
+            "formulas": {},
+            "data_types": {
+                "Fecha": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Cuenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CentroCosto": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "SaldoInicial$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Debitos$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Creditos$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Saldo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "TipoCuenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Naturaleza": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Sucursal": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
         },
         "CARTER01": {
             "columnas": [
@@ -456,7 +525,265 @@
                 "NuevoUsado",
                 "Sucursal"
             ],
-            "formulas": {}
+            "formulas": {},
+            "data_types": {
+                "FechaFactura": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Factura": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaPedido": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "NumeroPedido": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Vin": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NumeroInventario": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoVenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CanalOrigenVenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoPago": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Venta$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Descuento$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Iva$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Isan$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "ImpoConsumo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaTotal$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostodeVenta$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Bonificaciones$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "IncentivoCosto$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoTotal$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "A\u00f1o": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Marca": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Modelo": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Version": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Clase": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Catalogo": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CodigoColor": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "ColorPintura": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "ColorInterior": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "KilometrajedeVenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaMatricula": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Placas": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NumeroAsesorComercial": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NombreAsesorComercial": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaCompra": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Prenda": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "MontoFinanciado$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "EntidadFinanciera": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "PlazoFinanciado": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaVencimientoFinanciamiento": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "FechaEntrega": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "FechaActivacionGarantia": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "RFC": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NumeroCliente": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoPersona": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "RazonSocial": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "PrimerNombreCliente": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "SegundoNombreCliente": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "PrimerApellidoCliente": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "SegundoApellidoCiente": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Direccion": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Telefono": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Celular": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CP": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Email": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "PermiteContactar": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "MotivoContacto": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Asegurado": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoSeguro": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "VentaPolizaConcesionario": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Aseguradora": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Retoma": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoRetoma": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NuevoUsado": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Sucursal": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
         },
         "VTAUSA01": {
             "columnas": [
@@ -795,308 +1122,6 @@
                 "TipoOrden",
                 "Taller",
                 "Sucursal"
-            ],
-            "formulas": {}
-        },
-        "REFOEP01": {
-            "columnas": [
-                "NumeroOT",
-                "FechaEntrega",
-                "FechaCierre",
-                "Taller",
-                "TipoOrden",
-                "TipoServicio",
-                "Motivo",
-                "Status",
-                "Marca",
-                "NumeroParte",
-                "Descripcion",
-                "Cantidad",
-                "VentaUnitario$",
-                "Venta$",
-                "CostoUnitario$",
-                "Costo$",
-                "Vin",
-                "RFC",
-                "Modelo",
-                "Version",
-                "Sucursal"
-            ],
-            "formulas": {}
-        },
-        "VTAPER01": {
-            "columnas": [
-                "FechaVP",
-                "FolioVP",
-                "Canal",
-                "NumeroVendedor",
-                "NombreVendedor",
-                "NumeroCliente",
-                "NombreCliente",
-                "Marca",
-                "NumeroParte",
-                "Descripcion",
-                "Cantidad",
-                "VentaUnitario$",
-                "Venta$",
-                "ClaveMotivo",
-                "DescripcionMotivo",
-                "Telefono",
-                "Celular",
-                "Email",
-                "Sucursal"
-            ],
-            "formulas": {}
-        },
-        "REFPED01": {
-            "columnas": [
-                "FechaPedido",
-                "HoraPedido",
-                "FechaDespacho",
-                "HoraDespacho",
-                "NumeroDocumento",
-                "TipodeDocumento",
-                "RazondeIngreso",
-                "TipoOrden",
-                "Taller",
-                "NumeroOT",
-                "Marca",
-                "NumeroParte",
-                "Descripcion",
-                "CantidadPedida",
-                "CantidadDespachada",
-                "Vin",
-                "Placas",
-                "NumeroTecnico",
-                "NombreTecnico",
-                "NumeroDespachador",
-                "NombreDespachador",
-                "Sucursal"
-            ],
-            "formulas": {}
-        },
-        "CASA01": {
-            "columnas": [
-                "Fecha",
-                "Cuenta",
-                "CentroCosto",
-                "Descripcion",
-                "SaldoInicial$",
-                "Debitos$",
-                "Creditos$",
-                "Saldo$",
-                "TipoCuenta",
-                "Naturaleza",
-                "Sucursal"
-            ],
-            "formulas": {}
-        },
-        "VTANUE02": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE03": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE04": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE05": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE06": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE08": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE09": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE11": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE12": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE13": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE15": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE14": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE22": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE34": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE44": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE55": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE46": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
-            ],
-            "formulas": {}
-        },
-        "VTANUE51": {
-            "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "Venta",
-                "VentaTOT"
             ],
             "formulas": {}
         }

@@ -406,9 +406,20 @@
                                     {% if tab_data[tab].reportes %}
                                     <ul class="list-group" id="reporte-list-{{ loop.index }}">
                                         {% for reporte in tab_data[tab].reportes %}
+                                        {% set columnas = tab_data[tab].columnas_esperadas[reporte].columnas %}
+                                        {% set data_types = tab_data[tab].columnas_esperadas[reporte].data_types %}
+                                        {% set columnas_no_typed = [] %}
+                                        {% for columna in columnas %}
+                                            {% if columna not in data_types %}
+                                                {% set _ = columnas_no_typed.append(columna) %}
+                                            {% endif %}
+                                        {% endfor %}
                                         <li class="list-group-item d-flex justify-content-between align-items-center reporte-item">
                                             <div style="flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                                 <strong>{{ reporte }}</strong>
+                                                {% if columnas_no_typed %}
+                                                <i class="fa fa-triangle-exclamation text-warning"></i>
+                                                {% endif %}
                                             </div>
                                             <div class="btn-group ml-auto" role="group" style="white-space: nowrap;">
                                                 <!-- Botones de acciones -->
@@ -418,6 +429,13 @@
                                                 <button class="function-btn btn btn-success" onclick="selectColumn('{{ tab }}', '{{ reporte }}')">
                                                     <i class="fa fa-calculator"></i> Función
                                                 </button>
+                                                <button type="button" class="btn btn-info" 
+                                                        onclick="abrirModalConfiguracionColumnas('{{ tab }}', '{{ reporte }}')"
+                                                        data-tab="{{ tab }}" 
+                                                        data-reporte="{{ reporte }}">
+                                                    <i class="fa fa-database"></i> Tipo de datos
+                                                </button>
+
                                                 <button class="trash-btn btn btn-danger" onclick="eliminarReporte('{{ tab }}', '{{ reporte }}')">
                                                     <i class="fa fa-trash-alt"></i> Eliminar
                                                 </button>
@@ -427,7 +445,7 @@
                                             </div>
                                         </li>
                                         {% endfor %}
-                                    </ul>
+                                    </ul>                                    
                                     {% else %}
                                     <p>No hay reportes guardados en esta pestaña.</p>
                                     {% endif %}
@@ -684,8 +702,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button id="saveColumnsConfigBtn" class="btn btn-primary">Guardar Configuración</button>
-                </div>
+                    <button id="adddata" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+                </div>                               
             </div>
         </div>
     </div>
@@ -780,6 +798,7 @@
 }
 
 document.getElementById('saveOrderBtn').addEventListener('click', function() {
+    console.log("Boton clicl saveorder")
     const columnEditList = document.getElementById('column-edit-list');
     const ordenColumnas = Array.from(columnEditList.children).map(item => item.textContent.trim());
 
@@ -1139,67 +1158,100 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
 
     
 
-
-    function abrirModalConfiguracionColumnas(columnas) {
+        function abrirModalConfiguracionColumnas(tabName, reporte) {
     const configureColumnsTableBody = document.getElementById('configureColumnsTableBody');
     configureColumnsTableBody.innerHTML = '';
 
-    // Cargar tipos de datos desde database.json
     fetch('/get_tipos_datos')
-    .then(response => response.json())
-    .then(tiposDatos => {
-        // Crear filas para cada columna
-        columnas.forEach(columna => {
-            const tr = document.createElement('tr');
+        .then(response => response.json())
+        .then(tiposDatos => {
+            fetch(`/edit_reporte/${reporte}?tab_name=${tabName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const columnas = data.columnas || [];
+                    const dataTypes = data.data_types || {};
+                    const columnasSinTipoDato = data.columnas_sin_tipo_dato || [];
+                    console.log(columnasSinTipoDato)
 
-            const nameTd = document.createElement('td');
-            nameTd.textContent = columna;
-            tr.appendChild(nameTd);
+                    columnas.forEach(columna => {
+                        const tr = document.createElement('tr');
 
-            const dataTypeTd = document.createElement('td');
-            const select = document.createElement('select');
-            select.className = 'form-control data-type-select';
+                        const nameTd = document.createElement('td');
+                        nameTd.textContent = columna;
 
-            tiposDatos.forEach(tipo => {
-                const option = document.createElement('option');
-                option.value = tipo.tipo;
-                option.textContent = tipo.tipo;
-                select.appendChild(option);
-            });
+                        // Mostrar ícono de advertencia solo si la columna no tiene un tipo de dato asignado
+                        if (columnasSinTipoDato.includes(columna)) {
+                            const warningIcon = document.createElement('button');
+                            warningIcon.className = 'btn btn-warning btn-sm ml-2';
+                            warningIcon.innerHTML = '<i class="fa fa-exclamation-triangle"></i>';
+                            warningIcon.title = 'Columna nueva, no tiene un Tipo de dato asignado';
+                            nameTd.appendChild(warningIcon);
+                        }
 
-            dataTypeTd.appendChild(select);
-            tr.appendChild(dataTypeTd);
+                        tr.appendChild(nameTd);
 
-            const lengthTd = document.createElement('td');
-            const lengthInput = document.createElement('input');
-            lengthInput.type = 'number';
-            lengthInput.className = 'form-control length-input';
-            lengthInput.min = 0;
-            lengthInput.max = 255;
-            lengthInput.value = 25;
+                        const dataTypeTd = document.createElement('td');
+                        const select = document.createElement('select');
+                        select.className = 'form-control data-type-select';
 
-            // Desbloquear el campo Length/Precision si el tipo de dato es "character varying"
-            lengthInput.disabled = select.value !== 'character varying';
-            
-            lengthTd.appendChild(lengthInput);
-            tr.appendChild(lengthTd);
+                        tiposDatos.forEach(tipo => {
+                            const option = document.createElement('option');
+                            option.value = tipo.tipo;
+                            option.textContent = tipo.tipo;
+                            if (dataTypes[columna] && dataTypes[columna].tipo === tipo.tipo) {
+                                option.selected = true;
+                            }
+                            select.appendChild(option);
+                        });
 
-            configureColumnsTableBody.appendChild(tr);
+                        dataTypeTd.appendChild(select);
+                        tr.appendChild(dataTypeTd);
 
-            // Evento para cambiar la habilitación del campo Length/Precision según el tipo de dato seleccionado
-            select.addEventListener('change', function() {
-                lengthInput.disabled = (this.value !== 'character varying');
-                lengthInput.value = (this.value === 'character varying') ? 25 : '';
-            });
+                        const lengthTd = document.createElement('td');
+                        const lengthInput = document.createElement('input');
+                        lengthInput.type = 'number';
+                        lengthInput.className = 'form-control length-input';
+                        lengthInput.min = 0;
+                        lengthInput.max = 255;
+
+                        if (select.value === 'character varying') {
+                            lengthInput.value = dataTypes[columna] && dataTypes[columna].length ? dataTypes[columna].length : 25;
+                            lengthInput.disabled = false;
+                        } else {
+                            lengthInput.value = '';
+                            lengthInput.disabled = true;
+                        }
+
+                        lengthTd.appendChild(lengthInput);
+                        tr.appendChild(lengthTd);
+
+                        configureColumnsTableBody.appendChild(tr);
+
+                        select.addEventListener('change', function() {
+                            if (this.value === 'character varying') {
+                                lengthInput.disabled = false;
+                                lengthInput.value = 25;
+                            } else {
+                                lengthInput.value = '';
+                                lengthInput.disabled = true;
+                            }
+                        });
+                    });
+
+                    $('#configureColumnsModal').modal('show');
+                })
+                .catch(error => {
+                    console.error('Error al cargar las columnas del reporte:', error);
+                    Swal.fire('Error', 'No se pudieron cargar las columnas del reporte.', 'error');
+                });
+        })
+        .catch(error => {
+            console.error('Error al cargar los tipos de datos:', error);
+            Swal.fire('Error', 'No se pudieron cargar los tipos de datos.', 'error');
         });
 
-        // Mostrar el modal
-        $('#configureColumnsModal').modal('show');
-    })
-    .catch(error => {
-        console.error('Error al cargar los tipos de datos:', error);
-        Swal.fire('Error', 'No se pudieron cargar los tipos de datos.', 'error');
-    });
+    document.getElementById('configureColumnsModal').setAttribute('data-tab', tabName);
+    document.getElementById('configureColumnsModal').setAttribute('data-reporte', reporte);
 }
 
 
@@ -1409,6 +1461,64 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
             Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
         });
 }
+
+
+document.getElementById('adddata').addEventListener('click', function() {
+    const tabName = document.getElementById('configureColumnsModal').getAttribute('data-tab');
+    const reporte = document.getElementById('configureColumnsModal').getAttribute('data-reporte');
+
+    if (!tabName || !reporte) {
+        Swal.fire('Error', 'El nombre de la pestaña y el reporte son necesarios', 'error');
+        return;
+    }
+
+    const rows = document.querySelectorAll('#configureColumnsTableBody tr');
+    const dataTypes = {};
+
+    rows.forEach(row => {
+        const columnName = row.querySelector('td:first-child').textContent.trim();
+        const dataType = row.querySelector('select.data-type-select').value;
+        const lengthInput = row.querySelector('input.length-input');
+        const length = lengthInput ? lengthInput.value : null;
+
+        dataTypes[columnName] = {
+            tipo: dataType,
+            length: dataType === 'character varying' ? length : null
+        };
+    });
+
+    // Enviar la configuración al servidor
+    fetch('/save_columns', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            dms_name: tabName,
+            reporte: reporte,
+            data_types: dataTypes
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire('Éxito', 'Configuración guardada correctamente', 'success')
+                .then(() => {
+                    // Recargar la página manteniendo la pestaña actual
+                    const currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set('active_tab', tabName);
+                    window.location.href = currentUrl.toString();
+                });
+        } else {
+            Swal.fire('Error', data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo guardar la configuración de las columnas.', 'error');
+    });
+});
+
 
 document.getElementById('addColumnBtn').addEventListener('click', function() {
     $('#addColumnModal').modal('show');
@@ -1664,11 +1774,6 @@ function duplicarReporte(tab, reporte) {
         });
 
 
-        document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#saveColumnsConfigBtn').addEventListener('click', function() {
-        alert('Guardar Configuración clickeado después de cargar el DOM');
-    });
-});
 
 
 $('#configureColumnsModal').modal('show');

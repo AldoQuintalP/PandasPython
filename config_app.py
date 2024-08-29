@@ -303,8 +303,20 @@ def edit_reporte(reporte):
     with open(tab_path, 'r') as f:
         config = json.load(f)
 
-    columnas_info = config['columnas_esperadas'].get(reporte, {'columnas': [], 'formulas': {}})
-    return jsonify({'success': True, 'columnas': columnas_info['columnas'], 'formulas': columnas_info['formulas']})
+    columnas_info = config['columnas_esperadas'].get(reporte, {'columnas': [], 'formulas': {}, 'data_types': {}})
+    columnas = columnas_info.get('columnas', [])
+    data_types = columnas_info.get('data_types', {})
+
+    # Validar cuáles columnas no tienen un tipo de dato asignado
+    columnas_sin_tipo_dato = [col for col in columnas if col not in data_types]
+
+    return jsonify({
+        'success': True,
+        'columnas': columnas,
+        'data_types': data_types,
+        'columnas_sin_tipo_dato': columnas_sin_tipo_dato
+    })
+
 
 @app.route('/save-order', methods=['POST'])
 @login_required
@@ -1174,8 +1186,14 @@ def editar_tipo_dato():
 @app.route('/get_tipos_datos', methods=['GET'])
 @login_required
 def get_tipos_datos():
-    db_config = cargar_db_config()
-    return jsonify(db_config.get('tipos_datos', []))
+    try:
+        with open('database.json', 'r') as file:
+            db_config = json.load(file)
+            return jsonify(db_config.get('tipos_datos', []))
+    except Exception as e:
+        print(f"Error al cargar tipos de datos: {e}")
+        return jsonify({'success': False, 'error': 'No se pudo cargar los tipos de datos.'}), 500
+
 
 
 @app.route('/save_columns', methods=['POST'])
@@ -1183,12 +1201,10 @@ def get_tipos_datos():
 def save_columns():
     try:
         data = request.json
+        print(data)
         dms_name = data.get('dms_name')
-        print(dms_name)
         reporte = data.get('reporte')
-        print(reporte)
         data_types = data.get('data_types')
-        print(data_types)
 
         if not dms_name or not reporte or not data_types:
             return jsonify({'success': False, 'error': 'Faltan datos para guardar las columnas.'})
@@ -1218,6 +1234,15 @@ def save_columns():
     except Exception as e:
         print(f"Error al guardar las columnas: {e}")
         return jsonify({'success': False, 'error': 'No se pudieron guardar las columnas.'})
+
+@app.route('/configuracion', methods=['GET'])
+@login_required
+def configuracion():
+    active_tab = request.args.get('active_tab', None)
+    tabs = cargar_tabs()
+    
+    return render_template('configuracion.html', tabs=tabs, active_tab=active_tab)
+
 
 
 if __name__ == '__main__':

@@ -17,6 +17,10 @@
         {
             "tipo": "DATE",
             "descripcion": "Permite almacenar una fecha con el formato YYYY-MM-DD (4 d\u00edgitos para el a\u00f1o, 2 d\u00edgitos para el mes y 2 d\u00edgitos para el d\u00eda)."
+        },
+        {
+            "tipo": "double precision",
+            "descripcion": "15 decimal digits precision"
         }
     ]
 }
