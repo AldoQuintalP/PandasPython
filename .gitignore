@@ -16,6 +16,7 @@ __pycache__/
 
 # Ignorar el archivo de configuración
 config.json
+a.json
 
 
 # Ignorar la carpeta 3-Sandbx y todo su contenido

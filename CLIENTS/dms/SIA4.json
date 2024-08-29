@@ -1,7 +1,10 @@
 {
     "name": "SIA4",
     "reportes": [
-        "VTAUSA01"
+        "VTAUSA01",
+        "VTANUE",
+        "VTANUE22",
+        "VTANUE11"
     ],
     "columnas_esperadas": {
         "VTAUSA01": {
@@ -19,6 +22,39 @@
                 "Saldo90$",
                 "Saldo120$",
                 "Sucursal"
+            ],
+            "formulas": {}
+        },
+        "VTANUE": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE22": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
+            ],
+            "formulas": {}
+        },
+        "VTANUE11": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "Venta",
+                "VentaTOT"
             ],
             "formulas": {}
         }

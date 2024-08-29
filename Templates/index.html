@@ -685,7 +685,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="saveColumnsConfigBtn">Guardar Configuración</button>
+                    <button id="saveColumnsConfigBtn" class="btn btn-primary">Guardar Configuración</button>
                 </div>
             </div>
         </div>
@@ -1181,22 +1181,7 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
         });
     }
 
-    document.getElementById('saveColumnsConfigBtn').addEventListener('click', function() {
-        const formData = [];
-        const rows = document.querySelectorAll('#configureColumnsTableBody tr');
 
-        rows.forEach(row => {
-            const name = row.cells[0].textContent;
-            const dataType = row.cells[1].querySelector('select').value;
-            const length = row.cells[2].querySelector('input').value;
-            formData.push({ name, dataType, length });
-        });
-
-        console.log('Datos de configuración de columnas:', formData);
-        // Aquí puedes enviar formData al servidor si lo necesitas.
-        $('#configureColumnsModal').modal('hide');
-        Swal.fire('Éxito', 'Configuración de columnas guardada correctamente', 'success');
-    });
 
 
         document.querySelector('form').addEventListener('submit', function(event) {
@@ -1655,6 +1640,70 @@ function duplicarReporte(tab, reporte) {
                 Swal.fire('Error', 'No se pudo guardar la fórmula', 'error');
             });
         });
+
+
+        document.getElementById('saveColumnsConfigBtn').addEventListener('click', function() {
+    const columnas = [];
+    const dataTypes = [];
+    const rows = document.querySelectorAll('#configureColumnsTableBody tr');
+
+    rows.forEach(row => {
+        const name = row.cells[0].textContent;  // Nombre de la columna
+        const dataType = row.cells[1].querySelector('select').value;  // Tipo de dato
+        const length = row.cells[2].querySelector('input').value;  // Longitud
+
+        columnas.push(name);
+        dataTypes.push({
+            columna: name,
+            tipo: dataType,
+            longitud: length
+        });
+    });
+
+    // Obtener dmsName y reporte desde el HTML
+    const reporteConfig = document.getElementById('reporte-config');
+    const dmsName = reporteConfig.getAttribute('data-dms-name');
+    const reporte = reporteConfig.getAttribute('data-reporte-name');
+
+    console.log('Datos a enviar:', { dmsName, reporte, columnas, dataTypes });  // Debugging
+
+    // Enviar los datos al servidor
+    fetch('/save_columns', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            dms_name: dmsName,
+            reporte: reporte,
+            columnas: columnas,
+            data_types: dataTypes  // Asegúrate de enviar `data_types`
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Respuesta del servidor:', data);  // Debugging
+        if (data.success) {
+            Swal.fire('Éxito', 'Configuración de columnas guardada correctamente', 'success')
+            .then(() => {
+                location.reload();  // Recargar la página para reflejar los cambios
+            });
+        } else {
+            Swal.fire('Error', data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo guardar la configuración', 'error');
+    });
+});
+
+
+// Asegúrate de que el modal se cierre correctamente y que la clase 'modal-backdrop' se elimine
+$('#configureColumnsModal').on('hidden.bs.modal', function () {
+    $('.modal-backdrop').remove();  // Remueve cualquier backdrop sobrante
+    $('body').removeClass('modal-open');  // Elimina la clase 'modal-open' del cuerpo
+});
 
 
 

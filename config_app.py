@@ -1203,7 +1203,7 @@ def save_columns():
         if reporte in dms_data['reportes']:
             dms_data['columnas_esperadas'][reporte] = {
                 'columnas': columnas,
-                'formulas': {},  # Mantener las fórmulas existentes
+                'formulas': dms_data['columnas_esperadas'][reporte].get('formulas', {}),  # Mantener las fórmulas existentes
                 'data_types': data_types  # Añadir los tipos de datos
             }
 
@@ -1218,8 +1218,6 @@ def save_columns():
     except Exception as e:
         print(f"Error al guardar las columnas: {e}")
         return jsonify({'success': False, 'error': 'No se pudieron guardar las columnas.'})
-
-
 
 
 if __name__ == '__main__':
