@@ -1,0 +1,24 @@
+{
+    "name": "DMS",
+    "reportes": [
+        "VTAUSA"
+    ],
+    "columnas_esperadas": {
+        "VTAUSA": {
+            "columnas": [
+                "Fecha",
+                "Cuenta",
+                "CentroCosto",
+                "Descripcion",
+                "SaldoInicial$",
+                "Debitos$",
+                "Creditos$",
+                "Saldo$",
+                "TipoCuenta",
+                "Naturaleza",
+                "Sucursal"
+            ],
+            "formulas": {}
+        }
+    }
+}

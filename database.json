@@ -1,7 +1,7 @@
 {
     "host": "localhost",
     "usuario": "postgres",
-    "contrasena": "odoo",
+    "contrasena": "abcd1234",
     "base_de_datos": "Simdata",
     "workng_dir": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\2-Workng",
     "sandbx": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\3-Sandbx",

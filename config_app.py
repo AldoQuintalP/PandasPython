@@ -243,7 +243,8 @@ def add_reporte():
         config['reportes'].append(nombre_reporte)
         config['columnas_esperadas'][nombre_reporte] = {
             "columnas": columnas,
-            "formulas": {}
+            "formulas": {},
+            "data_types": {}  # Se agrega la nueva llave "data_types"
         }
 
         # Guardar el JSON actualizado
@@ -255,6 +256,7 @@ def add_reporte():
     except Exception as e:
         print(f"Error al guardar el reporte: {e}")
         return jsonify({'success': False, 'error': 'No se pudo guardar el reporte.'})
+
 
 @app.route('/delete-reporte', methods=['POST'])
 @login_required
@@ -1182,11 +1184,13 @@ def save_columns():
     try:
         data = request.json
         dms_name = data.get('dms_name')
+        print(dms_name)
         reporte = data.get('reporte')
-        columnas = data.get('columnas')
+        print(reporte)
         data_types = data.get('data_types')
+        print(data_types)
 
-        if not dms_name or not reporte or not columnas or not data_types:
+        if not dms_name or not reporte or not data_types:
             return jsonify({'success': False, 'error': 'Faltan datos para guardar las columnas.'})
 
         # Ruta al archivo JSON del DMS
@@ -1199,13 +1203,9 @@ def save_columns():
         with open(dms_path, 'r') as file:
             dms_data = json.load(file)
 
-        # Actualizar el reporte con las nuevas columnas y tipos de datos
+        # Actualizar el reporte con los tipos de datos en "data_types"
         if reporte in dms_data['reportes']:
-            dms_data['columnas_esperadas'][reporte] = {
-                'columnas': columnas,
-                'formulas': dms_data['columnas_esperadas'][reporte].get('formulas', {}),  # Mantener las fórmulas existentes
-                'data_types': data_types  # Añadir los tipos de datos
-            }
+            dms_data['columnas_esperadas'][reporte]['data_types'] = data_types
 
             # Guardar los cambios en el archivo JSON
             with open(dms_path, 'w') as file:
