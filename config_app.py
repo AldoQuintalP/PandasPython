@@ -9,6 +9,8 @@ import uuid
 from ext import db  # Importar db desde ext.py
 from forms import RegistrationForm, LoginForm
 from models import User  # Import the User model after db is initialized
+import subprocess
+import ast
 
 # Configura Flask con la ruta para archivos estáticos
 app = Flask(__name__, static_url_path='/static')
@@ -1243,6 +1245,55 @@ def configuracion():
     
     return render_template('configuracion.html', tabs=tabs, active_tab=active_tab)
 
+
+@app.route('/upload_and_execute', methods=['POST'])
+def upload_and_execute():
+    file = request.files['file']
+    print(f'file: {file}')
+    workng_dir = "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\2-Workng"
+    
+    if not file or not file.filename.endswith('.zip'):
+        return jsonify(success=False, error="No se ha proporcionado un archivo .zip válido.")
+    
+    # Mover el archivo al directorio workng_dir
+    try:
+        file_path = os.path.join(workng_dir, file.filename)
+        file.save(file_path)
+        
+        # Ejecutar el script prueba.py
+        # Ruta al script de activación del entorno virtual en Windows
+        activate_env = os.path.join('.venv', 'Scripts', 'activate.bat')
+
+        # Comando para ejecutar el script de activación seguido del script Python
+        command = f'{activate_env} && python prueba.py'
+
+        # Ejecutar el comando en un subprocess
+        result = subprocess.run(command, capture_output=True, text=True, shell=True)
+        
+        if result.returncode == 0:
+            return jsonify(success=True, output=result.stdout)
+        else:
+            return jsonify(success=False, error=result.stderr)
+    
+    except Exception as e:
+        return jsonify(success=False, error=str(e))
+    
+# Endpoint para obtener las funciones
+@app.route('/get_functions', methods=['GET'])
+def get_functions():
+    functions = []
+    file_path = os.path.join(os.getcwd(), 'funcionesExternas.py')
+
+    with open(file_path, 'r', encoding='utf-8') as f:
+        file_content = f.read()
+
+    tree = ast.parse(file_content)
+    
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            functions.append(node.name)
+
+    return jsonify(functions)
 
 
 if __name__ == '__main__':

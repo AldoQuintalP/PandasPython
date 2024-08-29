@@ -7,6 +7,7 @@ from datetime import datetime
 import psycopg2
 from psycopg2 import Error
 import logging
+import subprocess
 
 # Configuración del logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -17,6 +18,27 @@ sandbx = None
 reportes = None
 db_config = None
 columnas_esperadas = {}
+reportes_selec = []
+dms_name = None
+
+def configurar_logging(cliente_numero):
+    # Crear la carpeta de logs si no existe
+    logs_dir = os.path.join('CLIENTS', cliente_numero, 'Logs')
+    os.makedirs(logs_dir, exist_ok=True)
+    
+    # Crear el nombre del archivo de log
+    fecha_actual = datetime.now().strftime('%Y-%m-%d')
+    log_file = os.path.join(logs_dir, f'logs_{fecha_actual}.txt')
+    
+    # Configurar logging para que guarde los errores en el archivo de log
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()  # Para que también imprima en la consola
+        ]
+    )
 
 def cargar_reportes(cliente_numero):
     ruta_config = os.path.join('CLIENTS', cliente_numero, 'Config', 'config.json')
@@ -58,15 +80,84 @@ def encontrar_zip(carpeta):
             return os.path.join(carpeta, archivo)
     raise FileNotFoundError("No se encontró ningún archivo ZIP en la carpeta de trabajo.")
 
+
+def generar_query_verificacion_longitudes(columnas, valores, longitudes_maximas):
+    """
+    Genera una consulta SQL para verificar si algún valor excede la longitud máxima permitida en una columna.
+
+    :param columnas: Lista de nombres de las columnas de la tabla.
+    :param valores: Lista de valores que se intentan insertar.
+    :param longitudes_maximas: Lista de longitudes máximas permitidas para las columnas correspondientes.
+    :return: Consulta SQL como cadena de texto.
+    """
+    query = []
+    
+    for columna, valor, longitud_max in zip(columnas, valores, longitudes_maximas):
+        if valor:  # Evita las columnas con valores vacíos
+            condicion = f"SELECT '{columna}' AS column_name, {longitud_max} AS character_maximum_length, LENGTH('{valor}') AS actual_length WHERE LENGTH('{valor}') > {longitud_max}"
+            query.append(condicion)
+    
+    query_sql = " UNION ALL ".join(query)
+    
+    return query_sql
+
+def extraer_columnas_valores_longitudes(consulta):
+    print(f'Consulta a evaluar en extraer: {consulta}')
+    try:
+        # Validar que la consulta comience con 'INSERT INTO'
+        if not consulta.strip().upper().startswith('INSERT INTO'):
+            raise ValueError("La consulta no comienza con 'INSERT INTO'. Asegúrate de que la consulta sea correcta.")
+        
+        # Ajustar para tolerar más espacios y variaciones en la estructura de la consulta
+        match_columnas = re.search(r'INSERT INTO\s+\w+\s*\((.*?)\)\s*VALUES', consulta, re.DOTALL)
+        print(f'............... match_ {match_columnas}')
+        match_valores = re.search(r'VALUES\s*\((.*?)\)\s*', consulta, re.DOTALL)
+        print(f'March_vaores: {match_valores}')
+
+        if not match_columnas or not match_valores:
+            raise ValueError("No se pudieron extraer las columnas o valores de la consulta.")
+
+        # Extraer y limpiar columnas
+        columnas = [col.strip() for col in match_columnas.group(1).split(',')]
+
+        # Extraer y limpiar valores
+        valores = [val.strip().strip("'") for val in match_valores.group(1).split(',')]
+
+        # Placeholder para las longitudes máximas
+        longitudes_maximas = [25] * len(columnas)  # Placeholder, ajusta esto según tu esquema real
+
+        return columnas, valores, longitudes_maximas
+    
+    except ValueError as e:
+        print(f"Error: {e}")
+        return [], [], []  # Retornar listas vacías como valor por defecto
+
 # Función para inferir el tipo de dato de una columna
-def inferir_tipo_dato(serie):
+def inferir_tipo_dato(nombre_columna, dms_name, reporte_name):
     """
-    Esta función intenta inferir el tipo de dato SQL basado en el contenido de la columna de un DataFrame.
-    Por simplicidad, aquí siempre devuelve 'VARCHAR(255)', pero podría ser extendida para detectar tipos
-    como INTEGER, FLOAT, etc.
+    Esta función devuelve el tipo de dato almacenado en la llave 'tipo' del JSON del DMS para la columna especificada.
+    Si el tipo de dato es 'character varying', también incluye la longitud especificada en la llave 'length'.
     """
-    # Aquí podrías implementar lógica para detectar diferentes tipos de datos
-    return 'VARCHAR(255)'
+    # Obtener el data_type del DMS para la columna
+    dms_path = os.path.join('CLIENTS', 'dms', f'{dms_name}.json')
+    
+    if not os.path.exists(dms_path):
+        logging.error(f"No se encontró el archivo {dms_path} para el DMS {dms_name}.")
+        return 'VARCHAR(255)'  # Devolver un tipo por defecto en caso de error
+
+    with open(dms_path, 'r') as file:
+        dms_data = json.load(file)
+    
+    # Acceder al tipo de dato de la columna en el JSON del DMS
+    columna_info = dms_data.get('columnas_esperadas', {}).get(reporte_name, {}).get('data_types', {}).get(nombre_columna, {})
+    tipo_dato = columna_info.get('tipo', 'VARCHAR(255)')
+    
+    # Si el tipo de dato es 'character varying', incluir la longitud
+    if tipo_dato == 'character varying':
+        longitud = columna_info.get('length', 255)  # Asume 255 si no se especifica una longitud
+        tipo_dato = f'{tipo_dato}({longitud})'
+    
+    return tipo_dato
 
 
 # Extraer información del archivo ZIP
@@ -85,7 +176,7 @@ def extraer_info_zip(nombre_zip):
     return cliente, sucursal, fecha_actual
 
 def procesar_archivo_zip():
-    global workng_dir, sandbx, db_config, columnas_esperadas
+    global workng_dir, sandbx, db_config, columnas_esperadas, reportes_selec, dms_name
     
     try:
         with open('database.json', 'r', encoding='utf-8') as config_file:
@@ -112,11 +203,13 @@ def procesar_archivo_zip():
         if file_name.endswith('.zip'):
             nombre_zip = file_name
             break
+            
     else:
         print("No se encontraron archivos .zip en el directorio.")
         return
     
     cliente_numero = nombre_zip[0:4].lstrip('0')
+    
     cargar_reportes(cliente_numero)
     
     ruta_config = os.path.join('CLIENTS', cliente_numero, 'Config', 'config.json')
@@ -130,9 +223,13 @@ def procesar_archivo_zip():
                 columnas = obtener_columnas_esperadas(dms_name, reporte_name)
                 columnas_esperadas[reporte_name] = columnas
 
+
+    reportes_selec = list(columnas_esperadas.keys())
     print(f'Reportes : {reportes}')
     print(f"Configuración de la base de datos: {db_config}")
     print(f"Columnas esperadas para el cliente {cliente_numero}: {columnas_esperadas}")
+    print(f'Reportes select: {reportes_selec}')
+
 
     if not workng_dir or not sandbx or not reportes or not db_config:
         logging.error("Configuración incompleta en 'config.json'.")
@@ -211,8 +308,15 @@ def procesar_archivo_zip():
     # Iterar sobre cada reporte y realizar las operaciones de creación de tabla e inserción
     for reporte in reportes:
         print(f'Sucursal: {sucursal}')
-        print(f'Reporte: {filtrar_letras(reporte)}')
+        print(f'Reporte__: {reporte}')
+
+        for item in reportes_selec:
+            if reporte in item and reporte == ''.join([i for i in item if not i.isdigit()]):
+                reporte = item
+                break
+        print(f'Reporte ? : {reporte}')
         nombre_tabla = f"{filtrar_letras(reporte)}{sucursal}"
+        print(f'Nombre tabla: {nombre_tabla}')
         ruta_archivo = os.path.join(sandbx, f'{filtrar_letras(reporte)}{sucursal}.txt')
         print(f'Ruta_aarchivo: {ruta_archivo}')
 
@@ -244,7 +348,7 @@ def procesar_archivo_zip():
         data = [row.split('|') for row in raw_data_clean.strip().split('\n')]
 
         # Usar encabezados esperados del archivo de configuración
-        encabezados_esperados = columnas_esperadas.get(reporte + sucursal, [])
+        encabezados_esperados = columnas_esperadas.get(reporte, [])
         print(f'Encabezados esperados : {encabezados_esperados}')
         headers = encabezados_esperados
         rows = data
@@ -254,7 +358,7 @@ def procesar_archivo_zip():
         # Comparar las columnas actuales con las esperadas
         columnas = data[0]
         print(f'Columnas reporte: {columnas}')
-        columnas_esperadas_reporte = set(columnas_esperadas.get(reporte + sucursal, []))
+        columnas_esperadas_reporte = set(columnas_esperadas.get(reporte, []))
         print(f'Columnas esperadas: {columnas_esperadas_reporte}')
         # Verificar si al menos una columna coincide
         if columnas_esperadas_reporte.intersection(columnas):
@@ -279,6 +383,9 @@ def procesar_archivo_zip():
 
         # Crear el DataFrame con las columnas leídas del archivo
         df = pd.DataFrame(adjusted_rows, columns=headers)
+        encabezados = df.columns.to_list()
+        print("DF ********")
+        print(encabezados)
 
         # Añadir columnas Client, Branch, Date
         df.insert(0, 'Client', cliente)
@@ -293,9 +400,11 @@ def procesar_archivo_zip():
         create_table_query += "    Client VARCHAR(255),\n"
         create_table_query += "    Branch VARCHAR(255),\n"
         create_table_query += "    Date DATE,\n"
-        for columna in df.columns[3:]:
-            tipo_dato = inferir_tipo_dato(df[columna])
-            create_table_query += f"    {columna} {tipo_dato},\n"
+        
+        for a in encabezados:
+            tipo_dato = inferir_tipo_dato(a, dms_name, reporte)
+            print(f'Reporte: {reporte} columna : {a} .. {tipo_dato}')
+            create_table_query += f"    {a} {tipo_dato},\n"
         create_table_query = create_table_query.rstrip(',\n') + "\n);"
 
         # Añadir ENGINE y CHARSET a la consulta SQL
@@ -325,6 +434,7 @@ def procesar_archivo_zip():
             ejecutar_consulta(conexion, drop_query)
             ejecutar_consulta(conexion, create_table_query)
             ejecutar_consulta(conexion, insert_query)
+            
 
     # Cerrar la conexión a la base de datos
     if conexion:

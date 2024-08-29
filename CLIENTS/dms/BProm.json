@@ -59,20 +59,20 @@
                     "length": "50"
                 },
                 "SaldoInicial$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Debitos$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Creditos$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Saldo$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "TipoCuenta": {
                     "tipo": "character varying",
@@ -105,8 +105,8 @@
             "formulas": {},
             "data_types": {
                 "Fecha": {
-                    "tipo": "DATE",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Cuenta": {
                     "tipo": "character varying",
@@ -121,20 +121,20 @@
                     "length": "50"
                 },
                 "SaldoInicial$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Debitos$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Creditos$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Saldo$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "TipoCuenta": {
                     "tipo": "character varying",
@@ -536,8 +536,8 @@
                     "length": "25"
                 },
                 "FechaPedido": {
-                    "tipo": "DATE",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "NumeroPedido": {
                     "tipo": "character varying",
@@ -564,44 +564,44 @@
                     "length": "25"
                 },
                 "Venta$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Descuento$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Iva$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Isan$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "ImpoConsumo$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "VentaTotal$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "CostodeVenta$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Bonificaciones$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "IncentivoCosto$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "CostoTotal$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "50"
                 },
                 "A\u00f1o": {
                     "tipo": "character varying",
@@ -644,8 +644,8 @@
                     "length": "25"
                 },
                 "FechaMatricula": {
-                    "tipo": "DATE",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Placas": {
                     "tipo": "character varying",
@@ -660,16 +660,16 @@
                     "length": "25"
                 },
                 "FechaCompra": {
-                    "tipo": "DATE",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "Prenda": {
                     "tipo": "character varying",
                     "length": "25"
                 },
                 "MontoFinanciado$": {
-                    "tipo": "double precision",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "EntidadFinanciera": {
                     "tipo": "character varying",
@@ -680,16 +680,16 @@
                     "length": "25"
                 },
                 "FechaVencimientoFinanciamiento": {
-                    "tipo": "DATE",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "FechaEntrega": {
-                    "tipo": "DATE",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "FechaActivacionGarantia": {
-                    "tipo": "DATE",
-                    "length": null
+                    "tipo": "character varying",
+                    "length": "25"
                 },
                 "RFC": {
                     "tipo": "character varying",

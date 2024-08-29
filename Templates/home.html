@@ -313,25 +313,27 @@
         }
     
         function uploadFileToServer(file) {
-            const formData = new FormData();
-            formData.append('file', file);
+    const formData = new FormData();
+    formData.append('file', file);
 
-            fetch('/upload_file', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showAlert('success', 'El archivo se cargó correctamente a la carpeta work.');
-                } else {
-                    showAlert('danger', 'No se pudo cargar el archivo a la carpeta work.');
-                }
-            })
-            .catch(() => {
-                showAlert('danger', 'Hubo un problema al cargar el archivo al servidor.');
-            });
+    fetch('/upload_and_execute', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'El archivo se cargó y se ejecutó el script correctamente.');
+        } else {
+            showAlert('danger', 'Hubo un problema al procesar el archivo: ' + data.error);
         }
+    })
+    .catch(() => {
+        showAlert('danger', 'Hubo un problema al cargar el archivo al servidor.');
+    });
+}
+
+
 
     
         function showAlert(type, message) {

@@ -618,10 +618,6 @@
                     <h6 class="mt-4">Funciones de Excel:</h6>
                     <div class="function-list">
                         <ul id="excel-functions" class="list-group">
-                            <li class="list-group-item">IF</li>
-                            <li class="list-group-item">INT</li>
-                            <li class="list-group-item">INSTR</li>
-                            <li class="list-group-item">ISUPPER</li>
                             <!-- Añadir más funciones según sea necesario -->
                         </ul>
                     </div>
@@ -1156,7 +1152,29 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
         });
 
 
-    
+        function loadFunctions() {
+            fetch('/get_functions')
+                .then(response => response.json())
+                .then(functions => {
+                    const functionList = document.getElementById('excel-functions');
+                    functionList.innerHTML = '';  // Limpia la lista existente
+
+                    functions.forEach(func => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item';
+                        listItem.textContent = func;
+                        listItem.addEventListener('click', function() {
+                            document.getElementById('formula-text').value += ` ${func}()`;
+                        });
+                        functionList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error al cargar las funciones:', error));
+        }
+
+        // Llamar a esta función cuando se abra el modal "Crear Función"
+        document.getElementById('functionModal').addEventListener('show.bs.modal', loadFunctions);
+
 
         function abrirModalConfiguracionColumnas(tabName, reporte) {
     const configureColumnsTableBody = document.getElementById('configureColumnsTableBody');
