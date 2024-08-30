@@ -1138,7 +1138,7 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
 
         document.addEventListener('DOMContentLoaded', function() {
 
-            document.getElementById('functionModal').addEventListener('show.bs.modal', cargarFuncionesExcel);
+            $('#functionModal').on('show.bs.modal', cargarFuncionesExcel);
             
             // Obtener el valor del parámetro activeTab
             const urlParams = new URLSearchParams(window.location.search);
@@ -1185,10 +1185,27 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
                 listItem.className = 'list-group-item';
                 listItem.textContent = func;
 
+                // Agrega un evento al hacer clic para insertar la función en el campo de fórmula
                 listItem.addEventListener('click', function() {
                     const formulaText = document.getElementById('formula-text');
                     if (formulaText) {
-                        formulaText.value += ` ${func}()`;
+                        // Inserta la función donde está el cursor
+                        const functionWithParentheses = `${func}()`;
+                        const startPos = formulaText.selectionStart;
+                        const endPos = formulaText.selectionEnd;
+                        
+                        // Obtener el texto antes y después del cursor
+                        const beforeInsert = formulaText.value.substring(0, startPos);
+                        const afterInsert = formulaText.value.substring(endPos, formulaText.value.length);
+                        
+                        // Insertar la función en la posición del cursor
+                        formulaText.value = beforeInsert + functionWithParentheses + afterInsert;
+                        formulaText.style.color = '#002A6E';  // Cambia el color del texto
+                        
+                        // Posicionar el cursor dentro de los paréntesis
+                        const newCursorPosition = startPos + func.length + 1;  // Después de la función y antes del paréntesis de cierre
+                        formulaText.setSelectionRange(newCursorPosition, newCursorPosition);
+                        formulaText.focus();
                     } else {
                         console.error("No se encontró el elemento con ID 'formula-text' en el DOM.");
                     }
@@ -1201,6 +1218,10 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
             console.error('Error al cargar las funciones:', error);
         });
 }
+
+
+
+
 
 
 
@@ -1651,36 +1672,59 @@ function eliminarFormula(reporte, columna) {
 
 
 
-function openFunctionModal(tab, reporte, columnaSeleccionada) {
-    fetch(`/edit_reporte/${reporte}?tab_name=${tab}`)
-        .then(response => response.json())
-        .then(data => {
-            const columnas = data.columnas || [];
-            const columnList = document.getElementById('column-list');
-            columnList.innerHTML = '';
+    function openFunctionModal(tab, reporte, columnaSeleccionada) {
+        fetch(`/edit_reporte/${reporte}?tab_name=${tab}`)
+            .then(response => response.json())
+            .then(data => {
+                const columnas = data.columnas || [];
+                const columnList = document.getElementById('column-list');
+                columnList.innerHTML = '';
 
-            columnas.forEach(col => {
-                const listItem = document.createElement('li');
-                listItem.className = 'list-group-item';
-                listItem.textContent = col;
-                listItem.addEventListener('click', function() {
-                    document.getElementById('formula-text').value += ` ${col}`;
+                columnas.forEach(col => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    listItem.textContent = col;
+
+                    // Aquí va el código de inserción en la posición del cursor
+                    listItem.addEventListener('click', function() {
+                        const formulaText = document.getElementById('formula-text');
+                        if (formulaText) {
+                            // Inserta la columna donde está el cursor
+                            const startPos = formulaText.selectionStart;
+                            const endPos = formulaText.selectionEnd;
+
+                            // Obtener el texto antes y después del cursor
+                            const beforeInsert = formulaText.value.substring(0, startPos);
+                            const afterInsert = formulaText.value.substring(endPos, formulaText.value.length);
+
+                            // Insertar la columna en la posición del cursor
+                            formulaText.value = beforeInsert + col + afterInsert;
+
+                            // Posicionar el cursor después de la columna insertada
+                            const newCursorPosition = startPos + col.length;
+                            formulaText.setSelectionRange(newCursorPosition, newCursorPosition);
+                            formulaText.focus();
+                        } else {
+                            console.error("No se encontró el elemento con ID 'formula-text' en el DOM.");
+                        }
+                    });
+
+                    columnList.appendChild(listItem);
                 });
-                columnList.appendChild(listItem);
-            });
 
-            document.getElementById('selected-column-name').textContent = columnaSeleccionada;
-            document.getElementById('formula-text').value = '';
-            document.getElementById('functionModal').setAttribute('data-tab', tab);  // Aquí se asigna el tab_name
-            document.getElementById('functionModal').setAttribute('data-reporte', reporte);
-            document.getElementById('functionModal').setAttribute('data-columna', columnaSeleccionada);
-            $('#functionModal').modal('show');
-        })
-        .catch(error => {
-            console.error('Error al cargar las columnas:', error);
-            Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
-        });
-}
+                document.getElementById('selected-column-name').textContent = columnaSeleccionada;
+                document.getElementById('formula-text').value = '';
+                document.getElementById('functionModal').setAttribute('data-tab', tab);  // Aquí se asigna el tab_name
+                document.getElementById('functionModal').setAttribute('data-reporte', reporte);
+                document.getElementById('functionModal').setAttribute('data-columna', columnaSeleccionada);
+                $('#functionModal').modal('show');
+            })
+            .catch(error => {
+                console.error('Error al cargar las columnas:', error);
+                Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
+            });
+    }
+
 
 function duplicarReporte(tab, reporte) {
     // Obtener los tabs disponibles desde el servidor

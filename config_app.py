@@ -1282,26 +1282,26 @@ def upload_and_execute():
         return jsonify(success=False, error=str(e))
 
 
-# def get_functions_from_file(file_path):
-#     functions = []
-#     try:
-#         with open(file_path, 'r', encoding='utf-8') as file:
-#             tree = ast.parse(file.read())
-#             for node in tree.body:
-#                 if isinstance(node, ast.FunctionDef):
-#                     functions.append(node.name)
-#         logging.info(f"Funciones extraídas del archivo {file_path}: {functions}")
-#     except Exception as e:
-#         logging.error(f"Error al leer el archivo {file_path}: {e}")
-#     return functions
+def get_functions_from_file(file_path):
+    functions = []
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            tree = ast.parse(file.read())
+            for node in tree.body:
+                if isinstance(node, ast.FunctionDef):
+                    functions.append(node.name)
+        print(f"Funciones extraídas del archivo {file_path}: {functions}")
+    except Exception as e:
+        print(f"Error al leer el archivo {file_path}: {e}")
+    return functions
 
-# @app.route('/get_functions', methods=['GET'])
-# def get_functions():
-#     file_path = 'funcionesExternas.py'  # Ruta al archivo de funciones
-#     functions = get_functions_from_file(file_path)
-#     if not functions:
-#         logging.warning("No se encontraron funciones en el archivo o el archivo no se pudo leer.")
-#     return jsonify(functions)
+@app.route('/get_functions', methods=['GET'])
+def get_functions():
+    file_path = 'funcionesExternas.py'  # Ruta al archivo de funciones
+    functions = get_functions_from_file(file_path)
+    if not functions:
+        print("No se encontraron funciones en el archivo o el archivo no se pudo leer.")
+    return jsonify(functions)
 
 
 
