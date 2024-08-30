@@ -596,52 +596,53 @@
     </div>
 
     <!-- Modal para agregar una fórmula -->
-<div class="modal fade" id="functionModal" tabindex="-1" role="dialog" aria-labelledby="functionModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="functionModalLabel">Crear Función</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body d-flex">
-                <div class="col-4">
-                    <h6>Columnas Disponibles:</h6>
-                    <ul id="column-list" class="list-group">
-                        <!-- Las columnas se agregarán aquí dinámicamente -->
-                    </ul>
+    <div class="modal fade" id="functionModal" tabindex="-1" role="dialog" aria-labelledby="functionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="functionModalLabel">Crear Función</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="col-8">
-                    <h6>Fórmula para <span id="selected-column-name"></span>:</h6>
-                    <textarea id="formula-text" class="form-control" rows="2"></textarea>
-                    <h6 class="mt-4">Funciones de Excel:</h6>
-                    <div class="function-list">
-                        <ul id="excel-functions" class="list-group">
-                            <!-- Añadir más funciones según sea necesario -->
+                <div class="modal-body d-flex">
+                    <div class="col-4">
+                        <h6>Columnas Disponibles:</h6>
+                        <ul id="column-list" class="list-group">
+                            <!-- Las columnas se agregarán aquí dinámicamente -->
                         </ul>
                     </div>
-                    <h6 class="mt-4">Operadores:</h6>
-                    <div class="operator-list">
-                        <ul id="operators" class="list-group">
-                            <li class="list-group-item">+</li>
-                            <li class="list-group-item">-</li>
-                            <li class="list-group-item">*</li>
-                            <li class="list-group-item">/</li>
-                            <li class="list-group-item">&lt;</li>
-                            <li class="list-group-item">&gt;</li>
-                            <li class="list-group-item">=</li>
-                        </ul>
+                    <div class="col-8">
+                        <h6>Fórmula para <span id="selected-column-name"></span>:</h6>
+                        <textarea id="formula-text" class="form-control" rows="2"></textarea>
+                        <h6 class="mt-4">Funciones de Excel:</h6>
+                        <div class="function-list">
+                            <ul id="excel-functions" class="list-group">
+                                <!-- Las funciones de funcionesExternas.py se agregarán aquí dinámicamente -->
+                            </ul>
+                        </div>
+                        <h6 class="mt-4">Operadores:</h6>
+                        <div class="operator-list">
+                            <ul id="operators" class="list-group">
+                                <li class="list-group-item">+</li>
+                                <li class="list-group-item">-</li>
+                                <li class="list-group-item">*</li>
+                                <li class="list-group-item">/</li>
+                                <li class="list-group-item">&lt;</li>
+                                <li class="list-group-item">&gt;</li>
+                                <li class="list-group-item">=</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="save-formula-btn">Guardar Fórmula</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="save-formula-btn">Guardar Fórmula</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    
 
 
     <!-- Modal para agregar nuevos reportes -->
@@ -1136,6 +1137,9 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
         });
 
         document.addEventListener('DOMContentLoaded', function() {
+
+            document.getElementById('functionModal').addEventListener('show.bs.modal', cargarFuncionesExcel);
+            
             // Obtener el valor del parámetro activeTab
             const urlParams = new URLSearchParams(window.location.search);
             const activeTab = urlParams.get('activeTab');
@@ -1151,29 +1155,53 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
             }
         });
 
+        function cargarFuncionesExcel() {
+    console.log("Cargando funciones desde el servidor...");
 
-        function loadFunctions() {
-            fetch('/get_functions')
-                .then(response => response.json())
-                .then(functions => {
-                    const functionList = document.getElementById('excel-functions');
-                    functionList.innerHTML = '';  // Limpia la lista existente
+    // Realiza una solicitud al endpoint /get_functions para obtener las funciones
+    fetch('/get_functions')
+        .then(response => {
+            console.log("Respuesta recibida del servidor:", response);
 
-                    functions.forEach(func => {
-                        const listItem = document.createElement('li');
-                        listItem.className = 'list-group-item';
-                        listItem.textContent = func;
-                        listItem.addEventListener('click', function() {
-                            document.getElementById('formula-text').value += ` ${func}()`;
-                        });
-                        functionList.appendChild(listItem);
-                    });
-                })
-                .catch(error => console.error('Error al cargar las funciones:', error));
-        }
+            if (!response.ok) {
+                throw new Error("Error al obtener funciones del servidor.");
+            }
+            return response.json();
+        })
+        .then(functions => {
+            console.log("Funciones recibidas:", functions);
 
-        // Llamar a esta función cuando se abra el modal "Crear Función"
-        document.getElementById('functionModal').addEventListener('show.bs.modal', loadFunctions);
+            const functionsList = document.getElementById('excel-functions');
+
+            if (!functionsList) {
+                console.error("No se encontró el elemento con ID 'excel-functions' en el DOM.");
+                return;
+            }
+
+            functionsList.innerHTML = '';  // Limpia la lista actual
+
+            functions.forEach(func => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.textContent = func;
+
+                listItem.addEventListener('click', function() {
+                    const formulaText = document.getElementById('formula-text');
+                    if (formulaText) {
+                        formulaText.value += ` ${func}()`;
+                    } else {
+                        console.error("No se encontró el elemento con ID 'formula-text' en el DOM.");
+                    }
+                });
+
+                functionsList.appendChild(listItem);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar las funciones:', error);
+        });
+}
+
 
 
         function abrirModalConfiguracionColumnas(tabName, reporte) {
@@ -1646,7 +1674,6 @@ function openFunctionModal(tab, reporte, columnaSeleccionada) {
             document.getElementById('functionModal').setAttribute('data-tab', tab);  // Aquí se asigna el tab_name
             document.getElementById('functionModal').setAttribute('data-reporte', reporte);
             document.getElementById('functionModal').setAttribute('data-columna', columnaSeleccionada);
-
             $('#functionModal').modal('show');
         })
         .catch(error => {

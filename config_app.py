@@ -11,9 +11,12 @@ from forms import RegistrationForm, LoginForm
 from models import User  # Import the User model after db is initialized
 import subprocess
 import ast
+import logging
 
 # Configura Flask con la ruta para archivos estáticos
 app = Flask(__name__, static_url_path='/static')
+#logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
+
 
 # Cargar la configuración desde un archivo JSON específico
 def cargar_config(tab_name):
@@ -1277,23 +1280,29 @@ def upload_and_execute():
     
     except Exception as e:
         return jsonify(success=False, error=str(e))
-    
-# Endpoint para obtener las funciones
-@app.route('/get_functions', methods=['GET'])
-def get_functions():
-    functions = []
-    file_path = os.path.join(os.getcwd(), 'funcionesExternas.py')
 
-    with open(file_path, 'r', encoding='utf-8') as f:
-        file_content = f.read()
 
-    tree = ast.parse(file_content)
-    
-    for node in tree.body:
-        if isinstance(node, ast.FunctionDef):
-            functions.append(node.name)
+# def get_functions_from_file(file_path):
+#     functions = []
+#     try:
+#         with open(file_path, 'r', encoding='utf-8') as file:
+#             tree = ast.parse(file.read())
+#             for node in tree.body:
+#                 if isinstance(node, ast.FunctionDef):
+#                     functions.append(node.name)
+#         logging.info(f"Funciones extraídas del archivo {file_path}: {functions}")
+#     except Exception as e:
+#         logging.error(f"Error al leer el archivo {file_path}: {e}")
+#     return functions
 
-    return jsonify(functions)
+# @app.route('/get_functions', methods=['GET'])
+# def get_functions():
+#     file_path = 'funcionesExternas.py'  # Ruta al archivo de funciones
+#     functions = get_functions_from_file(file_path)
+#     if not functions:
+#         logging.warning("No se encontraron funciones en el archivo o el archivo no se pudo leer.")
+#     return jsonify(functions)
+
 
 
 if __name__ == '__main__':
