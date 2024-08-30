@@ -40,7 +40,12 @@
                 "Naturaleza",
                 "Sucursal"
             ],
-            "formulas": {},
+            "formulas": {
+                "SaldoInicial$": "LimpiaCodigos(Descripcion)",
+                "Fecha": "LimpiaCodigos(Fecha)",
+                "Descripcion": "LimpiaCodigos(Descripcion)LimpiaCodigosv1(SaldoInicial$)",
+                "Cuenta": "LimpiaCodigos(CentroCosto)"
+            },
             "data_types": {
                 "Fecha": {
                     "tipo": "DATE",

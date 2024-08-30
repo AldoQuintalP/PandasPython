@@ -311,6 +311,7 @@ def edit_reporte(reporte):
     columnas_info = config['columnas_esperadas'].get(reporte, {'columnas': [], 'formulas': {}, 'data_types': {}})
     columnas = columnas_info.get('columnas', [])
     data_types = columnas_info.get('data_types', {})
+    formulas = columnas_info.get('formulas', {})  # Asegurarse de obtener las fórmulas
 
     # Validar cuáles columnas no tienen un tipo de dato asignado
     columnas_sin_tipo_dato = [col for col in columnas if col not in data_types]
@@ -318,6 +319,7 @@ def edit_reporte(reporte):
     return jsonify({
         'success': True,
         'columnas': columnas,
+        'formulas': formulas,  # Asegurarse de que las fórmulas se devuelvan en la respuesta
         'data_types': data_types,
         'columnas_sin_tipo_dato': columnas_sin_tipo_dato
     })
@@ -509,17 +511,23 @@ def actualizar_registro():
 @login_required
 def save_formula():
     try:
-        tab_name = request.form.get('name')  # Obtener el nombre de la pestaña desde el formulario
-        print(f'tab_name: {tab_name}')
-        reporte = request.form.get('reporte')
-        columna = request.form.get('columna')
-        formula = request.form.get('formula')
+        # Obtener los datos del request como JSON
+        data = request.get_json()
+        tab_name = data.get('name')  # Obtener el nombre de la pestaña
+        reporte = data.get('reporte')
+        columna = data.get('columna')
+        formula = data.get('formula')
+
+        print(f"Tab Name: {tab_name}, Reporte: {reporte}, Columna: {columna}")
 
         if not tab_name or not reporte or not columna:
             return jsonify({'success': False, 'error': 'Pestaña, reporte y columna son necesarios.'})
 
         # Cargar la configuración para la pestaña especificada
         config = cargar_config(tab_name)
+
+        if config is None:
+            return jsonify({'success': False, 'error': 'No se pudo cargar la configuración para la pestaña especificada.'})
 
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe.'})
@@ -537,6 +545,7 @@ def save_formula():
     except Exception as e:
         print(f"Error al guardar la fórmula: {e}")
         return jsonify({'success': False, 'error': 'No se pudo guardar la fórmula.'})
+
     
 @app.route('/delete-formula', methods=['POST'])
 def delete_formula():
@@ -862,6 +871,7 @@ def get_reportes_json():
             return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 @app.route('/guardar_registro', methods=['POST'])
@@ -1303,6 +1313,25 @@ def get_functions():
         print("No se encontraron funciones en el archivo o el archivo no se pudo leer.")
     return jsonify(functions)
 
+
+@app.route('/get_formulas', methods=['GET'])
+@login_required
+def get_formulas():
+    tab_name = request.args.get('tab_name')
+    reporte = request.args.get('reporte')
+
+    if not tab_name or not reporte:
+        return jsonify({'success': False, 'error': 'Pestaña y reporte son necesarios.'})
+
+    config = cargar_config(tab_name)
+
+    if reporte not in config['columnas_esperadas']:
+        return jsonify({'success': False, 'error': 'El reporte no existe.'})
+
+    # Obtener las columnas que tienen fórmulas
+    formulas = config['columnas_esperadas'][reporte].get('formulas', {})
+
+    return jsonify({'success': True, 'formulas': formulas})
 
 
 if __name__ == '__main__':
