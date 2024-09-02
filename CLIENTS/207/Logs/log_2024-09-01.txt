@@ -1,0 +1,55 @@
+2024-09-01 13:42:54,420 - INFO - <--------------- Inicia el proceso --------------->
+2024-09-01 13:42:54,486 - INFO - Archivo descomprimido en C:\Users\aldoq\OneDrive\Escritorio\Repositorio Pandas\PandasPython\3-Sandbx
+2024-09-01 13:42:54,487 - INFO - Archivo renombrado de INVUSA01_13082024.txt a INVUSA01.txt
+2024-09-01 13:42:54,517 - INFO - Conexión a la base de datos establecida.
+2024-09-01 13:42:54,517 - INFO - Versión del servidor PostgreSQL: PostgreSQL 14.3, compiled by Visual C++ build 1914, 64-bit
+2024-09-01 13:42:54,519 - INFO - Al menos una columna de INVUSA01 coincide con las columnas esperadas en la configuración.
+2024-09-01 13:42:54,521 - INFO - No hay fórmula para la columna 'Vin' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,521 - INFO - No hay fórmula para la columna 'Modelo' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,521 - INFO - No hay fórmula para la columna 'Año' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,522 - INFO - No hay fórmula para la columna 'Marca' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,522 - INFO - No hay fórmula para la columna 'Version' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,523 - INFO - No hay fórmula para la columna 'ColorPintura' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,523 - INFO - No hay fórmula para la columna 'Interior' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,523 - INFO - No hay fórmula para la columna 'Costo$' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,524 - INFO - No hay fórmula para la columna 'FechaCompra' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,525 - INFO - No hay fórmula para la columna 'Status' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,527 - INFO - Fórmula 'LimpiaTexto(TipoCompra)' aplicada a la columna 'TipoCompra' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,527 - INFO - No hay fórmula para la columna 'Fecha' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,528 - INFO - No hay fórmula para la columna 'NumeroInventario' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,528 - INFO - No hay fórmula para la columna 'CostoCompra$' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,528 - INFO - No hay fórmula para la columna 'Version1' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,529 - INFO - No hay fórmula para la columna 'Placas' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,529 - INFO - No hay fórmula para la columna 'FechaAlta' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,530 - INFO - No hay fórmula para la columna 'Nuevo_Usado' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,530 - INFO - No hay fórmula para la columna 'Sucursal' en el reporte 'INVUSA01'.
+2024-09-01 13:42:54,540 - INFO - Archivo SQL dump generado: C:\Users\aldoq\OneDrive\Escritorio\Repositorio Pandas\PandasPython\3-Sandbx\INVUSA01.sql.dump
+2024-09-01 13:42:54,567 - INFO - Consulta ejecutada con éxito.
+2024-09-01 13:42:54,573 - INFO - Consulta ejecutada con éxito.
+2024-09-01 13:42:54,574 - ERROR - Error al ejecutar la consulta: el valor es demasiado largo para el tipo character varying(5)
+
+2024-09-01 13:42:54,574 - ERROR - Error al ejecutar la consulta: INSERT INTO INVUSA01 (Client, Branch, Date, Vin, Modelo, Año, Marca, Version, ColorPintura, Interior, Costo$, FechaCompra, Status, TipoCompra, Fecha, NumeroInventario, CostoCompra$, Version1, Placas, FechaAlta, Nuevo_Usado, Sucursal) VALUES ('207', '01', '01/09/2024', '3HGRU5832MM006345', 'HR-V UNIQ CVT 5PTAS', '2021', 'HONDA', 'SIN VERSION', 'PLATA LUNAR', 'TELA', '307000.00000', '18/04/2024', 'DISPONIBLE', 'COMPRA@ A PERSONA FISICA +-PSOT MARCAS', '13/08/2024', '1472', '307000.00000', 'HR-V UNIQ CVT 5PTAS', '', '05/08/2024', 'Usado', 'Toy_Oaxaca'), ('207', '01', '01/09/2024', '3G1MA5E53ML133725', 'ONIX PAQUETE G PREMIER', '2021', 'CHEVROLET', 'SIN VERSION', 'AZUL PACIFICO', 'TELA', '190000.00000', '16/04/2024', 'DISPONIBLE', 'COMPRA PERSONA FISICA ACT EMPRESARIAL OT MARCAS', '13/08/2024', '1471', '163793.10000', 'ONIX PAQUETE G PREMIER', '', '03/07/2024', 'Usado', 'Toy_Oaxaca'), ('207', '01', '01/09/2024', 'WBAYH110XL5N83472', 'BMW X2 SDRIVE18IA EXECUTIVE', '2020', 'BMW', 'SIN VERSION', 'BLACK SAPPHIRE', 'TELA', '404357.30000', '08/04/2024', 'DISPONIBLE', 'COMPRA PERSONA FISICA ACT EMPRESARIAL OT MARCAS', '13/08/2024', '1462', '348583.88000', 'BMW X2 SDRIVE18IA EXECUTIVE', '', '08/04/2024', 'Usado', 'Toy_Oaxaca'), ('207', '01', '01/09/2024', '3HGRU5852JM008836', 'HR-V EPIC CVT', '2018', 'HONDA', 'SIN VERSION', 'PLATA LUNAR', 'TELA', '275000.00000', '19/04/2024', 'DISPONIBLE', 'COMPRA A PERSONA FISICA OT MARCAS', '13/08/2024', '1476', '275000.00000', 'HR-V EPIC CVT', '', '06/06/2024', 'Usado', 'Toy_Oaxaca'), ('207', '01', '01/09/2024', 'JN8BT27T9GW014714', 'XTRAIL SENSE 2 FILAS', '2016', 'NISSAN', 'SIN VERSION', 'PLATA', 'TELA', '258000.00000', '30/11/2023', 'DISPONIBLE', 'COMPRA A PERSONA FISICA OT MARCAS', '13/08/2024', '1401', '258000.00000', 'XTRAIL SENSE 2 FILAS', '', '30/11/2023', 'Usado', 'Toy_Oaxaca'), ('207', '01', '01/09/2024', 'MHKMF5CF8LK009444', 'AVANZA LE AT', '2020', 'TOYOTA', 'SIN VERSION', 'BLANCO', 'GRIS', '215000.00000', '07/08/2024', 'DISPONIBLE', 'TOMA A PERSONA FISICA  DE LA MARCA', '13/08/2024', '1547', '215000.00000', 'AVANZA LE AT', '', '07/08/2024', 'Usado', 'Toy_Oaxaca'), ('207', '01', '01/09/2024', 'MHKAA1BA3PJ081342', 'RAIZE XLE CVT BI TONO', '2023', 'TOYOTA', 'SIN VERSION', 'ROJO/NEGRO', 'NEGRO', '290000.00000', '10/08/2024', 'DISPONIBLE', 'COMPRA A PERSONA FISICA  DE LA MARCA', '13/08/2024', '1548', '290000.00000', 'RAIZE XLE CVT BI TONO', '', '12/08/2024', 'Usado', 'Toy_Oaxaca'), ('207', '01', '01/09/2024', 'TMCJ33AB2KJ782436', 'TUCSON LIMITED TECH NAVI AT', '2019', 'HYUNDAI', 'SIN VERSION', 'TABACO', 'VINO', '276000.00000', '24/07/2024', 'DISPONIBLE', 'COMPRA A PERSONA FISICA OT MARCAS', '13/08/2024', '1540', '276000.00000', 'TUCSON LIMITED TECH NAVI AT', '', '29/07/2024', 'Usado', 'Toy_Oaxaca'), ('207', '01', '01/09/2024', '1HGRW1899KL901174', 'CR-V TOURING CVT', '2019', 'HONDA', 'SIN VERSION', 'PLATA LUNAR', 'PIEL', '350000.00000', '08/07/2024', 'DISPONIBLE', 'COMPRA A PERSONA FISICA OT MARCAS', '13/08/2024', '1530', '350000.00000', 'CR-V TOURING CVT', '', '05/08/2024', 'Usado', 'Toy_Oaxaca'), ('207', '01', '01/09/2024', '1FTEW1C80HKC38720', 'F-150 XL SUPER CREW 4X2 3.5L V6 TA', '2017', 'FORD', 'SIN VERSION', 'BLANCO OXFORD', 'TELA GRIS', '432000.00000', '31/10/2022', 'DISPONIBLE', 'COMPRA PERSONA MORAL OT MARCAS', '13/08/2024', '1226', '372413.79000', 'F-150 XL SUPER CREW 4X2 3.5L V6 TA', '', '07/06/2024', 'Usado', 'Toy_Oaxaca'); - el valor es demasiado largo para el tipo character varying(5)
+
+2024-09-01 13:42:54,575 - INFO - Error relacionado con el tamaño de las columnas detectado. Ajustando tamaños...
+2024-09-01 13:42:54,578 - ERROR - Error al ajustar el tamaño de la columna 'ColorPintura' en la tabla 'INVUSA01': transacción abortada, las órdenes serán ignoradas hasta el fin de bloque de transacción
+
+2024-09-01 13:42:54,579 - INFO - Tamaño de la columna 'TipoCompra' en la tabla 'INVUSA01' ajustado a 65.
+2024-09-01 13:42:54,582 - INFO - Tamaño de la columna 'ColorPintura' en la tabla 'INVUSA01' ajustado a 55.
+2024-09-01 13:42:54,582 - INFO - Tamaño de la columna 'TipoCompra' en la tabla 'INVUSA01' ajustado a 65.
+2024-09-01 13:42:54,585 - INFO - Tamaño de la columna 'ColorPintura' en la tabla 'INVUSA01' ajustado a 55.
+2024-09-01 13:42:54,585 - INFO - Tamaño de la columna 'TipoCompra' en la tabla 'INVUSA01' ajustado a 65.
+2024-09-01 13:42:54,587 - INFO - Tamaño de la columna 'ColorPintura' en la tabla 'INVUSA01' ajustado a 55.
+2024-09-01 13:42:54,587 - INFO - Tamaño de la columna 'TipoCompra' en la tabla 'INVUSA01' ajustado a 65.
+2024-09-01 13:42:54,590 - INFO - Tamaño de la columna 'TipoCompra' en la tabla 'INVUSA01' ajustado a 65.
+2024-09-01 13:42:54,592 - INFO - Tamaño de la columna 'ColorPintura' en la tabla 'INVUSA01' ajustado a 55.
+2024-09-01 13:42:54,592 - INFO - Tamaño de la columna 'TipoCompra' en la tabla 'INVUSA01' ajustado a 65.
+2024-09-01 13:42:54,595 - INFO - Tamaño de la columna 'ColorPintura' en la tabla 'INVUSA01' ajustado a 55.
+2024-09-01 13:42:54,595 - INFO - Tamaño de la columna 'TipoCompra' en la tabla 'INVUSA01' ajustado a 65.
+2024-09-01 13:42:54,597 - INFO - Tamaño de la columna 'ColorPintura' en la tabla 'INVUSA01' ajustado a 55.
+2024-09-01 13:42:54,598 - INFO - Tamaño de la columna 'TipoCompra' en la tabla 'INVUSA01' ajustado a 65.
+2024-09-01 13:42:54,600 - INFO - Tamaño de la columna 'ColorPintura' en la tabla 'INVUSA01' ajustado a 55.
+2024-09-01 13:42:54,600 - INFO - Tamaño de la columna 'TipoCompra' en la tabla 'INVUSA01' ajustado a 65.
+2024-09-01 13:42:54,603 - INFO - Tamaño de la columna 'ColorPintura' en la tabla 'INVUSA01' ajustado a 55.
+2024-09-01 13:42:54,603 - INFO - Tamaño de la columna 'TipoCompra' en la tabla 'INVUSA01' ajustado a 65.
+2024-09-01 13:42:54,604 - INFO - Inserción exitosa después de ajustar el tamaño de las columnas.
+2024-09-01 13:42:54,604 - INFO - <--------------- Conexión a la base de datos cerrada. --------------->

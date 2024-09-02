@@ -430,24 +430,23 @@
                                             </div>
                                             <div class="btn-group ml-auto" role="group" style="white-space: nowrap;">
                                                 <!-- Botones de acciones -->
-                                                <button class="edit-btn btn btn-warning" onclick="abrirEditarColumnasModal('{{ tab }}', '{{ reporte }}')">
+                                                <button class="btn btn-outline-warning" onclick="abrirEditarColumnasModal('{{ tab }}', '{{ reporte }}')">
                                                     <i class="fa fa-edit"></i> Editar
                                                 </button>
-                                                <button class="function-btn btn btn-success" onclick="selectColumn('{{ tab }}', '{{ reporte }}')">
+                                                <button class="btn btn-outline-success" onclick="selectColumn('{{ tab }}', '{{ reporte }}')">
                                                     <i class="fa fa-calculator"></i> Función
                                                 </button>
-                                                <button type="button" class="btn btn-info" 
+                                                <button type="button" class="btn btn-outline-secondary" 
                                                         onclick="abrirModalConfiguracionColumnas('{{ tab }}', '{{ reporte }}')"
                                                         data-tab="{{ tab }}" 
                                                         data-reporte="{{ reporte }}">
                                                     <i class="fa fa-database"></i> Tipo de datos
                                                 </button>
-
-                                                <button class="trash-btn btn btn-danger" onclick="eliminarReporte('{{ tab }}', '{{ reporte }}')">
-                                                    <i class="fa fa-trash-alt"></i> Eliminar
-                                                </button>
-                                                <button class="duplicate-btn btn btn-info" onclick="duplicarReporte('{{ tab }}', '{{ reporte }}')">
+                                                <button class="btn btn-outline-info" onclick="duplicarReporte('{{ tab }}', '{{ reporte }}')">
                                                     <i class="fa fa-copy"></i> Duplicar
+                                                </button>
+                                                <button class="btn btn-outline-danger" onclick="eliminarReporte('{{ tab }}', '{{ reporte }}')">
+                                                    <i class="fa fa-trash-alt"></i> Eliminar
                                                 </button>
                                             </div>
                                         </li>
@@ -966,17 +965,21 @@ function filtrarReportes(tabName, tabIndex) {
                     </div>
                     <div class="btn-group ml-auto" role="group" style="white-space: nowrap;">
                         <!-- Botones de acciones -->
-                        <button class="edit-btn btn btn-warning" onclick="abrirEditarColumnasModal('${tabName}', '${reporte}')">
+                        <button class="btn btn-outline-warning" onclick="abrirEditarColumnasModal('${tabName}', '${reporte}')">
                             <i class="fa fa-edit"></i> Editar
                         </button>
-                        <button class="function-btn btn btn-success" onclick="selectColumn('${tabName}', '${reporte}')">
+                        <button class="btn btn-outline-success" onclick="selectColumn('${tabName}', '${reporte}')">
                             <i class="fa fa-calculator"></i> Función
                         </button>
-                        <button class="trash-btn btn btn-danger" onclick="eliminarReporte('${tabName}', '${reporte}')">
-                            <i class="fa fa-trash-alt"></i> Eliminar
-                        </button>
-                        <button class="duplicate-btn btn btn-info" onclick="duplicarReporte('${tabName}', '${reporte}')">
+                        <button class="btn btn-outline-secondary" 
+                                                        onclick="abrirModalConfiguracionColumnas('${tabName}', '${reporte}')"
+                                                    <i class="fa fa-database"></i> Tipo de datos
+                                                </button>
+                        <button class="btn btn-outline-info" onclick="duplicarReporte('${tabName}', '${reporte}')">
                             <i class="fa fa-copy"></i> Duplicar
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="eliminarReporte('${tabName}', '${reporte}')">
+                            <i class="fa fa-trash-alt"></i> Eliminar
                         </button>
                     </div>
                 `;

@@ -41,10 +41,10 @@
                 "Sucursal"
             ],
             "formulas": {
-                "SaldoInicial$": "LimpiaCodigos(Descripcion)",
-                "Fecha": "LimpiaCodigos(Fecha)",
-                "Descripcion": "LimpiaCodigos(Descripcion)LimpiaCodigosv1(SaldoInicial$)",
-                "Cuenta": "LimpiaCodigos(CentroCosto)"
+                "SaldoInicial$": "LimpiaTexto(Descripcion)",
+                "Fecha": "LimpiaTexto(Fecha)",
+                "Descripcion": "LimpiaTexto(Descripcion)",
+                "Cuenta": "LimpiaTexto(CentroCosto)"
             },
             "data_types": {
                 "Fecha": {
@@ -219,25 +219,106 @@
         "INVUSA01": {
             "columnas": [
                 "Vin",
-                "NumeroInventario",
-                "CostoCompra$",
-                "CostoActual$",
+                "Modelo",
                 "A\u00f1o",
                 "Marca",
-                "Modelo",
                 "Version",
                 "ColorPintura",
                 "Interior",
+                "Costo$",
+                "FechaCompra",
                 "Status",
                 "TipoCompra",
-                "FechaCompra",
+                "Fecha",
+                "NumeroInventario",
+                "CostoCompra$",
+                "Version1",
                 "Placas",
                 "FechaAlta",
-                "Odometro",
-                "NuevoUsado",
+                "Nuevo_Usado",
                 "Sucursal"
             ],
-            "formulas": {}
+            "formulas": {
+                "TipoCompra": "LimpiaTexto(TipoCompra)"
+            },
+            "data_types": {
+                "Vin": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Modelo": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "A\u00f1o": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Marca": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Version": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "ColorPintura": {
+                    "tipo": "character varying",
+                    "length": "5"
+                },
+                "Interior": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Costo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "FechaCompra": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Status": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "TipoCompra": {
+                    "tipo": "character varying",
+                    "length": "15"
+                },
+                "Fecha": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "NumeroInventario": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "CostoCompra$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Version1": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Placas": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "FechaAlta": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Nuevo_Usado": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Sucursal": {
+                    "tipo": "character varying",
+                    "length": "50"
+                }
+            }
         },
         "COTNUE01": {
             "columnas": [
