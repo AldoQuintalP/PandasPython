@@ -1,6 +1,7 @@
 from unidecode import unidecode
 import unicodedata
 from pyspark.sql import functions as F
+import pandas as pd
 
 def LimpiaCodigos(texto):
     #Se Eliminan caracteres especiales antes y despues del texto
@@ -24,20 +25,35 @@ def LimpiaCodigosv1(texto):
     return final
 
 def LimpiaTexto(texto):
-    # Eliminar caracteres especiales antes y después del texto
-    if texto is not None:
-       temp = texto.upper()
-       temp = temp.strip("""-+*/._:,;{}[]&lt;&gt;^`¨~´¡!¿?\'()=&amp;%$#º°ª¬@¢©®«»±£¤¥§¯µ¶·¸ÆæÇçØß÷Œ×ƒ½¼¾ðÐ¦þ\t¹²³“‘" """)
-       # Reemplazar caracteres especiales por letras
-       temp_rep = temp.upper().replace("Ã‘","N").replace("Ã‰","E").replace("Ã“","O").replace("Ãº","U")\
-       .replace("Ã­","I").replace("Ã±","N").replace("‰","A").replace("¢","O").replace("Ã³","O")\
-       .replace("/"," ").replace("-"," ").replace("_"," ").replace(".","").replace(",","")
-       # Eliminar acentos de letras Ej: Ã -> A 
-       final = unidecode(temp_rep)
+    """
+    Limpia el texto dado eliminando caracteres especiales y reemplazando letras con acentos.
+    Funciona tanto con cadenas individuales como con pandas Series.
+
+    :param texto: El texto o pandas Series a limpiar.
+    :return: El texto limpio o pandas Series con texto limpio.
+    """
+    if isinstance(texto, pd.Series):
+        return texto.apply(LimpiaTexto)  # Aplicar la función recursivamente a cada elemento de la Series
+
+    if texto is not None and isinstance(texto, str):
+        # Convertir a mayúsculas
+        temp = texto.upper()
+
+        # Eliminar caracteres especiales antes y después del texto
+        temp = temp.strip("""-+*/._:,;{}[]&lt;&gt;^`¨~´¡!¿?\'()=&amp;%$#º°ª¬@¢©®«»±£¤¥§¯µ¶·¸ÆæÇçØß÷Œ×ƒ½¼¾ðÐ¦þ\t¹²³“‘" """)
+
+        # Reemplazar caracteres especiales por letras
+        temp_rep = temp.replace("Ã‘", "N").replace("Ã‰", "E").replace("Ã“", "O").replace("Ãº", "U") \
+            .replace("Ã­", "I").replace("Ã±", "N").replace("‰", "A").replace("¢", "O").replace("Ã³", "O") \
+            .replace("/", " ").replace("-", " ").replace("_", " ").replace(".", "").replace(",", "")
+
+        # Eliminar acentos de letras Ej: Ã -> A
+        final = unidecode(temp_rep)
     else:
-       final = ""
+        final = str(texto) if texto is not None else ""  # Convertir a string si no es None
 
     return final
+
 
 def LimpiaTextov1(texto):
     if texto is not None:

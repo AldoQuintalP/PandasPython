@@ -383,38 +383,69 @@ def procesar_archivo_zip():
                     row = row[:max_columns]  # Truncar si hay más columnas de las esperadas
                 adjusted_rows.append(row)
 
-            # Crear el DataFrame con las columnas leídas del archivo
-            df = pd.DataFrame(adjusted_rows, columns=headers)
+            # Paso 1: Filtrar los campos que contienen '(computed)'
+            campos_computed = [campo for campo in headers if '(computed)' in campo]
+            encabezados2 = [campo for campo in headers if '(computed)' not in campo]
 
-            # Aplicar las fórmulas a las columnas si existen
-            for columna in df.columns:
-                formula = obtener_formula(dms_name, reporte, columna)
+            # Paso 2: Verificar y ajustar el número de columnas en adjusted_rows
+            adjusted_rows = [row[:len(encabezados2)] for row in adjusted_rows]
+
+            # Paso 3: Crear el DataFrame sin los campos calculados
+            df = pd.DataFrame(adjusted_rows, columns=encabezados2)
+
+            # Paso 4: Aplicar las fórmulas a todas las columnas que tengan fórmulas en encabezados2
+            aplicar_formulas(df, dms_name, reporte_name)
+
+            # Paso 5: Aplicar las fórmulas para las columnas calculadas (computed)
+            print(f'Campos_computed: {campos_computed}')
+            for campo_calculado in campos_computed:
+                formula = obtener_formula(dms_name, reporte_name, campo_calculado)
+                print(f'Formula campo calculado: {formula}')
                 if formula:
                     try:
-                        # Extraer el nombre de la función y el nombre de la columna a procesar
-                        match = re.match(r"(\w+)\((\w+)\)", formula)
-                        if match:
-                            funcion_nombre = match.group(1)
-                            columna_a_procesar = match.group(2)
-                            
-                            # Verificar si la función existe en el contexto actual
-                            if funcion_nombre in globals() and columna_a_procesar in df.columns:
-                                # Aplicar la función a cada valor de la columna
-                                df[columna] = df[columna_a_procesar].apply(globals()[funcion_nombre])
-                                logging.info(f"Fórmula '{formula}' aplicada a la columna '{columna}' en el reporte '{reporte}'.")
-                            else:
-                                logging.warning(f"No se encontró la función '{funcion_nombre}' o la columna '{columna_a_procesar}' en el DataFrame.")
-                        else:
-                            logging.error(f"La fórmula '{formula}' no está en el formato esperado.")
+                        print(df.columns)
+                        for col in df.columns:
+                            formula = formula.replace(col, f"df['{col}']")
+                        print(f'Formula ajustada: {formula}')
+                        
+                        # Identificar las columnas en la fórmula
+                        columnas_en_formula = re.findall(r"df\['(.*?)'\]", formula)
+                        
+                        # Convertir las columnas a tipo numérico, manejando errores y NaNs
+                        for col in columnas_en_formula:
+                            df[col] = pd.to_numeric(df[col], errors='coerce')
+                            if df[col].isnull().any():
+                                logging.warning(f"Valores no numéricos en la columna '{col}' fueron convertidos a 0.")
+                                df[col] = df[col].fillna(0)
+                        
+                        # Evaluar la fórmula
+                        df[campo_calculado] = eval(formula)
+                        logging.info(f"Fórmula aplicada a la columna calculada '{campo_calculado}'.")
+
+                        # Renombrar la columna quitando '(computed)'
+                        nuevo_nombre = campo_calculado.replace(' (computed)', '')
+                        df.rename(columns={campo_calculado: nuevo_nombre}, inplace=True)
+                        logging.info(f"El encabezado de la columna '{campo_calculado}' fue cambiado a '{nuevo_nombre}'.")
+
                     except Exception as e:
-                        logging.error(f"Error al aplicar la fórmula '{formula}' en la columna '{columna}': {e}")
-                else:
-                    logging.info(f"No hay fórmula para la columna '{columna}' en el reporte '{reporte}'.")
+                        logging.error(f"Error al aplicar la fórmula en la columna calculada '{campo_calculado}': {e}")
 
-            encabezados = df.columns.to_list()
-            print("DF ********")
-            print(encabezados)
+            # Paso 6: Reordenar las columnas para respetar la posición original de las columnas calculadas
+            for campo_calculado in campos_computed:
+                nuevo_nombre = campo_calculado.replace('(computed)', '').strip()
+                if nuevo_nombre in df.columns:
+                    pos_original = encabezados_esperados.index(campo_calculado)
+                    encabezados_esperados[pos_original] = nuevo_nombre  # Actualizar el nombre sin '(computed)'
 
+            # Asegurar que las columnas estén en el orden esperado
+            df = df[encabezados_esperados]
+
+            # Obtener los nuevos encabezados después de aplicar las fórmulas y reordenar
+            nuevos_encabezados = df.columns.to_list()
+            print(f'Nuevos Encabezados: {nuevos_encabezados}')
+
+        
+            
             # Añadir columnas Client, Branch, Date
             df.insert(0, 'Client', cliente)
             df.insert(1, 'Branch', sucursal)
@@ -429,7 +460,7 @@ def procesar_archivo_zip():
             create_table_query += "    Branch character varying(255),\n"
             create_table_query += "    Date character varying(20),\n"
             
-            for a in encabezados:
+            for a in nuevos_encabezados:
                 tipo_dato = inferir_tipo_dato(a, dms_name, reporte)
                 print(f'Reporte: {reporte} columna : {a} .. {tipo_dato}')
                 create_table_query += f"    {a} {tipo_dato},\n"
@@ -463,20 +494,22 @@ def procesar_archivo_zip():
                 longitudes_maximas = obtener_column_lengths(archivo_sql)
                 print(f'Longitudes_maximas _ {longitudes_maximas}')
                 
-                datos_extraidos = extraer_datos_insert(archivo_sql)
-                print(f'datos extraoidos : {datos_extraidos}')
+                # datos_extraidos = extraer_datos_insert(archivo_sql)
+                # print(f'datos extraoidos : {datos_extraidos}')
 
-                dataL = clean_and_split_list(datos_extraidos)
-                print(f'DataL ... {dataL}')
+                # dataL = clean_and_split_list(datos_extraidos, longitudes_maximas)
+                # print(f'DataL ... {dataL}')
 
-                #Mostrar los datos limpiados
-                for fila in dataL:
-                    errores = verificar_longitudes_y_ajustar(fila, longitudes_maximas)
-                    print(f'Hooreres ::::: {errores}')
+                # #Mostrar los datos limpiados
+                # for fila in dataL:
+                #     errores = verificar_longitudes_y_ajustar(fila, longitudes_maximas)
+                #     print(f'Hooreres ::::: {errores}')
 
                 ejecutar_consulta(conexion, drop_query)
                 ejecutar_consulta(conexion, create_table_query)
-                ejecutar_consulta_insert(conexion, insert_query, reporte, dataL, longitudes_maximas)
+                ejecutar_consulta_insert(conexion, insert_query, df=df, max_lengths=longitudes_maximas, nombre_tabla=nombre_tabla, version_servidor=version_servidor, archivo_sql=archivo_sql)
+
+                
 
 
     finally:
@@ -514,8 +547,26 @@ def ejecutar_consulta(conexion, consulta):
         logging.error(f"Error al ejecutar la consulta: {consulta} - {e}")
 
 
-# Función para ejecutar una consulta SQL
-def ejecutar_consulta_insert(conexion, consulta, nombre_tabla=None, filas=None, longitudes_maximas=None):
+def ejecutar_consulta_insert(conexion, consulta, df=None, max_lengths=None, nombre_tabla=None, archivo_sql=None, version_servidor=None):
+    """
+    Ejecuta una consulta SQL y maneja los errores relacionados con la longitud máxima de las columnas. 
+    Si la consulta falla debido a un valor que excede la longitud máxima permitida en una columna, 
+    ajusta los valores en el DataFrame y vuelve a intentar la inserción.
+    Si el nuevo intento de inserción tiene éxito, se guarda el nuevo INSERT en el archivo .sql.dump.
+
+    :param conexion: Objeto de conexión a la base de datos.
+    :param consulta: Cadena de texto que contiene la consulta SQL a ejecutar.
+    :param df: DataFrame que contiene los datos a insertar. (Opcional)
+    :param max_lengths: Diccionario con las columnas como claves y sus longitudes máximas permitidas como valores. (Opcional)
+    :param nombre_tabla: Nombre de la tabla en la base de datos donde se realizará la inserción. (Opcional)
+    :param archivo_sql: Ruta del archivo .sql.dump donde se guardarán las consultas. (Opcional)
+    :param version_servidor: Versión del servidor PostgreSQL. Necesario para la cabecera del archivo .sql.dump. (Opcional)
+    :return: None
+    """
+    if df is not None and df.empty:
+        logging.warning("El DataFrame está vacío, no se realizará ninguna operación.")
+        return  # Salir de la función si el DataFrame está vacío
+
     try:
         cursor = conexion.cursor()
         cursor.execute(consulta)
@@ -523,26 +574,53 @@ def ejecutar_consulta_insert(conexion, consulta, nombre_tabla=None, filas=None, 
         logging.info("Consulta ejecutada con éxito.")
     except Error as e:
         logging.error(f"Error al ejecutar la consulta: {e}")
-        logging.error(f"Error al ejecutar la consulta: {consulta} - {e}")
+        logging.error(f"Consulta que falló: {consulta}")
+        # Realiza un rollback para liberar la transacción
+        conexion.rollback()
 
-         # Verificar si el error está relacionado con el tamaño de las columnas
-        if "el valor es demasiado largo para el tipo character varying" in str(e) and nombre_tabla and filas and longitudes_maximas:
-            logging.info("Error relacionado con el tamaño de las columnas detectado. Ajustando tamaños...")
-            # Ajustar las columnas necesarias
-            print(f'nombre tabla: {nombre_tabla}')
-            print(f'Filas ... :.l.:{filas}')
-            print(f'Longitudes max: {longitudes_maximas}')
-            verificar_y_ajustar_columnas(conexion, nombre_tabla, filas, longitudes_maximas)
-            
-            # Intentar de nuevo la inserción después de ajustar las columnas
+        # Proceder a ajustar el dataframe y reintentar la inserción
+        if df is not None and max_lengths is not None:
+            logging.info("Ajustando el dataframe y reintentando la inserción...")
+
             try:
-                cursor.execute(consulta)
+                # Truncar los valores que exceden la longitud máxima permitida
+                for col, max_len in max_lengths.items():
+                    if col in df.columns and max_len is not None:
+                        df[col] = df[col].apply(lambda x: x[:max_len] if isinstance(x, str) else x)
+                
+                # Verificar si después del ajuste el DataFrame sigue teniendo datos
+                if df.empty:
+                    logging.warning("El DataFrame está vacío después del ajuste, no se realizará ninguna operación.")
+                    return  # Salir de la función si el DataFrame está vacío después del ajuste
+                
+                # Generar una nueva consulta INSERT con los datos ajustados
+                columns = ', '.join(df.columns)
+                values = ', '.join(str(tuple(row)) for row in df.values)
+                new_insert_query = f"INSERT INTO {nombre_tabla} ({columns}) VALUES {values};"
+
+                cursor.execute(new_insert_query)
                 conexion.commit()
-                logging.info("Inserción exitosa después de ajustar el tamaño de las columnas.")
-            except Error as e2:
-                logging.error(f"Error durante la reinserción: {e2}")
+                logging.info("Inserción reintentada con éxito después del ajuste.")
+                
+                # Si se proporciona un archivo SQL, guardar solo el nuevo insert en el archivo
+                if archivo_sql and version_servidor:
+                    consultas = [
+                        f"-- Table structure for table {nombre_tabla}",
+                        f"-- Dumping data for table {nombre_tabla} después de ajustar los datos",
+                        new_insert_query
+                    ]
+                    guardar_sql_dump(archivo_sql, consultas, version_servidor)
+            except KeyError as ke:
+                logging.error(f"Error de columna en el DataFrame: {ke}")
+            except Exception as e2:
+                logging.error(f"Error al ejecutar la consulta después del ajuste: {e2}")
+                conexion.rollback()  # Asegurarse de hacer rollback también aquí
         else:
-            logging.error(f"El error no está relacionado con el tamaño de las columnas o faltan parámetros para ajustar columnas.")
+            logging.error("El dataframe o las longitudes máximas son None, no se puede proceder con el ajuste.")
+            conexion.rollback()  # Realiza un rollback para liberar la transacción
+
+
+
 
 
 
@@ -781,23 +859,28 @@ def obtener_columnas_varying_ordenadas(column_lengths):
     return columnas_varying_ordenadas
 
 
-def clean_and_split_list(raw_list):
+def clean_and_split_list(raw_list, column_lengths):
     cleaned_list = []
 
     for item in raw_list:
         if isinstance(item, tuple):
             # Convertir cada elemento del tuple en una cadena y limpiar
-            cleaned_item = tuple(i.strip("()',") for i in item)
+            cleaned_item = [i.strip("()',") for i in item]
             cleaned_list.extend(cleaned_item)
         else:
             # En caso de que no sea tuple (por si acaso), limpiar directamente
             cleaned_item = item.strip("()',")
             cleaned_list.append(cleaned_item)
     
-    # Agrupar los elementos en registros de 22 campos
-    grouped_list = [cleaned_list[i:i + 22] for i in range(0, len(cleaned_list), 22)]
+    # Determinar el número de columnas basado en la longitud del diccionario
+    num_columns = len(column_lengths)
+
+    # Agrupar los elementos en registros con el número de columnas determinado
+    grouped_list = [cleaned_list[i:i + num_columns] for i in range(0, len(cleaned_list), num_columns)]
     
     return grouped_list
+
+
 
 
 def ajustar_tamano_columna(conexion, nombre_tabla, columna, nuevo_tamano):
@@ -949,6 +1032,54 @@ def obtener_formula(dms_name, reporte_name, campo):
     formula = dms_data.get('columnas_esperadas', {}).get(reporte_name, {}).get('formulas', {}).get(campo, None)
     
     return formula
+
+def aplicar_formulas(df, dms_name, reporte):
+    """
+    Aplica fórmulas a las columnas calculadas en el DataFrame.
+
+    :param df: El DataFrame al que se aplicarán las fórmulas.
+    :param dms_name: El nombre del DMS utilizado para obtener las fórmulas.
+    :param reporte: El nombre del reporte que se está procesando.
+    """
+    for columna in df.columns:
+        # Obtener la fórmula asociada a la columna
+        formula = obtener_formula(dms_name, reporte, columna)
+        if formula:
+            try:
+                # Reemplazar los nombres de las columnas en la fórmula por df['columna']
+                for col in df.columns:
+                    formula = formula.replace(col, f"df['{col}']")
+
+                # Identificar las columnas que participan en la fórmula
+                columnas_en_formula = re.findall(r"df\['(.*?)'\]", formula)
+
+                # Evaluar si la fórmula es para limpieza de texto o para operaciones numéricas
+                if 'LimpiaTexto' in formula:
+                    # Aplicar LimpiaTexto a la columna especificada
+                    df[columna] = eval(formula)
+                else:
+                    # Convertir las columnas que participan en la fórmula a un tipo numérico
+                    for col in columnas_en_formula:
+                        if df[col].dtype == 'object':
+                            logging.info(f"Convirtiendo la columna '{col}' a numérico.")
+                            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+
+                            # Verificar si la conversión fue exitosa
+                            if df[col].dtype == 'object':
+                                logging.error(f"La columna '{col}' no pudo ser convertida a numérico.")
+
+                    # Evaluar la fórmula para obtener el resultado
+                    df[columna] = eval(formula)
+
+                logging.info(f"Fórmula '{formula}' aplicada a la columna '{columna}' en el reporte '{reporte}'.")
+
+            except Exception as e:
+                logging.error(f"Error al aplicar la fórmula en la columna calculada '{columna}': {e}")
+                logging.error(f"Fórmula: {formula}")
+        else:
+            logging.info(f"No hay fórmula para la columna '{columna}' en el reporte '{reporte}'.")
+
+
 
 # Ejemplo de uso
 procesar_archivo_zip()

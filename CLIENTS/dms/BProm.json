@@ -23,7 +23,8 @@
         "REFCOM01",
         "REFINV01",
         "REFMOS01",
-        "REFSER01"
+        "REFSER01",
+        "MACC02"
     ],
     "columnas_esperadas": {
         "MACC01": {
@@ -171,9 +172,74 @@
                 "Saldo120$",
                 "SaldoMas120$",
                 "TipoCliente",
-                "Sucursal"
+                "Sucursal",
+                "Casa2 (computed)"
             ],
-            "formulas": {}
+            "formulas": {
+                "Factura": "LimpiaCodigos(Factura)"
+            },
+            "data_types": {
+                "NumeroCliente": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NombreCliente": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoCartera": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Factura": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaFactura": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaVencimiento": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Saldo$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "SaldoCorriente$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Saldo30$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Saldo60$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Saldo90$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Saldo120$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "SaldoMas120$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoCliente": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Sucursal": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
         },
         "PROVED01": {
             "columnas": [
@@ -1210,6 +1276,73 @@
                 "Sucursal"
             ],
             "formulas": {}
+        },
+        "MACC02": {
+            "columnas": [
+                "Fecha",
+                "Cuenta",
+                "CentroCosto",
+                "Descripcion",
+                "SaldoInicial$",
+                "Debitos$",
+                "Creditos$",
+                "Saldo$",
+                "TipoCuenta",
+                "Naturaleza",
+                "Sucursal"
+            ],
+            "formulas": {
+                "SaldoInicial$": "LimpiaTexto(Descripcion)",
+                "Fecha": "LimpiaTexto(Fecha)",
+                "Descripcion": "LimpiaTexto(Descripcion)",
+                "Cuenta": "LimpiaTexto(CentroCosto)"
+            },
+            "data_types": {
+                "Fecha": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Cuenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CentroCosto": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "SaldoInicial$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Debitos$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Creditos$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Saldo$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoCuenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Naturaleza": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Sucursal": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
         }
     }
 }

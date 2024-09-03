@@ -12,11 +12,24 @@ from models import User  # Import the User model after db is initialized
 import subprocess
 import ast
 import logging
+import psycopg2
 
 # Configura Flask con la ruta para archivos estáticos
 app = Flask(__name__, static_url_path='/static')
 #logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
 
+
+def get_database_connection():
+    db_config = cargar_db_config()
+    if db_config is None:
+        raise ValueError("No se pudo cargar la configuración de la base de datos.")
+    
+    return psycopg2.connect(
+        host=db_config['host'],
+        user=db_config['usuario'],
+        password=db_config['contrasena'],
+        database=db_config['base_de_datos']
+    )
 
 # Cargar la configuración desde un archivo JSON específico
 def cargar_config(tab_name):
@@ -981,9 +994,15 @@ def search_client_folder():
 @app.route('/validar_cliente', methods=['POST'])
 def validar_cliente():
     data = request.get_json()
-    client_number = data.get('clientNumber')[0:3].lstrip('0')  # Eliminar ceros a la izquierda
+    
+    # Separar el número de cliente y el código de sucursal
+    client_number = data.get('clientNumber')[0:4]  # Los primeros 4 caracteres
+    branch_code = data.get('clientNumber')[4:6]  # Los siguientes 2 caracteres
+    
+    # Eliminar ceros a la izquierda del número de cliente
+    client_number = client_number.lstrip('0')
+    
     print(f'Numero de cliente: {client_number}')
-    branch_code = data.get('clientNumber')[3:5]
     print(f'Numero de Branch: {branch_code}')
 
     # Buscar la carpeta del cliente en la carpeta CLIENTS
@@ -995,21 +1014,31 @@ def validar_cliente():
             with open(config_path, 'r') as f:
                 config_data = json.load(f)
                 branch_exists = False
+                reportes = []
 
                 # Recorrer todos los registros para verificar si el branch existe
                 for registro in config_data.get('registros', []):
                     if registro['branch'] == branch_code:
                         branch_exists = True
+                        # Obtener todos los reportes asociados al DMS en el branch
+                        for dms, reportes_list in registro.get('dms', {}).items():
+                            reportes.extend(reportes_list)
                         break
                 
                 # Cliente existe, verificar si la sucursal (branch) también existe
-                return jsonify({'clientExists': True, 'branchExists': branch_exists})
+                return jsonify({
+                    'clientExists': True, 
+                    'branchExists': branch_exists, 
+                    'reportes': reportes
+                })
         
         # Si la carpeta del cliente existe pero no se encuentra el archivo config.json o el branch
-        return jsonify({'clientExists': True, 'branchExists': False})
+        return jsonify({'clientExists': True, 'branchExists': False, 'reportes': []})
 
     # Si no existe la carpeta del cliente
-    return jsonify({'clientExists': False, 'branchExists': False})
+    return jsonify({'clientExists': False, 'branchExists': False, 'reportes': []})
+
+
 
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
@@ -1332,6 +1361,67 @@ def get_formulas():
     formulas = config['columnas_esperadas'][reporte].get('formulas', {})
 
     return jsonify({'success': True, 'formulas': formulas})
+
+
+@app.route('/obtener_reporte', methods=['GET'])
+def obtener_reporte():
+    nombre_reporte = "REFSER33"
+    print(f'Nombre Reporte: {nombre_reporte}')
+    sucursal = request.args.get('branch_code')  # Agrega esto si necesitas obtener la sucursal
+
+    # Ruta del archivo SQL dump
+    sql_dump_path = os.path.join('3-Sandbx', f'{nombre_reporte}.sql.dump')
+    print(f'sql_dump_path: {sql_dump_path}')
+
+    if os.path.exists(sql_dump_path):
+        with open(sql_dump_path, 'r') as f:
+            sql_dump = f.read()
+
+        # Procesar el SQL y generar la tabla HTML
+        tabla_html = procesar_sql_y_generar_tabla(sql_dump, nombre_reporte)
+        return tabla_html
+    else:
+        return "<p>Error: No se encontró el archivo SQL para el reporte solicitado.</p>", 404
+
+
+
+def procesar_sql_y_generar_tabla(sql_dump, table_name):
+    connection = None
+    try:
+        # Conectar a la base de datos
+        connection = get_database_connection()
+        cursor = connection.cursor()
+
+        # Ejecutar el SQL dump (esto incluye los INSERTS)
+        cursor.execute(sql_dump)
+        connection.commit()  # Asegurarse de que las inserciones se guarden
+
+        # Ejecutar una consulta SELECT para obtener los datos de la tabla después de los INSERTS
+        select_query = f"SELECT * FROM {table_name}"
+        cursor.execute(select_query)
+
+        # Obtener los resultados
+        rows = cursor.fetchall()
+        headers = [desc[0] for desc in cursor.description]
+
+        # Generar el HTML de la tabla
+        table_html = '<table class="table table-striped">'
+        table_html += '<thead><tr>' + ''.join([f'<th>{header}</th>' for header in headers]) + '</tr></thead>'
+        table_html += '<tbody>'
+        for row in rows:
+            table_html += '<tr>' + ''.join([f'<td>{cell}</td>' for cell in row]) + '</tr>'
+        table_html += '</tbody></table>'
+
+        return table_html
+    except Exception as e:
+        logging.error(f"Error al procesar el SQL y generar la tabla: {e}")
+        return f"<p>Error: {e}</p>"
+    finally:
+        if connection:
+            connection.close()
+
+
+
 
 
 if __name__ == '__main__':

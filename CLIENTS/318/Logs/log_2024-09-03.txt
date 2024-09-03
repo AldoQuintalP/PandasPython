@@ -1,0 +1,228 @@
+2024-09-03 13:32:05,163 - INFO - <--------------- Inicia el proceso --------------->
+2024-09-03 13:32:05,198 - INFO - Archivo descomprimido en C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx
+2024-09-03 13:32:05,199 - INFO - Archivo renombrado de MACC31802.txt a MACC22.txt
+2024-09-03 13:32:05,200 - INFO - Archivo renombrado de MACP31802.txt a MACP22.txt
+2024-09-03 13:32:05,200 - INFO - Archivo renombrado de VTANUE31802.txt a VTANUE22.txt
+2024-09-03 13:32:05,376 - INFO - Conexión a la base de datos establecida.
+2024-09-03 13:32:05,377 - INFO - Versión del servidor PostgreSQL: PostgreSQL 16.3, compiled by Visual C++ build 1938, 64-bit
+2024-09-03 13:32:05,383 - INFO - Al menos una columna de MACC22 coincide con las columnas esperadas en la configuración.
+2024-09-03 13:32:05,384 - INFO - No hay fórmula para la columna 'Fecha' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,385 - INFO - No hay fórmula para la columna 'Cuenta' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,386 - INFO - No hay fórmula para la columna 'CentroCosto' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,386 - INFO - No hay fórmula para la columna 'Descripcion' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,387 - INFO - No hay fórmula para la columna 'SaldoInicial$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,388 - INFO - No hay fórmula para la columna 'Debitos$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,389 - INFO - No hay fórmula para la columna 'Creditos$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,390 - INFO - No hay fórmula para la columna 'Saldo$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,390 - INFO - No hay fórmula para la columna 'TipoCuenta' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,391 - INFO - No hay fórmula para la columna 'Naturaleza' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,392 - INFO - No hay fórmula para la columna 'Sucursal' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,404 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\MACC22.sql.dump
+2024-09-03 13:32:05,413 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:32:05,433 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:32:05,443 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:32:05,448 - INFO - Al menos una columna de MACP22 coincide con las columnas esperadas en la configuración.
+2024-09-03 13:32:05,449 - INFO - No hay fórmula para la columna 'Fecha' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,450 - INFO - No hay fórmula para la columna 'Cuenta' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,451 - INFO - No hay fórmula para la columna 'CentroCosto' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,451 - INFO - No hay fórmula para la columna 'Descripcion' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,452 - INFO - No hay fórmula para la columna 'SaldoInicial$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,452 - INFO - No hay fórmula para la columna 'Debitos$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,453 - INFO - No hay fórmula para la columna 'Creditos$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,454 - INFO - No hay fórmula para la columna 'Saldo$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,455 - INFO - No hay fórmula para la columna 'TipoCuenta' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,455 - INFO - No hay fórmula para la columna 'Naturaleza' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,456 - INFO - No hay fórmula para la columna 'Sucursal' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,466 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\MACP22.sql.dump
+2024-09-03 13:32:05,470 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:32:05,484 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:32:05,494 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:32:05,500 - INFO - Al menos una columna de VTANUE22 coincide con las columnas esperadas en la configuración.
+2024-09-03 13:32:05,502 - INFO - No hay fórmula para la columna 'FechaFactura' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,503 - INFO - No hay fórmula para la columna 'Factura' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,503 - INFO - No hay fórmula para la columna 'FechaPedido' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,504 - INFO - No hay fórmula para la columna 'NumeroPedido' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,505 - INFO - No hay fórmula para la columna 'Vin' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,506 - INFO - No hay fórmula para la columna 'NumeroInventario' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,507 - INFO - No hay fórmula para la columna 'TipoVenta' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,508 - INFO - No hay fórmula para la columna 'CanalOrigenVenta' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,509 - INFO - No hay fórmula para la columna 'TipoPago' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,509 - INFO - No hay fórmula para la columna 'Venta$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,510 - INFO - No hay fórmula para la columna 'Descuento$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,510 - INFO - No hay fórmula para la columna 'Iva$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,511 - INFO - No hay fórmula para la columna 'Isan$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,512 - INFO - No hay fórmula para la columna 'ImpoConsumo$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,512 - INFO - No hay fórmula para la columna 'VentaTotal$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,513 - INFO - No hay fórmula para la columna 'CostodeVenta$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,513 - INFO - No hay fórmula para la columna 'Bonificaciones$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,514 - INFO - No hay fórmula para la columna 'IncentivoCosto$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,515 - INFO - No hay fórmula para la columna 'CostoTotal$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,515 - INFO - No hay fórmula para la columna 'Año' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,516 - INFO - No hay fórmula para la columna 'Marca' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,517 - INFO - No hay fórmula para la columna 'Modelo' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,517 - INFO - No hay fórmula para la columna 'Version' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,518 - INFO - No hay fórmula para la columna 'Clase' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,518 - INFO - No hay fórmula para la columna 'Catalogo' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,519 - INFO - No hay fórmula para la columna 'CodigoColor' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,520 - INFO - No hay fórmula para la columna 'ColorPintura' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,521 - INFO - No hay fórmula para la columna 'ColorInterior' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,521 - INFO - No hay fórmula para la columna 'KilometrajedeVenta' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,522 - INFO - No hay fórmula para la columna 'FechaMatricula' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,523 - INFO - No hay fórmula para la columna 'Placas' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,524 - INFO - No hay fórmula para la columna 'NumeroAsesorComercial' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,524 - INFO - No hay fórmula para la columna 'NombreAsesorComercial' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,525 - INFO - No hay fórmula para la columna 'FechaCompra' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,526 - INFO - No hay fórmula para la columna 'Prenda' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,526 - INFO - No hay fórmula para la columna 'MontoFinanciado$' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,527 - INFO - No hay fórmula para la columna 'EntidadFinanciera' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,527 - INFO - No hay fórmula para la columna 'PlazoFinanciado' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,528 - INFO - No hay fórmula para la columna 'FechaVencimientoFinanciamiento' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,528 - INFO - No hay fórmula para la columna 'FechaEntrega' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,529 - INFO - No hay fórmula para la columna 'FechaActivacionGarantia' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,529 - INFO - No hay fórmula para la columna 'RFC' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,530 - INFO - No hay fórmula para la columna 'NumeroCliente' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,530 - INFO - No hay fórmula para la columna 'TipoPersona' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,531 - INFO - No hay fórmula para la columna 'RazonSocial' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,532 - INFO - No hay fórmula para la columna 'PrimerNombreCliente' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,532 - INFO - No hay fórmula para la columna 'SegundoNombreCliente' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,533 - INFO - No hay fórmula para la columna 'PrimerApellidoCliente' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,533 - INFO - No hay fórmula para la columna 'SegundoApellidoCiente' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,534 - INFO - No hay fórmula para la columna 'Direccion' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,534 - INFO - No hay fórmula para la columna 'Telefono' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,535 - INFO - No hay fórmula para la columna 'Celular' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,535 - INFO - No hay fórmula para la columna 'CP' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,536 - INFO - No hay fórmula para la columna 'Email' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,536 - INFO - No hay fórmula para la columna 'PermiteContactar' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,537 - INFO - No hay fórmula para la columna 'MotivoContacto' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,538 - INFO - No hay fórmula para la columna 'Asegurado' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,539 - INFO - No hay fórmula para la columna 'TipoSeguro' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,539 - INFO - No hay fórmula para la columna 'VentaPolizaConcesionario' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,540 - INFO - No hay fórmula para la columna 'Aseguradora' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,540 - INFO - No hay fórmula para la columna 'Retoma' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,541 - INFO - No hay fórmula para la columna 'TipoRetoma' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,542 - INFO - No hay fórmula para la columna 'NuevoUsado' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,542 - INFO - No hay fórmula para la columna 'Sucursal' en el reporte 'VTANUE01'.
+2024-09-03 13:32:05,585 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\VTANUE22.sql.dump
+2024-09-03 13:32:05,595 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:32:05,611 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:32:05,614 - ERROR - Error al ejecutar la consulta: el valor es demasiado largo para el tipo character varying(25)
+
+2024-09-03 13:32:05,614 - ERROR - Consulta que falló: INSERT INTO VTANUE22 (Client, Branch, Date, FechaFactura, Factura, FechaPedido, NumeroPedido, Vin, NumeroInventario, TipoVenta, CanalOrigenVenta, TipoPago, Venta$, Descuento$, Iva$, Isan$, ImpoConsumo$, VentaTotal$, CostodeVenta$, Bonificaciones$, IncentivoCosto$, CostoTotal$, Año, Marca, Modelo, Version, Clase, Catalogo, CodigoColor, ColorPintura, ColorInterior, KilometrajedeVenta, FechaMatricula, Placas, NumeroAsesorComercial, NombreAsesorComercial, FechaCompra, Prenda, MontoFinanciado$, EntidadFinanciera, PlazoFinanciado, FechaVencimientoFinanciamiento, FechaEntrega, FechaActivacionGarantia, RFC, NumeroCliente, TipoPersona, RazonSocial, PrimerNombreCliente, SegundoNombreCliente, PrimerApellidoCliente, SegundoApellidoCiente, Direccion, Telefono, Celular, CP, Email, PermiteContactar, MotivoContacto, Asegurado, TipoSeguro, VentaPolizaConcesionario, Aseguradora, Retoma, TipoRetoma, NuevoUsado, Sucursal) VALUES ('318', '22', '03/09/2024', '13/05/24', 'AA00001', 'LJ11PAB57SC010617', '100019', 'PUBLICO', 'CONTADO', '451368.92', '389995.55', '13286.25', '539000.00', '2025', 'JAC', 'FRISON T9', 'BLANCO', 'NEGRO', 'ADVB', 'ADRIANA VARGAS BARRIENTOS', '', '13/05/24', 'CAMM620226KD6', '10001', '', 'MARTA LAURA CASTAÑON MORALES', 'CALLE LIBERTAD 10 S/N', '7444491387', '', '39910', 'MARTALUARA_C@HOTMAIL.COM', '', 'NUEVO', 'JAC ACAPULCO', '', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '14/05/24', 'AA00002', 'LJ11PAB55RC087657', '100018', 'PUBLICO', 'CONTADO', '398787.11', '346886.69', '4661.17', '468000.00', '2024', 'JAC', 'FRISON T8 4X2 I', 'BLANCO', 'PIEL', 'KACJ', 'KAREN CARRETO JUAREZ', '', '20/05/24', '', '10005', '', 'SAGRARIO GARCIA ENRIQUEZ', 'LA CHARAMUSCA SN', '', '', '40972', 'balanzar1972nabor@gmail.com', '', 'NUEVO', 'JAC ACAPULCO', '7811114513', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '15/05/24', 'AA00003', '3GALD1540RM017726', '100020', 'PUBLICO', 'CONTADO', '398787.11', '346887.55', '4661.17', '468000.00', '2024', 'JAC', 'FRISON T8', 'GRIS', 'PIEL', 'ADVB', 'ADRIANA VARGAS BARRIENTOS', '', '27/05/24', 'SARJ5401072S7', '2470', '', 'JESUS SALINAS ROQUE', 'AVENIDA DE LA JUVENTUD SIN NUMERO', '7471221437', '', '39090', 'capricornio_8012@hotmail.com', '', 'NUEVO', 'JAC ACAPULCO', '', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '17/05/24', 'AA00004', 'LJ11PAB51NC017728', '5', 'PUBLICO', 'FINANCIERA', '301724.14', '300000.00', '0.00', '350000.00', '2022', 'JAC', 'FRISON T8', 'BLANCO', 'BEIGE', 'ADVB', 'ADRIANA VARGAS BARRIENTOS', '', '21/05/24', '', '10018', '', 'ALFREDO RAMIREZ ALVAREZ', 'AV LAS GRANJAS 92 DEP 204', '', '', '39460', 'alfralv@hotmail.com', '', 'USADO', 'JAC ACAPULCO', '7444083050', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '21/05/24', 'AA00005', 'MMSVC41SXLR104560', '8', 'PUBLICO', 'CONTADO', '260344.97', '225001.00', '0.00', '266000.00', '2020', 'SUZUKI', 'CIAZ', 'ROJO', 'NEGRO', 'MANC', 'MIGUEL ANGEL NOVA CISNEROS', '20/05/24', '', '', '10007', '', 'IRMA ANDREA SOTELO PIÑA', 'URUAPAN 53', '', '', '39350', 'irmaandreasotelo2@gmail.com', '', 'USADO', 'JAC ACAPULCO', '7441284822', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '21/05/24', 'AA00006', '3GALC3220RM005528', '100003', 'PUBLICO', 'CONTADO', '257758.62', '251956.68', '0.00', '299000.00', '2025', 'JAC', 'Sei2', 'ROJO', 'NEGRO', 'KACJ', 'KAREN CARRETO JUAREZ', '', '', '', '10025', '', 'ARANTXZA ANILU PANO GONZALEZ', 'AV FARALLON EDIF 22 DEP 302', '', '', '39690', 'SINCORREO@SINCORREO.MX', '', 'NUEVO', 'JAC ACAPULCO', '5555555555', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '22/05/24', 'AA00007', 'MMSVC41SXLR104560', '8', 'PUBLICO', 'CONTADO', '260344.97', '225001.00', '0.00', '266000.00', '2020', 'SUZUKI', 'CIAZ', 'ROJO', 'NEGRO', 'MANC', 'MIGUEL ANGEL NOVA CISNEROS', '20/05/24', '22/05/24', '', '10007', '', 'IRMA ANDREA SOTELO PIÑA', 'URUAPAN 53', '', '', '39350', 'irmaandreasotelo2@gmail.com', '', 'USADO', 'JAC ACAPULCO', '7441284822', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '27/05/24', 'AA00008', 'LJ166B3D5R2251936', '100026', 'PUBLICO', 'FINANCIERA', '642839.63', '0.00', '39918.99', '792000.00', '2024', 'JAC', 'SUNRAY PASAJEROS', 'BLANCO', 'GRIS', 'KACJ', 'KAREN CARRETO JUAREZ', '23/05/24', '', 'SOOP910327KN0', '10014', '', 'PLACIDO SOTELO OLEA', 'CALLE 40 200', '2216037291', '', '39700', 'susimiamor353@gmail.com', '', 'NUEVO', 'JAC ACAPULCO', '', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '28/05/24', 'AA00009', '3GALC1337RM015128', '100004', 'PUBLICO', 'OTROS BANCOS', '306034.48', '266187.76', '0.00', '355000.00', '2024', 'JAC', 'Sei4 Pro', 'GRIS', 'NEGRO', 'KACJ', 'KAREN CARRETO JUAREZ', '', '', '', '10039', '', 'ODILON CARRILLO LOPEZ', 'LAZARO CARDENAS MZ 1 LT 21', '', '', '39704', 'sincorreo@sincorreo.mx', '', 'NUEVO', 'JAC ACAPULCO', '7442089138', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '28/05/24', 'AA00010', 'LJ11PAB51SC012640', '100011', 'PUBLICO', 'OTROS BANCOS', '451368.92', '389995.55', '13286.25', '539000.00', '2025', 'JAC', 'FRISON T9', 'ROJO', 'NEGRO', 'KACJ', 'KAREN CARRETO JUAREZ', '', '', '', '10033', '', 'MA. REMEDIOS MORALES SARMIENTO', 'MORELOS 108', '', '', '39906', 'SINCORREO@SINCORREO.MX', '', 'NUEVO', 'JAC ACAPULCO', '7441365781', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '28/05/24', 'AA00011', '3GALC3222RM014229', '100028', 'PUBLICO', 'CONTADO', '257758.62', '226960.34', '0.00', '299000.00', '2024', 'JAC', 'Sei2', 'ROJO', 'NEGRO', 'CRRG', 'CRISTIAN ROQUE GRANADOS', '23/05/24', '', '', '10017', '', 'CLAUDIA GALAN AGUERO', 'ACUEDUCTO 1', '', '', '39650', 'SINCORREO@SINCORREO.MX', '', 'NUEVO', 'JAC ACAPULCO', '5555555555', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '28/05/24', 'AA00012', 'LJ12EKS34R4710307', '100009', 'PUBLICO', 'CONTADO', '357576.01', '311154.31', '3630.89', '419000.00', '2024', 'JAC', 'Sei4 I', 'GRIS', 'NEGRO', 'ADVB', 'ADRIANA VARGAS BARRIENTOS', '', '29/05/24', 'ICI180129DU8', '10043', '', 'INGENIERIA CIVIL E INMOBILIARIA DEL PACIFICO SA DE CV', 'CALLE HACIENDA SANTA ANA II 7', '', '', '39909', 'lisbetmujicaperez@gmail.com', '', 'NUEVO', 'JAC ACAPULCO', '7441580678', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '29/05/24', 'AA00013', '3GALC3228RM014123', '100002', 'PUBLICO', 'OTROS BANCOS', '257758.62', '251956.68', '0.00', '299000.00', '2024', 'JAC', 'Sei2', 'BLANCO', 'NEGRO', 'CRRG', 'CRISTIAN ROQUE GRANADOS', '', '', '', '10037', '', 'JORGE ANTONIO NAJERA BELLO', 'AV PLAN DE AYUTLA 14', '', '', '39740', 'najerajorge10@gmail.com', '', 'NUEVO', 'JAC ACAPULCO', '7444488993', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '22/05/24', 'IA00001', 'MMSVC41SXLR104560', '8', 'PUBLICO', 'CONTADO', '-260344.97', '-225001.00', '0.00', '-266000.00', '2020', 'SUZUKI', 'CIAZ', 'ROJO', 'NEGRO', 'MANC', 'MIGUEL ANGEL NOVA CISNEROS', '20/05/24', '', '', '10007', '', 'IRMA ANDREA SOTELO PIÑA', 'URUAPAN 53', '', '', '39350', 'irmaandreasotelo2@gmail.com', '', 'USADO', 'JAC ACAPULCO', '7441284822', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+2024-09-03 13:32:05,615 - INFO - Ajustando el dataframe y reintentando la inserción...
+2024-09-03 13:32:05,635 - INFO - Inserción reintentada con éxito después del ajuste.
+2024-09-03 13:32:05,637 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\VTANUE22.sql.dump
+2024-09-03 13:32:05,637 - INFO - <--------------- Conexión a la base de datos cerrada. --------------->
+2024-09-03 13:35:47,036 - INFO - <--------------- Inicia el proceso --------------->
+2024-09-03 13:35:47,111 - INFO - Archivo descomprimido en C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx
+2024-09-03 13:35:47,112 - INFO - Archivo renombrado de MACC31802.txt a MACC22.txt
+2024-09-03 13:35:47,114 - INFO - Archivo renombrado de MACP31802.txt a MACP22.txt
+2024-09-03 13:35:47,116 - INFO - Archivo renombrado de VTANUE31802.txt a VTANUE22.txt
+2024-09-03 13:35:47,349 - INFO - Conexión a la base de datos establecida.
+2024-09-03 13:35:47,350 - INFO - Versión del servidor PostgreSQL: PostgreSQL 16.3, compiled by Visual C++ build 1938, 64-bit
+2024-09-03 13:35:47,358 - INFO - Al menos una columna de MACC22 coincide con las columnas esperadas en la configuración.
+2024-09-03 13:35:47,361 - INFO - No hay fórmula para la columna 'Fecha' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,361 - INFO - No hay fórmula para la columna 'Cuenta' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,362 - INFO - No hay fórmula para la columna 'CentroCosto' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,363 - INFO - No hay fórmula para la columna 'Descripcion' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,364 - INFO - No hay fórmula para la columna 'SaldoInicial$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,365 - INFO - No hay fórmula para la columna 'Debitos$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,365 - INFO - No hay fórmula para la columna 'Creditos$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,366 - INFO - No hay fórmula para la columna 'Saldo$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,367 - INFO - No hay fórmula para la columna 'TipoCuenta' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,367 - INFO - No hay fórmula para la columna 'Naturaleza' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,368 - INFO - No hay fórmula para la columna 'Sucursal' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,393 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\MACC22.sql.dump
+2024-09-03 13:35:47,429 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:35:47,438 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:35:47,450 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:35:47,455 - INFO - Al menos una columna de MACP22 coincide con las columnas esperadas en la configuración.
+2024-09-03 13:35:47,456 - INFO - No hay fórmula para la columna 'Fecha' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,456 - INFO - No hay fórmula para la columna 'Cuenta' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,457 - INFO - No hay fórmula para la columna 'CentroCosto' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,457 - INFO - No hay fórmula para la columna 'Descripcion' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,458 - INFO - No hay fórmula para la columna 'SaldoInicial$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,458 - INFO - No hay fórmula para la columna 'Debitos$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,459 - INFO - No hay fórmula para la columna 'Creditos$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,459 - INFO - No hay fórmula para la columna 'Saldo$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,460 - INFO - No hay fórmula para la columna 'TipoCuenta' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,460 - INFO - No hay fórmula para la columna 'Naturaleza' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,461 - INFO - No hay fórmula para la columna 'Sucursal' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,472 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\MACP22.sql.dump
+2024-09-03 13:35:47,494 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:35:47,503 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:35:47,512 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:35:47,522 - INFO - Al menos una columna de VTANUE22 coincide con las columnas esperadas en la configuración.
+2024-09-03 13:35:47,524 - INFO - No hay fórmula para la columna 'FechaFactura' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,525 - INFO - No hay fórmula para la columna 'Factura' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,526 - INFO - No hay fórmula para la columna 'FechaPedido' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,526 - INFO - No hay fórmula para la columna 'NumeroPedido' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,527 - INFO - No hay fórmula para la columna 'Vin' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,528 - INFO - No hay fórmula para la columna 'NumeroInventario' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,529 - INFO - No hay fórmula para la columna 'TipoVenta' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,529 - INFO - No hay fórmula para la columna 'CanalOrigenVenta' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,530 - INFO - No hay fórmula para la columna 'TipoPago' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,530 - INFO - No hay fórmula para la columna 'Venta$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,531 - INFO - No hay fórmula para la columna 'Descuento$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,532 - INFO - No hay fórmula para la columna 'Iva$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,532 - INFO - No hay fórmula para la columna 'Isan$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,533 - INFO - No hay fórmula para la columna 'ImpoConsumo$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,534 - INFO - No hay fórmula para la columna 'VentaTotal$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,534 - INFO - No hay fórmula para la columna 'CostodeVenta$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,535 - INFO - No hay fórmula para la columna 'Bonificaciones$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,535 - INFO - No hay fórmula para la columna 'IncentivoCosto$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,536 - INFO - No hay fórmula para la columna 'CostoTotal$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,536 - INFO - No hay fórmula para la columna 'Año' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,537 - INFO - No hay fórmula para la columna 'Marca' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,538 - INFO - No hay fórmula para la columna 'Modelo' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,538 - INFO - No hay fórmula para la columna 'Version' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,539 - INFO - No hay fórmula para la columna 'Clase' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,540 - INFO - No hay fórmula para la columna 'Catalogo' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,541 - INFO - No hay fórmula para la columna 'CodigoColor' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,542 - INFO - No hay fórmula para la columna 'ColorPintura' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,544 - INFO - No hay fórmula para la columna 'ColorInterior' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,544 - INFO - No hay fórmula para la columna 'KilometrajedeVenta' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,545 - INFO - No hay fórmula para la columna 'FechaMatricula' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,546 - INFO - No hay fórmula para la columna 'Placas' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,547 - INFO - No hay fórmula para la columna 'NumeroAsesorComercial' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,547 - INFO - No hay fórmula para la columna 'NombreAsesorComercial' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,548 - INFO - No hay fórmula para la columna 'FechaCompra' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,550 - INFO - No hay fórmula para la columna 'Prenda' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,551 - INFO - No hay fórmula para la columna 'MontoFinanciado$' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,551 - INFO - No hay fórmula para la columna 'EntidadFinanciera' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,552 - INFO - No hay fórmula para la columna 'PlazoFinanciado' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,553 - INFO - No hay fórmula para la columna 'FechaVencimientoFinanciamiento' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,554 - INFO - No hay fórmula para la columna 'FechaEntrega' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,555 - INFO - No hay fórmula para la columna 'FechaActivacionGarantia' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,555 - INFO - No hay fórmula para la columna 'RFC' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,556 - INFO - No hay fórmula para la columna 'NumeroCliente' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,557 - INFO - No hay fórmula para la columna 'TipoPersona' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,557 - INFO - No hay fórmula para la columna 'RazonSocial' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,558 - INFO - No hay fórmula para la columna 'PrimerNombreCliente' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,559 - INFO - No hay fórmula para la columna 'SegundoNombreCliente' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,560 - INFO - No hay fórmula para la columna 'PrimerApellidoCliente' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,561 - INFO - No hay fórmula para la columna 'SegundoApellidoCiente' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,562 - INFO - No hay fórmula para la columna 'Direccion' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,562 - INFO - No hay fórmula para la columna 'Telefono' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,563 - INFO - No hay fórmula para la columna 'Celular' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,564 - INFO - No hay fórmula para la columna 'CP' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,564 - INFO - No hay fórmula para la columna 'Email' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,565 - INFO - No hay fórmula para la columna 'PermiteContactar' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,565 - INFO - No hay fórmula para la columna 'MotivoContacto' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,566 - INFO - No hay fórmula para la columna 'Asegurado' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,566 - INFO - No hay fórmula para la columna 'TipoSeguro' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,567 - INFO - No hay fórmula para la columna 'VentaPolizaConcesionario' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,568 - INFO - No hay fórmula para la columna 'Aseguradora' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,568 - INFO - No hay fórmula para la columna 'Retoma' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,568 - INFO - No hay fórmula para la columna 'TipoRetoma' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,569 - INFO - No hay fórmula para la columna 'NuevoUsado' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,569 - INFO - No hay fórmula para la columna 'Sucursal' en el reporte 'VTANUE01'.
+2024-09-03 13:35:47,604 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\VTANUE22.sql.dump
+2024-09-03 13:35:47,627 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:35:47,633 - INFO - Consulta ejecutada con éxito.
+2024-09-03 13:35:47,635 - ERROR - Error al ejecutar la consulta: el valor es demasiado largo para el tipo character varying(25)
+
+2024-09-03 13:35:47,635 - ERROR - Consulta que falló: INSERT INTO VTANUE22 (Client, Branch, Date, FechaFactura, Factura, FechaPedido, NumeroPedido, Vin, NumeroInventario, TipoVenta, CanalOrigenVenta, TipoPago, Venta$, Descuento$, Iva$, Isan$, ImpoConsumo$, VentaTotal$, CostodeVenta$, Bonificaciones$, IncentivoCosto$, CostoTotal$, Año, Marca, Modelo, Version, Clase, Catalogo, CodigoColor, ColorPintura, ColorInterior, KilometrajedeVenta, FechaMatricula, Placas, NumeroAsesorComercial, NombreAsesorComercial, FechaCompra, Prenda, MontoFinanciado$, EntidadFinanciera, PlazoFinanciado, FechaVencimientoFinanciamiento, FechaEntrega, FechaActivacionGarantia, RFC, NumeroCliente, TipoPersona, RazonSocial, PrimerNombreCliente, SegundoNombreCliente, PrimerApellidoCliente, SegundoApellidoCiente, Direccion, Telefono, Celular, CP, Email, PermiteContactar, MotivoContacto, Asegurado, TipoSeguro, VentaPolizaConcesionario, Aseguradora, Retoma, TipoRetoma, NuevoUsado, Sucursal) VALUES ('318', '22', '03/09/2024', '13/05/24', 'AA00001', 'LJ11PAB57SC010617', '100019', 'PUBLICO', 'CONTADO', '451368.92', '389995.55', '13286.25', '539000.00', '2025', 'JAC', 'FRISON T9', 'BLANCO', 'NEGRO', 'ADVB', 'ADRIANA VARGAS BARRIENTOS', '', '13/05/24', 'CAMM620226KD6', '10001', '', 'MARTA LAURA CASTAÑON MORALES', 'CALLE LIBERTAD 10 S/N', '7444491387', '', '39910', 'MARTALUARA_C@HOTMAIL.COM', '', 'NUEVO', 'JAC ACAPULCO', '', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '14/05/24', 'AA00002', 'LJ11PAB55RC087657', '100018', 'PUBLICO', 'CONTADO', '398787.11', '346886.69', '4661.17', '468000.00', '2024', 'JAC', 'FRISON T8 4X2 I', 'BLANCO', 'PIEL', 'KACJ', 'KAREN CARRETO JUAREZ', '', '20/05/24', '', '10005', '', 'SAGRARIO GARCIA ENRIQUEZ', 'LA CHARAMUSCA SN', '', '', '40972', 'balanzar1972nabor@gmail.com', '', 'NUEVO', 'JAC ACAPULCO', '7811114513', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '15/05/24', 'AA00003', '3GALD1540RM017726', '100020', 'PUBLICO', 'CONTADO', '398787.11', '346887.55', '4661.17', '468000.00', '2024', 'JAC', 'FRISON T8', 'GRIS', 'PIEL', 'ADVB', 'ADRIANA VARGAS BARRIENTOS', '', '27/05/24', 'SARJ5401072S7', '2470', '', 'JESUS SALINAS ROQUE', 'AVENIDA DE LA JUVENTUD SIN NUMERO', '7471221437', '', '39090', 'capricornio_8012@hotmail.com', '', 'NUEVO', 'JAC ACAPULCO', '', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '17/05/24', 'AA00004', 'LJ11PAB51NC017728', '5', 'PUBLICO', 'FINANCIERA', '301724.14', '300000.00', '0.00', '350000.00', '2022', 'JAC', 'FRISON T8', 'BLANCO', 'BEIGE', 'ADVB', 'ADRIANA VARGAS BARRIENTOS', '', '21/05/24', '', '10018', '', 'ALFREDO RAMIREZ ALVAREZ', 'AV LAS GRANJAS 92 DEP 204', '', '', '39460', 'alfralv@hotmail.com', '', 'USADO', 'JAC ACAPULCO', '7444083050', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '21/05/24', 'AA00005', 'MMSVC41SXLR104560', '8', 'PUBLICO', 'CONTADO', '260344.97', '225001.00', '0.00', '266000.00', '2020', 'SUZUKI', 'CIAZ', 'ROJO', 'NEGRO', 'MANC', 'MIGUEL ANGEL NOVA CISNEROS', '20/05/24', '', '', '10007', '', 'IRMA ANDREA SOTELO PIÑA', 'URUAPAN 53', '', '', '39350', 'irmaandreasotelo2@gmail.com', '', 'USADO', 'JAC ACAPULCO', '7441284822', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '21/05/24', 'AA00006', '3GALC3220RM005528', '100003', 'PUBLICO', 'CONTADO', '257758.62', '251956.68', '0.00', '299000.00', '2025', 'JAC', 'Sei2', 'ROJO', 'NEGRO', 'KACJ', 'KAREN CARRETO JUAREZ', '', '', '', '10025', '', 'ARANTXZA ANILU PANO GONZALEZ', 'AV FARALLON EDIF 22 DEP 302', '', '', '39690', 'SINCORREO@SINCORREO.MX', '', 'NUEVO', 'JAC ACAPULCO', '5555555555', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '22/05/24', 'AA00007', 'MMSVC41SXLR104560', '8', 'PUBLICO', 'CONTADO', '260344.97', '225001.00', '0.00', '266000.00', '2020', 'SUZUKI', 'CIAZ', 'ROJO', 'NEGRO', 'MANC', 'MIGUEL ANGEL NOVA CISNEROS', '20/05/24', '22/05/24', '', '10007', '', 'IRMA ANDREA SOTELO PIÑA', 'URUAPAN 53', '', '', '39350', 'irmaandreasotelo2@gmail.com', '', 'USADO', 'JAC ACAPULCO', '7441284822', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '27/05/24', 'AA00008', 'LJ166B3D5R2251936', '100026', 'PUBLICO', 'FINANCIERA', '642839.63', '0.00', '39918.99', '792000.00', '2024', 'JAC', 'SUNRAY PASAJEROS', 'BLANCO', 'GRIS', 'KACJ', 'KAREN CARRETO JUAREZ', '23/05/24', '', 'SOOP910327KN0', '10014', '', 'PLACIDO SOTELO OLEA', 'CALLE 40 200', '2216037291', '', '39700', 'susimiamor353@gmail.com', '', 'NUEVO', 'JAC ACAPULCO', '', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '28/05/24', 'AA00009', '3GALC1337RM015128', '100004', 'PUBLICO', 'OTROS BANCOS', '306034.48', '266187.76', '0.00', '355000.00', '2024', 'JAC', 'Sei4 Pro', 'GRIS', 'NEGRO', 'KACJ', 'KAREN CARRETO JUAREZ', '', '', '', '10039', '', 'ODILON CARRILLO LOPEZ', 'LAZARO CARDENAS MZ 1 LT 21', '', '', '39704', 'sincorreo@sincorreo.mx', '', 'NUEVO', 'JAC ACAPULCO', '7442089138', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '28/05/24', 'AA00010', 'LJ11PAB51SC012640', '100011', 'PUBLICO', 'OTROS BANCOS', '451368.92', '389995.55', '13286.25', '539000.00', '2025', 'JAC', 'FRISON T9', 'ROJO', 'NEGRO', 'KACJ', 'KAREN CARRETO JUAREZ', '', '', '', '10033', '', 'MA. REMEDIOS MORALES SARMIENTO', 'MORELOS 108', '', '', '39906', 'SINCORREO@SINCORREO.MX', '', 'NUEVO', 'JAC ACAPULCO', '7441365781', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '28/05/24', 'AA00011', '3GALC3222RM014229', '100028', 'PUBLICO', 'CONTADO', '257758.62', '226960.34', '0.00', '299000.00', '2024', 'JAC', 'Sei2', 'ROJO', 'NEGRO', 'CRRG', 'CRISTIAN ROQUE GRANADOS', '23/05/24', '', '', '10017', '', 'CLAUDIA GALAN AGUERO', 'ACUEDUCTO 1', '', '', '39650', 'SINCORREO@SINCORREO.MX', '', 'NUEVO', 'JAC ACAPULCO', '5555555555', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '28/05/24', 'AA00012', 'LJ12EKS34R4710307', '100009', 'PUBLICO', 'CONTADO', '357576.01', '311154.31', '3630.89', '419000.00', '2024', 'JAC', 'Sei4 I', 'GRIS', 'NEGRO', 'ADVB', 'ADRIANA VARGAS BARRIENTOS', '', '29/05/24', 'ICI180129DU8', '10043', '', 'INGENIERIA CIVIL E INMOBILIARIA DEL PACIFICO SA DE CV', 'CALLE HACIENDA SANTA ANA II 7', '', '', '39909', 'lisbetmujicaperez@gmail.com', '', 'NUEVO', 'JAC ACAPULCO', '7441580678', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '29/05/24', 'AA00013', '3GALC3228RM014123', '100002', 'PUBLICO', 'OTROS BANCOS', '257758.62', '251956.68', '0.00', '299000.00', '2024', 'JAC', 'Sei2', 'BLANCO', 'NEGRO', 'CRRG', 'CRISTIAN ROQUE GRANADOS', '', '', '', '10037', '', 'JORGE ANTONIO NAJERA BELLO', 'AV PLAN DE AYUTLA 14', '', '', '39740', 'najerajorge10@gmail.com', '', 'NUEVO', 'JAC ACAPULCO', '7444488993', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), ('318', '22', '03/09/2024', '22/05/24', 'IA00001', 'MMSVC41SXLR104560', '8', 'PUBLICO', 'CONTADO', '-260344.97', '-225001.00', '0.00', '-266000.00', '2020', 'SUZUKI', 'CIAZ', 'ROJO', 'NEGRO', 'MANC', 'MIGUEL ANGEL NOVA CISNEROS', '20/05/24', '', '', '10007', '', 'IRMA ANDREA SOTELO PIÑA', 'URUAPAN 53', '', '', '39350', 'irmaandreasotelo2@gmail.com', '', 'USADO', 'JAC ACAPULCO', '7441284822', '0.00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+2024-09-03 13:35:47,636 - INFO - Ajustando el dataframe y reintentando la inserción...
+2024-09-03 13:35:47,648 - INFO - Inserción reintentada con éxito después del ajuste.
+2024-09-03 13:35:47,649 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\VTANUE22.sql.dump
+2024-09-03 13:35:47,649 - INFO - <--------------- Conexión a la base de datos cerrada. --------------->

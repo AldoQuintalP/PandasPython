@@ -1,0 +1,668 @@
+{
+    "name": "1509",
+    "reportes": [
+        "INVNUE01",
+        "INVUSA01",
+        "MACC01",
+        "MACP01",
+        "REFCOM01",
+        "REFOEP01",
+        "REFSER01"
+    ],
+    "columnas_esperadas": {
+        "INVNUE01": {
+            "columnas": [
+                "Vin",
+                "Modelo",
+                "A\u00f1o",
+                "Marca",
+                "Version2",
+                "ColorPintura",
+                "Interior",
+                "FechaCompra",
+                "Status",
+                "TipoCompra",
+                "Fecha",
+                "EntidadFinanciera",
+                "NumeroInventario",
+                "Costo$",
+                "Version1"
+            ],
+            "formulas": {},
+            "data_types": {
+                "Vin": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Modelo": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "A\u00f1o": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Marca": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Version2": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "ColorPintura": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Interior": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaCompra": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Status": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoCompra": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Fecha": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "EntidadFinanciera": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NumeroInventario": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Costo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Version1": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
+        },
+        "INVUSA01": {
+            "columnas": [
+                "Vin",
+                "Modelo",
+                "A\u00f1o",
+                "Marca",
+                "Version",
+                "ColorPintura",
+                "Interior",
+                "Costo$",
+                "FechaCompra",
+                "Status",
+                "TipoCompra",
+                "Fecha",
+                "NumeroInventario",
+                "CostoCompra$",
+                "Version1",
+                "Placas"
+            ],
+            "formulas": {
+                "TipoCompra": "LimpiaTexto(TipoCompra)"
+            },
+            "data_types": {
+                "Vin": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Modelo": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "A\u00f1o": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Marca": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Version": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "ColorPintura": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Interior": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Costo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "FechaCompra": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Status": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "TipoCompra": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Fecha": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "NumeroInventario": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "CostoCompra$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Version1": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Placas": {
+                    "tipo": "character varying",
+                    "length": "50"
+                }
+            }
+        },
+        "MACC01": {
+            "columnas": [
+                "Fecha1",
+                "Cuenta",
+                "Descripcion",
+                "SaldoInicial$",
+                "Debitos$",
+                "Creditos$",
+                "ClosingBalance",
+                "Naturaleza",
+                "CostCenter",
+                "TipoCuenta"
+            ],
+            "formulas": {},
+            "data_types": {
+                "Fecha1": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Cuenta": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "20"
+                },
+                "SaldoInicial$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Debitos$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Creditos$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "ClosingBalance": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Naturaleza": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "CostCenter": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "TipoCuenta": {
+                    "tipo": "character varying",
+                    "length": "50"
+                }
+            }
+        },
+        "MACP01": {
+            "columnas": [
+                "Fecha",
+                "Cuenta",
+                "Descripcion",
+                "SaldoInicial$",
+                "Debitos$",
+                "Creditos$",
+                "ClosingBalance",
+                "Naturaleza",
+                "CostCenter",
+                "TipoCuenta"
+            ],
+            "formulas": {},
+            "data_types": {
+                "Fecha": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Cuenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "SaldoInicial$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Debitos$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Creditos$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "ClosingBalance": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Naturaleza": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CostCenter": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoCuenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
+        },
+        "REFCOM01": {
+            "columnas": [
+                "Factura",
+                "FechaFactura",
+                "TipoProveedor",
+                "NombreProveedor",
+                "TipoCompra",
+                "NumeroParte",
+                "Descripcion",
+                "Cantidad",
+                "CostoUnitario$",
+                "NumeroProveedor",
+                "Costo$",
+                "Almacen"
+            ],
+            "formulas": {},
+            "data_types": {
+                "Factura": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaFactura": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoProveedor": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NombreProveedor": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoCompra": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NumeroParte": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Cantidad": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CostoUnitario$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "NumeroProveedor": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Costo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Almacen": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
+        },
+        "REFOEP01": {
+            "columnas": [
+                "NumeroOT",
+                "Linea",
+                "FechaEntrega",
+                "NumeroParte",
+                "Cantidad",
+                "Descripcion",
+                "CostoUnit$",
+                "VentaUnit$",
+                "TipoOrden",
+                "FechaCierre",
+                "Taller",
+                "TipoServicio",
+                "Motivo",
+                "Status",
+                "Marca",
+                "Venta$",
+                "Costo$",
+                "Vin",
+                "RFC",
+                "Modelo",
+                "Version1"
+            ],
+            "formulas": {},
+            "data_types": {
+                "NumeroOT": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Linea": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaEntrega": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "NumeroParte": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Cantidad": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CostoUnit$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaUnit$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "TipoOrden": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaCierre": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Taller": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoServicio": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Motivo": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Status": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Marca": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Venta$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Costo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Vin": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "RFC": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Modelo": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Version1": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
+        },
+        "REFSER01": {
+            "columnas": [
+                "NumeroOT",
+                "Linea",
+                "Factura",
+                "FechaFactura",
+                "NumeroParte",
+                "Descripcion",
+                "Cantidad",
+                "Venta$",
+                "Costo$",
+                "RFC",
+                "NumeroCliente",
+                "NombreCliente",
+                "TipoOrden",
+                "TipoPago",
+                "TipoVenta",
+                "TipoParte",
+                "Marca",
+                "VentaUnit$",
+                "CostoUnit$",
+                "VentaCosto$ (computed)",
+                "Descuento$",
+                "NumeroVendedor",
+                "NombreVendedor",
+                "Calle",
+                "NoExt",
+                "NoInt",
+                "Colonia",
+                "CP",
+                "Delegacion",
+                "Ciudad",
+                "Estado",
+                "Telefono",
+                "Email",
+                "PermiteContactar",
+                "MotivoContacto",
+                "Taller"
+            ],
+            "formulas": {
+                "NombreCliente": "LimpiaTexto(NombreCliente)",
+                "VentaCosto$ (computed)": "VentaUnit$ * CostoUnit$"
+            },
+            "data_types": {
+                "NumeroOT": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Linea": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Factura": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaFactura": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "NumeroParte": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Cantidad": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Venta$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Costo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "RFC": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NumeroCliente": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NombreCliente": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoOrden": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoPago": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoVenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoParte": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Marca": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "VentaUnit$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoUnit$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Descuento$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "NumeroVendedor": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NombreVendedor": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Calle": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NoExt": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NoInt": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Colonia": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CP": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Delegacion": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Ciudad": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Estado": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Telefono": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Email": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "PermiteContactar": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "MotivoContacto": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Taller": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "VentaCosto$ (computed)": {
+                    "tipo": "double precision",
+                    "length": null
+                }
+            }
+        }
+    }
+}
