@@ -8,10 +8,17 @@
     <title>Procesamiento de Archivos</title>
     <!-- Incluye Bootstrap CSS desde un CDN -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Incluye SweetAlert2 CSS desde un CDN -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <!-- Incluye Font Awesome 6 desde un CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
+
+
+    
+
 
     <style>
         body {
@@ -106,6 +113,24 @@
             color: red;
             text-decoration: line-through;
         }
+        
+        #reporteTabla tfoot {
+            display: table-header-group;
+        }
+
+        #reporteTabla tfoot input {
+            width: 100%;
+            padding: 3px;
+            box-sizing: border-box;
+        }
+
+        #reporteTabla_wrapper {
+            overflow: auto;
+            max-height: 50vh;  /* Ajusta esta altura según tus necesidades */
+        }
+
+
+
     </style>
 </head>
 <body>
@@ -190,14 +215,12 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="modalBody">
+                <div class="modal-body" id="modalBody" style="overflow-x: auto; max-height: 80vh;">
                     <!-- Aquí se cargará el contenido del reporte -->
                 </div>
             </div>
         </div>
     </div>
-
-
 
     <!-- Incluye jQuery, Popper.js y Bootstrap JS desde un CDN -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -206,217 +229,250 @@
     <!-- Incluye Font Awesome JS desde un CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    
 
     <script>
         function toggleNav() {
-    var sidebar = document.getElementById("mySidebar");
-    var main = document.getElementById("main");
-    var toggleBtn = document.querySelector('.togglebtn');
-    
-    if (sidebar.classList.contains("expanded")) {
-        sidebar.classList.remove("expanded");
-        main.style.marginLeft = '50px';
-        main.style.overflow = 'auto';
-        toggleBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
-    } else {
-        sidebar.classList.add("expanded");
-        main.style.marginLeft = '250px';
-        main.style.overflow = 'hidden';
-        toggleBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i> Ocultar Menú';
-    }
-}
+            var sidebar = document.getElementById("mySidebar");
+            var main = document.getElementById("main");
+            var toggleBtn = document.querySelector('.togglebtn');
+            
+            if (sidebar.classList.contains("expanded")) {
+                sidebar.classList.remove("expanded");
+                main.style.marginLeft = '50px';
+                main.style.overflow = 'auto';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
+            } else {
+                sidebar.classList.add("expanded");
+                main.style.marginLeft = '250px';
+                main.style.overflow = 'hidden';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i> Ocultar Menú';
+            }
+        }
 
-document.getElementById('upload-container').addEventListener('click', function() {
-    document.getElementById('fileInput').click();
-});
+        document.getElementById('upload-container').addEventListener('click', function() {
+            document.getElementById('fileInput').click();
+        });
 
-document.getElementById('fileInput').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file && file.name.endsWith('.zip')) {
-        resetTaskList();
-        const fileName = file.name;
-        const clientNumber = fileName.slice(0, 7); 
-        const branchCode = fileName.slice(3, 5);
-        const diaZip = fileName.slice(6, 8); // Obtener los últimos dos dígitos del ZIP para el día
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.name.endsWith('.zip')) {
+                resetTaskList();
+                const fileName = file.name;
+                const clientNumber = fileName.slice(0, 7); 
+                const branchCode = fileName.slice(3, 5);
+                const diaZip = fileName.slice(6, 8); // Obtener los últimos dos dígitos del ZIP para el día
 
-        const currentDate = new Date();
-        const currentDay = String(currentDate.getDate()).padStart(2, '0');
+                const currentDate = new Date();
+                const currentDay = String(currentDate.getDate()).padStart(2, '0');
 
-        const fechaValida = (diaZip === currentDay);
+                const fechaValida = (diaZip === currentDay);
 
-        startProgressBar();
+                startProgressBar();
 
-        setTimeout(() => {
-            fetch("{{ url_for('validar_cliente') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ clientNumber: clientNumber + branchCode })
+                setTimeout(() => {
+                    fetch("{{ url_for('validar_cliente') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ clientNumber: clientNumber + branchCode })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const progressBar = document.getElementById('progressBar');
+                        progressBar.style.width = '100%';
+                        setTimeout(() => {
+                            validarTareas(data.clientExists, data.branchExists, fechaValida, data.reportes);
+
+                            if (!data.clientExists || !data.branchExists) {
+                                showAlert('danger', 'No se pudo cargar el archivo debido a fallos en las validaciones.');
+                            } else {
+                                // Si pasa todas las validaciones, se envía el archivo al servidor
+                                uploadFileToServer(file);
+                            }
+                        }, 500);
+                    })
+                    .catch(() => {
+                        showAlert('danger', 'Hubo un problema al verificar el archivo. Intenta de nuevo.');
+                    });
+                }, 2000);
+            } else {
+                showAlert('danger', 'Por favor, sube un archivo .zip válido.');
+            }
+        });
+
+        function validarTareas(clientExists, branchExists, fechaValida, reportes) {
+            const tareaCliente = document.getElementById('tareaCliente');
+            const tareaSucursal = document.getElementById('tareaSucursal');
+            const tareaFecha = document.getElementById('tareaFecha');
+            const listaReportes = document.getElementById('listaReportes');
+            const reportesList = document.getElementById('reportesList');
+
+            if (tareaCliente) {
+                if (clientExists) {
+                    tareaCliente.innerHTML = '<i class="fa fa-check-circle text-success"></i> El cliente se encuentra registrado';
+                } else {
+                    tareaCliente.innerHTML = '<i class="fa fa-times-circle text-danger"></i> El cliente no está registrado';
+                }
+                tareaCliente.classList.add('visible');
+            }
+
+            if (tareaSucursal) {
+                if (branchExists) {
+                    tareaSucursal.innerHTML = '<i class="fa fa-check-circle text-success"></i> La sucursal se encuentra registrada';
+                } else {
+                    tareaSucursal.innerHTML = '<i class="fa fa-times-circle text-danger"></i> La sucursal no está registrada';
+                }
+                tareaSucursal.classList.add('visible');
+            }
+
+            if (tareaFecha) {
+                if (fechaValida) {
+                    tareaFecha.innerHTML = '<i class="fa fa-check-circle text-success"></i> El paquete es del día de hoy';
+                } else {
+                    tareaFecha.innerHTML = '<i class="fa fa-exclamation-circle text-warning" title="No es del día de hoy"></i> El paquete no es del día de hoy';
+                }
+                tareaFecha.classList.add('visible');
+            }
+
+            // Mostrar reportes si el cliente y la sucursal existen
+            if (clientExists && branchExists && reportes.length > 0) {
+                reportesList.innerHTML = ''; // Limpiar la lista de reportes anterior
+                const branchCode = document.getElementById('fileInput').files[0].name.slice(4, 6); // Obtener el branchCode del nombre del archivo
+                reportes.forEach(reporte => {
+                    const reporteName = `${reporte.slice(0, -2)}${branchCode}`; // Remover los últimos dos caracteres de reporte y agregar branchCode
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="#" onclick="mostrarReporte('${reporteName}', '${branchCode}')">${reporteName}</a>`;
+                    reportesList.appendChild(li);
+                });
+                listaReportes.style.display = 'block';
+            } else {
+                listaReportes.style.display = 'none';
+            }
+        }
+
+        function resetTaskList() {
+            document.getElementById('tareaCliente').classList.remove('failed', 'visible');
+            document.getElementById('tareaSucursal').classList.remove('failed', 'visible');
+            document.getElementById('tareaFecha').classList.remove('failed', 'visible');
+        }
+
+        function startProgressBar() {
+            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.getElementById('progressContainer');
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 10;
+                progressBar.style.width = width + '%';
+                progressBar.setAttribute('aria-valuenow', width);
+                if (width >= 100) {
+                    clearInterval(interval);
+                }
+            }, 200); // Cada incremento toma 200ms, completando en 2 segundos
+        }
+
+        function uploadFileToServer(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload_and_execute', {
+                method: 'POST',
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
-                const progressBar = document.getElementById('progressBar');
-                progressBar.style.width = '100%';
-                setTimeout(() => {
-                    validarTareas(data.clientExists, data.branchExists, fechaValida, data.reportes);
-
-                    if (!data.clientExists || !data.branchExists) {
-                        showAlert('danger', 'No se pudo cargar el archivo debido a fallos en las validaciones.');
-                    } else {
-                        // Si pasa todas las validaciones, se envía el archivo al servidor
-                        uploadFileToServer(file);
-                    }
-                }, 500);
+                if (data.success) {
+                    showAlert('success', 'El archivo se cargó y se ejecutó el script correctamente.');
+                } else {
+                    showAlert('danger', 'Hubo un problema al procesar el archivo: ' + data.error);
+                }
             })
             .catch(() => {
-                showAlert('danger', 'Hubo un problema al verificar el archivo. Intenta de nuevo.');
+                showAlert('danger', 'Hubo un problema al cargar el archivo al servidor.');
             });
-        }, 2000);
-    } else {
-        showAlert('danger', 'Por favor, sube un archivo .zip válido.');
-    }
-});
-
-function validarTareas(clientExists, branchExists, fechaValida, reportes) {
-    const tareaCliente = document.getElementById('tareaCliente');
-    const tareaSucursal = document.getElementById('tareaSucursal');
-    const tareaFecha = document.getElementById('tareaFecha');
-    const listaReportes = document.getElementById('listaReportes');
-    const reportesList = document.getElementById('reportesList');
-
-    if (tareaCliente) {
-        if (clientExists) {
-            tareaCliente.innerHTML = '<i class="fa fa-check-circle text-success"></i> El cliente se encuentra registrado';
-        } else {
-            tareaCliente.innerHTML = '<i class="fa fa-times-circle text-danger"></i> El cliente no está registrado';
         }
-        tareaCliente.classList.add('visible');
-    }
 
-    if (tareaSucursal) {
-        if (branchExists) {
-            tareaSucursal.innerHTML = '<i class="fa fa-check-circle text-success"></i> La sucursal se encuentra registrada';
-        } else {
-            tareaSucursal.innerHTML = '<i class="fa fa-times-circle text-danger"></i> La sucursal no está registrada';
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alertContainer');
+            if (alertContainer) {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-${type}" role="alert">
+                        ${message}
+                    </div>
+                `;
+                setTimeout(() => {
+                    alertContainer.innerHTML = '';
+                }, 3000); // Eliminar el mensaje después de 3 segundos, sin recargar la página
+            }
         }
-        tareaSucursal.classList.add('visible');
-    }
 
-    if (tareaFecha) {
-        if (fechaValida) {
-            tareaFecha.innerHTML = '<i class="fa fa-check-circle text-success"></i> El paquete es del día de hoy';
-        } else {
-            tareaFecha.innerHTML = '<i class="fa fa-exclamation-circle text-warning" title="No es del día de hoy"></i> El paquete no es del día de hoy';
+        function mostrarReporte(nombreReporte, branchCode) {
+    console.log(`Nombre Reporte: ${nombreReporte}`);
+    console.log(`Branch Code: ${branchCode}`);
+    
+    const url = `/obtener_reporte?nombreReporte=${encodeURIComponent(nombreReporte)}&branch_code=${encodeURIComponent(branchCode)}`;
+    fetch(url)
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('modalBody').innerHTML = html;
+
+        // Asegúrate de que DataTables se inicialice después de agregar la tabla al DOM
+        $(document).ready(function() {
+    var table = $('#reporteTabla').DataTable({
+        paging: false,  // Desactiva la paginación si no la necesitas
+        scrollY: '50vh',  // Define la altura del scroll vertical
+        scrollX: true,    // Activa el scroll horizontal
+        fixedHeader: true, // Fija los encabezados al hacer scroll
+        initComplete: function () {
+            var api = this.api();
+
+            // Para cada columna, agregamos un `select` en el pie de página
+            api.columns().every(function () {
+                var column = this;
+                var select = $('select', column.footer()).empty();
+
+                // Agregar una opción por defecto
+                select.append('<option value="">Filtrar por ' + $(column.header()).text() + '</option>');
+
+                // Obtener valores únicos de la columna y agregarlos al `select`
+                var uniqueData = [];
+
+                column.data().each(function (d, j) {
+                    if (uniqueData.indexOf(d) === -1) {
+                        uniqueData.push(d);
+                    }
+                });
+
+                uniqueData.sort().forEach(function (d) {
+                    select.append('<option value="' + d + '">' + d + '</option>');
+                });
+
+                // Evento para filtrar la tabla al cambiar la selección
+                select.on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex($(this).val());
+
+                    column.search(val ? '^' + val + '$' : '', true, false).draw();
+                });
+            });
         }
-        tareaFecha.classList.add('visible');
-    }
-
-    // Mostrar reportes si el cliente y la sucursal existen
-    if (clientExists && branchExists && reportes.length > 0) {
-        reportesList.innerHTML = ''; // Limpiar la lista de reportes anterior
-        reportes.forEach(reporte => {
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="#" onclick="mostrarReporte('${reporte}')">${reporte}</a>`;
-            reportesList.appendChild(li);
-        });
-        listaReportes.style.display = 'block';
-    } else {
-        listaReportes.style.display = 'none';
-    }
-}
-
-function resetTaskList() {
-    document.getElementById('tareaCliente').classList.remove('failed', 'visible');
-    document.getElementById('tareaSucursal').classList.remove('failed', 'visible');
-    document.getElementById('tareaFecha').classList.remove('failed', 'visible');
-}
-
-function startProgressBar() {
-    const progressBar = document.getElementById('progressBar');
-    const progressContainer = document.getElementById('progressContainer');
-    progressContainer.style.display = 'block';
-    progressBar.style.width = '0%';
-
-    let width = 0;
-    const interval = setInterval(() => {
-        width += 10;
-        progressBar.style.width = width + '%';
-        progressBar.setAttribute('aria-valuenow', width);
-        if (width >= 100) {
-            clearInterval(interval);
-        }
-    }, 200); // Cada incremento toma 200ms, completando en 2 segundos
-}
-
-function uploadFileToServer(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    fetch('/upload_and_execute', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showAlert('success', 'El archivo se cargó y se ejecutó el script correctamente.');
-        } else {
-            showAlert('danger', 'Hubo un problema al procesar el archivo: ' + data.error);
-        }
-    })
-    .catch(() => {
-        showAlert('danger', 'Hubo un problema al cargar el archivo al servidor.');
     });
-}
-
-
-
-function showAlert(type, message) {
-    const alertContainer = document.getElementById('alertContainer');
-    if (alertContainer) {
-        alertContainer.innerHTML = `
-            <div class="alert alert-${type}" role="alert">
-                ${message}
-            </div>
-        `;
-        setTimeout(() => {
-            alertContainer.innerHTML = '';
-        }, 3000); // Eliminar el mensaje después de 3 segundos, sin recargar la página
-    }
-}
-
-
-document.getElementById('reportesList').addEventListener('click', function(event) {
-    if (event.target.tagName === 'LI') {
-        const reporteName = event.target.textContent;
-        mostrarModalReporte(reporteName);
-    }
 });
 
-function mostrarReporte(nombreReporte, branchCode) {
-            fetch(`/obtener_reporte?branch_code=${branchCode}&nombreReporte=${nombreReporte}`, {
-                method: 'GET',
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error al obtener el reporte');
-                }
-                return response.text();
-            })
-            .then(data => {
-                document.getElementById('modalBody').innerHTML = data;
-                $('#reporteModal').modal('show');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Hubo un problema al cargar el reporte. Por favor, inténtalo de nuevo.');
-            });
-        }
+
+
+        $('#reporteModal').modal('show');
+    });
+
+}
 
 
     </script>
-    
 </body>
 {% endblock %}
 </html>

@@ -507,7 +507,7 @@ def procesar_archivo_zip():
 
                 ejecutar_consulta(conexion, drop_query)
                 ejecutar_consulta(conexion, create_table_query)
-                ejecutar_consulta_insert(conexion, insert_query, df=df, max_lengths=longitudes_maximas, nombre_tabla=nombre_tabla, version_servidor=version_servidor, archivo_sql=archivo_sql)
+                ejecutar_consulta_insert(conexion, insert_query, df=df, max_lengths=longitudes_maximas, nombre_tabla=nombre_tabla, version_servidor=version_servidor, archivo_sql=archivo_sql, drop_query=drop_query,create_table_query=create_table_query)
 
                 
 
@@ -547,7 +547,7 @@ def ejecutar_consulta(conexion, consulta):
         logging.error(f"Error al ejecutar la consulta: {consulta} - {e}")
 
 
-def ejecutar_consulta_insert(conexion, consulta, df=None, max_lengths=None, nombre_tabla=None, archivo_sql=None, version_servidor=None):
+def ejecutar_consulta_insert(conexion, consulta, df=None, max_lengths=None, nombre_tabla=None, archivo_sql=None, version_servidor=None, drop_query=None, create_table_query=None):
     """
     Ejecuta una consulta SQL y maneja los errores relacionados con la longitud máxima de las columnas. 
     Si la consulta falla debido a un valor que excede la longitud máxima permitida en una columna, 
@@ -606,6 +606,8 @@ def ejecutar_consulta_insert(conexion, consulta, df=None, max_lengths=None, nomb
                 if archivo_sql and version_servidor:
                     consultas = [
                         f"-- Table structure for table {nombre_tabla}",
+                        drop_query,
+                        create_table_query,
                         f"-- Dumping data for table {nombre_tabla} después de ajustar los datos",
                         new_insert_query
                     ]

@@ -13,6 +13,7 @@ import subprocess
 import ast
 import logging
 import psycopg2
+import re
 
 # Configura Flask con la ruta para archivos estáticos
 app = Flask(__name__, static_url_path='/static')
@@ -1029,14 +1030,21 @@ def validar_cliente():
                 return jsonify({
                     'clientExists': True, 
                     'branchExists': branch_exists, 
+                    'branchCode': branch_code,  # Incluir branch_code en la respuesta
                     'reportes': reportes
                 })
         
         # Si la carpeta del cliente existe pero no se encuentra el archivo config.json o el branch
-        return jsonify({'clientExists': True, 'branchExists': False, 'reportes': []})
+        return jsonify({
+            'clientExists': True, 
+            'branchExists': False, 
+            'branchCode': branch_code,  # Incluir branch_code en la respuesta
+            'reportes': []
+        })
 
     # Si no existe la carpeta del cliente
-    return jsonify({'clientExists': False, 'branchExists': False, 'reportes': []})
+    return jsonify({'clientExists': False, 'branchExists': False, 'branchCode': branch_code, 'reportes': []})
+
 
 
 
@@ -1365,12 +1373,14 @@ def get_formulas():
 
 @app.route('/obtener_reporte', methods=['GET'])
 def obtener_reporte():
-    nombre_reporte = "REFSER33"
+    nombre_reporte = request.args.get('nombreReporte')
+    nombre_reporte = re.sub(r'\d+', '', nombre_reporte)
+    branch_code = request.args.get('branch_code')  # Obtener el branch_code
     print(f'Nombre Reporte: {nombre_reporte}')
-    sucursal = request.args.get('branch_code')  # Agrega esto si necesitas obtener la sucursal
+    print(f'Sucursal: {branch_code}')
 
     # Ruta del archivo SQL dump
-    sql_dump_path = os.path.join('3-Sandbx', f'{nombre_reporte}.sql.dump')
+    sql_dump_path = os.path.join('3-Sandbx', f'{nombre_reporte+branch_code}.sql.dump')
     print(f'sql_dump_path: {sql_dump_path}')
 
     if os.path.exists(sql_dump_path):
@@ -1378,11 +1388,10 @@ def obtener_reporte():
             sql_dump = f.read()
 
         # Procesar el SQL y generar la tabla HTML
-        tabla_html = procesar_sql_y_generar_tabla(sql_dump, nombre_reporte)
+        tabla_html = procesar_sql_y_generar_tabla(sql_dump, nombre_reporte + branch_code)
         return tabla_html
     else:
         return "<p>Error: No se encontró el archivo SQL para el reporte solicitado.</p>", 404
-
 
 
 def procesar_sql_y_generar_tabla(sql_dump, table_name):
@@ -1405,8 +1414,15 @@ def procesar_sql_y_generar_tabla(sql_dump, table_name):
         headers = [desc[0] for desc in cursor.description]
 
         # Generar el HTML de la tabla
-        table_html = '<table class="table table-striped">'
+        table_html = '<table id="reporteTabla" class="table table-striped">'
+        
+        # Thead
         table_html += '<thead><tr>' + ''.join([f'<th>{header}</th>' for header in headers]) + '</tr></thead>'
+        
+        # Tfoot para los filtros - lo generamos vacío aquí
+        table_html += '<tfoot><tr>' + ''.join([f'<th><select><option value="">Filtrar por {header}</option></select></th>' for header in headers]) + '</tr></tfoot>'
+        
+        # Tbody
         table_html += '<tbody>'
         for row in rows:
             table_html += '<tr>' + ''.join([f'<td>{cell}</td>' for cell in row]) + '</tr>'
@@ -1420,6 +1436,47 @@ def procesar_sql_y_generar_tabla(sql_dump, table_name):
         if connection:
             connection.close()
 
+
+
+
+@app.route('/obtener_headers/<reporte>', methods=['GET'])
+def obtener_headers(reporte):
+    # Ruta del archivo SQL dump
+    sql_dump_path = os.path.join('3-Sandbx', f'{reporte}.sql.dump')
+    
+    if os.path.exists(sql_dump_path):
+        with open(sql_dump_path, 'r') as f:
+            sql_dump = f.read()
+        
+        # Buscar la sección CREATE TABLE y extraer las columnas
+        headers = extraer_headers(sql_dump)
+        
+        if headers:
+            return jsonify({'headers': headers})
+        else:
+            return jsonify({'error': 'No se encontraron columnas en el archivo SQL dump.'}), 404
+    else:
+        return jsonify({'error': f'No se encontró el archivo SQL para el reporte {reporte}.'}), 404
+
+def extraer_headers(sql_dump):
+    # Buscar la sección CREATE TABLE
+    create_table_match = re.search(r'CREATE TABLE.*?\((.*?)\);', sql_dump, re.S)
+    
+    if create_table_match:
+        # Extraer los nombres de las columnas
+        columns_definition = create_table_match.group(1)
+        headers = []
+        
+        for line in columns_definition.splitlines():
+            # Ignorar líneas vacías y líneas que no definen columnas
+            if line.strip() and not line.strip().startswith('--'):
+                # Extraer el nombre de la columna antes de la primera palabra clave (tipo de dato)
+                column_name = re.match(r'\s*([^\s]+)', line.strip())
+                if column_name:
+                    headers.append(column_name.group(1))
+        
+        return headers
+    return None
 
 
 
