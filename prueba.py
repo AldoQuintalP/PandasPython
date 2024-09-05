@@ -519,7 +519,7 @@ def procesar_archivo_zip():
         # Asegurarse de cerrar la conexión al final
         if conexion:
             conexion.close()
-            logging.info("<--------------- Conexión a la base de datos cerrada. --------------->")
+            logging.info("<--------------- Conexion a la base de datos cerrada. --------------->")
     
 
 

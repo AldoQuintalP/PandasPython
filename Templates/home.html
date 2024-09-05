@@ -347,6 +347,10 @@
                                 <p>Arrastra un archivo .zip aquí o haz clic para seleccionar uno</p>
                                 <input type="file" id="fileInput" accept=".zip">
                             </div>
+                            <div id="spinner" style="display: none; text-align: center; margin-top: 20px;">
+                                <i class="spinner-grow text-primary" style="font-size: 40px; color: #007bff;"></i>
+                                <p>Procesando archivo...</p>
+                            </div>
 
                         <div id="fileInfo" style="margin-top: 20px;"></div>
                     
@@ -458,52 +462,56 @@
         });
 
         document.getElementById('fileInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file && file.name.endsWith('.zip')) {
-                resetTaskList();
-                const fileName = file.name;
-                const clientNumber = fileName.slice(0, 7); 
-                const branchCode = fileName.slice(3, 5);
-                const diaZip = fileName.slice(6, 8); // Obtener los últimos dos dígitos del ZIP para el día
+    const file = event.target.files[0];
+    if (file && file.name.endsWith('.zip')) {
+        resetTaskList();
+        const fileName = file.name;
+        const clientNumber = fileName.slice(0, 7); 
+        const branchCode = fileName.slice(3, 5);
+        const diaZip = fileName.slice(6, 8); // Obtener los últimos dos dígitos del ZIP para el día
 
-                const currentDate = new Date();
-                const currentDay = String(currentDate.getDate()).padStart(2, '0');
+        const currentDate = new Date();
+        const currentDay = String(currentDate.getDate()).padStart(2, '0');
 
-                const fechaValida = (diaZip === currentDay);
+        const fechaValida = (diaZip === currentDay);
 
-                startProgressBar();
+        // Iniciar el spinner antes de iniciar la validación y la carga del archivo
+        startSpinner();
+        startProgressBar();
 
+        setTimeout(() => {
+            fetch("{{ url_for('validar_cliente') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ clientNumber: clientNumber + branchCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const progressBar = document.getElementById('progressBar');
+                progressBar.style.width = '100%';
                 setTimeout(() => {
-                    fetch("{{ url_for('validar_cliente') }}", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ clientNumber: clientNumber + branchCode })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        const progressBar = document.getElementById('progressBar');
-                        progressBar.style.width = '100%';
-                        setTimeout(() => {
-                            validarTareas(data.clientExists, data.branchExists, fechaValida, data.reportes);
+                    validarTareas(data.clientExists, data.branchExists, fechaValida, data.reportes);
 
-                            if (!data.clientExists || !data.branchExists) {
-                                showAlert('danger', 'No se pudo cargar el archivo debido a fallos en las validaciones.');
-                            } else {
-                                // Si pasa todas las validaciones, se envía el archivo al servidor
-                                uploadFileToServer(file);
-                            }
-                        }, 500);
-                    })
-                    .catch(() => {
-                        showAlert('danger', 'Hubo un problema al verificar el archivo. Intenta de nuevo.');
-                    });
-                }, 2000);
-            } else {
-                showAlert('danger', 'Por favor, sube un archivo .zip válido.');
-            }
-        });
+                    if (!data.clientExists || !data.branchExists) {
+                        stopSpinner(); // Detener el spinner en caso de fallos en la validación
+                        showAlert('danger', 'No se pudo cargar el archivo debido a fallos en las validaciones.');
+                    } else {
+                        // Si pasa todas las validaciones, se envía el archivo al servidor
+                        uploadFileToServer(file);
+                    }
+                }, 500);
+            })
+            .catch(() => {
+                stopSpinner(); // Detener el spinner en caso de error
+                showAlert('danger', 'Hubo un problema al verificar el archivo. Intenta de nuevo.');
+            });
+        }, 2000);
+    } else {
+        showAlert('danger', 'Por favor, sube un archivo .zip válido.');
+    }
+});
 
         function validarTareas(clientExists, branchExists, fechaValida, reportes) {
             const tareaCliente = document.getElementById('tareaCliente');
@@ -579,25 +587,27 @@
         }
 
         function uploadFileToServer(file) {
-            const formData = new FormData();
-            formData.append('file', file);
+    const formData = new FormData();
+    formData.append('file', file);
 
-            fetch('/upload_and_execute', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showAlert('success', 'El archivo se cargó y se ejecutó el script correctamente.');
-                } else {
-                    showAlert('danger', 'Hubo un problema al procesar el archivo: ' + data.error);
-                }
-            })
-            .catch(() => {
-                showAlert('danger', 'Hubo un problema al cargar el archivo al servidor.');
-            });
+    fetch('/upload_and_execute', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            checkProcessFinished(file.name);
+        } else {
+            stopSpinner();
+            showAlert('danger', 'Hubo un problema al procesar el archivo: ' + data.error);
         }
+    })
+    .catch(() => {
+        stopSpinner();
+        showAlert('danger', 'Hubo un problema al cargar el archivo al servidor.');
+    });
+}
 
         function showAlert(type, message) {
             const alertContainer = document.getElementById('alertContainer');
@@ -816,6 +826,53 @@ function detenerLogsEnTiempoReal() {
     }
 }
 
+
+// Inicia el spinner al iniciar el proceso de subida del archivo
+function startSpinner() {
+    document.getElementById('spinner').style.display = 'block';
+}
+
+// Apaga el spinner
+function stopSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+}
+
+
+// Verificar si el proceso ha finalizado revisando los logs
+function checkProcessFinished(fileName) {
+    const clientNumber = fileName.slice(0, 4).replace(/^0+/, ''); // Extraer los primeros 4 dígitos del nombre del archivo ZIP (sin ceros a la izquierda)
+
+    const intervalId = setInterval(() => {
+        fetch(`/leer_logs/${clientNumber}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.logs) {
+                const logLines = data.logs.split('\n');
+                const closedConnectionLog = logLines.find(line => line.includes("Conexion a la base de datos cerrada"));
+                console.log(closedConnectionLog)
+                if (closedConnectionLog) {
+                    const logTime = closedConnectionLog.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}/)[0];
+                    const logDate = new Date(logTime.replace(',', '.'));
+                    const currentTime = new Date();
+
+                    console.log(logDate)
+                    console.log(currentTime)
+
+                    if (logDate <= currentTime) {
+                        stopSpinner(); // Detener el spinner cuando el proceso haya terminado
+                        clearInterval(intervalId); // Detener la verificación periódica
+                        showAlert('success', 'El proceso ha terminado exitosamente.');
+                    }
+                }
+            }
+        })
+        .catch(() => {
+            stopSpinner(); // Detener el spinner si hay un error al leer los logs
+            clearInterval(intervalId);
+            showAlert('danger', 'Error al leer los logs del cliente.');
+        });
+    }, 1000); // Verificar cada 1 segundo
+}
 
 
     </script>

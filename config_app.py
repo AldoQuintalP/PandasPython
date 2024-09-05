@@ -1487,46 +1487,46 @@ def extraer_headers(sql_dump):
 @app.route('/leer_logs/<cliente>', methods=['GET'])
 def leer_logs(cliente):
     try:
-        cliente = str(cliente)[:4].lstrip('0')
+        # Eliminar ceros a la izquierda del número del cliente
+        cliente = str(cliente).lstrip('0')
+        print(f'Cliente: {cliente}')
+        
+        # Obtener la fecha actual en formato aaaa-mm-dd
         fecha_actual = datetime.now().strftime('%Y-%m-%d')
         log_file_path = os.path.join('CLIENTS', cliente, 'Logs', f'log_{fecha_actual}.txt')
-        print(f'log_file_path: {log_file_path}')
+        print(f'Log_filepath: {log_file_path}')
 
-        # Lista de codificaciones comunes a intentar
-        codificaciones = ['utf-8', 'ISO-8859-1', 'latin1', 'Windows-1252']
-        
+        # Verificar si el archivo de logs existe antes de leerlo
+        if not os.path.exists(log_file_path):
+            print(f'Archivo de logs no encontrado: {log_file_path}')
+            return jsonify({'logs': 'Archivo de logs no encontrado.'}), 404
+
+        # Intentar leer el archivo de logs con diferentes codificaciones
         logs = None
+        codificaciones = ['utf-8', 'ISO-8859-1', 'latin1', 'Windows-1252']
         for codificacion in codificaciones:
             try:
                 with open(log_file_path, 'r', encoding=codificacion) as log_file:
                     logs = log_file.read()
-                print(f"Archivo leído exitosamente con la codificación: {codificacion}")
-                break  # Si se lee con éxito, salir del bucle
+                    print(f'Archivo leído con la codificación {codificacion}')
+                    break  # Salir del bucle si la lectura fue exitosa
             except UnicodeDecodeError:
-                print(f"Error al leer con la codificación {codificacion}, intentando otra...")
+                print(f'Error al leer con la codificación {codificacion}, probando otra...')
                 continue
 
         # Si logs sigue siendo None, significa que no se pudo leer con ninguna codificación
         if logs is None:
-            raise UnicodeDecodeError("No se pudo leer el archivo con las codificaciones probadas.")
+            return jsonify({'logs': 'Error al leer el archivo de logs con las codificaciones probadas.'}), 500
 
-        # Filtrar logs desde el inicio del proceso hasta el cierre de la conexión
-        inicio = "<--------------- Inicia el proceso --------------->"
-        fin = "INFO - <--------------- Conexión a la base de datos cerrada. --------------->"
-
-        if inicio in logs and fin in logs:
-            logs_proceso = logs.split(inicio)[1].split(fin)[0] + fin
-        else:
-            logs_proceso = logs  # Si no encuentra inicio o fin, devolver los logs completos
-
-        return jsonify({'logs': logs_proceso})
+        return jsonify({'logs': logs})
 
     except FileNotFoundError:
         return jsonify({'logs': 'Archivo de logs no encontrado.'}), 404
-    except UnicodeDecodeError as e:
-        return jsonify({'logs': f'Error al leer los logs: {str(e)}'}), 500
     except Exception as e:
+        print(f'Error inesperado: {str(e)}')
         return jsonify({'logs': f'Error inesperado: {str(e)}'}), 500
+
+
 
 
 
