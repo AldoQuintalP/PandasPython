@@ -1300,7 +1300,7 @@ def configuracion():
 def upload_and_execute():
     file = request.files['file']
     print(f'file: {file}')
-    workng_dir = "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\2-Workng"
+    workng_dir = "C:\\Users\\aldoq\\OneDrive\\Escritorio\\Repositorio Pandas\\PandasPython\\2-Workng"
     
     if not file or not file.filename.endswith('.zip'):
         return jsonify(success=False, error="No se ha proporcionado un archivo .zip válido.")

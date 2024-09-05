@@ -392,6 +392,8 @@ def procesar_archivo_zip():
 
             # Paso 3: Crear el DataFrame sin los campos calculados
             df = pd.DataFrame(adjusted_rows, columns=encabezados2)
+            # Convertir las fechas en el DataFrame antes de la inserción
+            df = convertir_fechas_df(df, dms_name, reporte_name)
 
             # Paso 4: Aplicar las fórmulas a todas las columnas que tengan fórmulas en encabezados2
             aplicar_formulas(df, dms_name, reporte_name)
@@ -1082,6 +1084,35 @@ def aplicar_formulas(df, dms_name, reporte):
             logging.info(f"No hay fórmula para la columna '{columna}' en el reporte '{reporte}'.")
 
 
+def convertir_fechas_df(df, dms_name, reporte_name):
+    """
+    Esta función busca las columnas de tipo DATE en el DataFrame y las convierte al formato 'yyyy-mm-dd'.
+    """
+    # Obtener las columnas que son de tipo DATE en el DMS
+    dms_path = os.path.join('CLIENTS', 'dms', f'{dms_name}.json')
+    
+    if not os.path.exists(dms_path):
+        logging.error(f"No se encontró el archivo {dms_path} para el DMS {dms_name}.")
+        return df
+
+    with open(dms_path, 'r') as file:
+        dms_data = json.load(file)
+    
+    # Acceder al tipo de dato de la columna en el JSON del DMS
+    columnas_tipo_date = [
+        col for col, info in dms_data.get('columnas_esperadas', {}).get(reporte_name, {}).get('data_types', {}).items()
+        if info.get('tipo') == 'DATE'
+    ]
+    
+    # Convertir las columnas de tipo DATE al formato 'yyyy-mm-dd'
+    for col in columnas_tipo_date:
+        if col in df.columns:
+            try:
+                df[col] = pd.to_datetime(df[col], format='%d/%m/%Y').dt.strftime('%Y-%m-%d')
+            except Exception as e:
+                logging.error(f"Error al convertir la columna {col} a formato de fecha: {e}")
+    
+    return df
 
 # Ejemplo de uso
 procesar_archivo_zip()

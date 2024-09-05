@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Procesamiento de Archivos</title>
     <!-- Incluye Bootstrap CSS desde un CDN -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">    
     <!-- Incluye SweetAlert2 CSS desde un CDN -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <!-- Incluye Font Awesome 6 desde un CDN -->
@@ -129,6 +128,113 @@
             max-height: 50vh;  /* Ajusta esta altura según tus necesidades */
         }
 
+        .modal-body {
+            max-height: 69vh; /* Ajusta la altura máxima del cuerpo del modal */
+            overflow-y: auto; /* Permitir scroll vertical */
+        }
+
+        table th {
+            position: sticky;
+            top: 0;
+            background-color: white; /* Color de fondo para el encabezado */
+            z-index: 10; /* Asegurar que el encabezado quede encima del contenido */
+            border-bottom: 2px solid #dee2e6; /* Añadir un borde para separar el encabezado */
+        }
+
+
+        /* Para hacer que el encabezado de la tabla sea fijo */
+        #reporteTabla thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa; /* Fondo más claro */
+            z-index: 10; /* Aumentar z-index para asegurarse de que el encabezado esté por encima de las filas */
+            border-bottom: 2px solid #dee2e6; /* Añadir una línea inferior */
+            color: #343a40; /* Texto oscuro */
+            font-weight: bold;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); /* Sombra para dar más visibilidad */
+        }
+
+        /* Establece el contenedor de la tabla como desplazable */
+        .table-responsive {
+            max-height: 60vh; /* Limita la altura para activar el scroll vertical */
+            overflow-y: auto; /* Desplazamiento vertical */
+            overflow-x: auto; /* Desplazamiento horizontal */
+            position: relative; /* Para que el z-index funcione correctamente */
+        }
+
+        #reporteTabla {
+            width: 100%; /* Asegurarse de que la tabla ocupe todo el ancho */
+            table-layout: auto; /* Ajustar las columnas automáticamente */
+            border-collapse: collapse;
+        }
+        /* Mantener el cuerpo de la tabla separado del encabezado */
+        #reporteTabla tbody td {
+            background-color: #ffffff; /* Color de fondo del cuerpo */
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+            text-align: center;
+        }
+        #reporteTabla thead th select {
+            margin: 5px;
+            padding: 3px;
+            font-size: 12px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+        }
+        /* Mejorar la apariencia de las celdas y filas al hacer hover */
+        #reporteTabla tbody tr:hover {
+            background-color: #e9ecef; /* Color al pasar el ratón por encima */
+        }
+
+        #reporteTabla tbody tr td {
+            white-space: nowrap; /* Evita que el texto se corte */
+        }
+        #reporteTabla td, #reporteTabla th {
+            border-left: 1px solid #dee2e6;
+        }
+        table tfoot {
+            background-color: #f1f1f1;
+            font-weight: bold;
+        }
+        #totalesContainer table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+#totalesContainer th, #totalesContainer td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+    vertical-align: middle;
+}
+
+#totalesContainer th {
+    background-color: #f2f2f2;
+}
+#reporteTabla td {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#totalesContainer {
+    width: 100%;
+    position: relative;
+    bottom: 0;
+    padding-top: 15px;
+}
+
+
+#totalesRow {
+    display: table;
+    width: 100%;
+    margin-top: 10px;
+    border-top: 1px solid #dee2e6;
+}
 
 
     </style>
@@ -204,29 +310,54 @@
             </div>
         </div>
     </div>
-    
-    <!-- Modal para mostrar el reporte -->
-    <div class="modal fade" id="reporteModal" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl" role="document">
+        
+    <div class="modal fade" id="reporteModal" tabindex="-1" aria-labelledby="reporteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="reporteModalLabel">Reporte</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="btn btn-secondary" id="limpiarFiltrosBtn">Limpiar Filtros</button>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="modalBody" style="overflow-x: auto; max-height: 80vh;">
-                    <!-- Aquí se cargará el contenido del reporte -->
+    
+                <!-- Aquí añadimos el contenedor de los totales sobre las columnas -->
+                <div id="totalesContainer" style="overflow-x: auto;">
+                    <table id="totalesRow" class="table table-bordered">
+                        <thead>
+                            <tr id="totalesHeaderRow"></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="totalesDataRow"></tr>
+                        </tbody>
+                    </table>
+                </div>
+    
+                <div class="modal-body" id="modalBody" style="overflow-x: auto;">
+                    <div class="table-responsive" style="height: 60vh; overflow-y: auto;">
+                        <table id="reporteTabla" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <!-- Encabezados de columna, se generarán dinámicamente con el contenido -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Contenido dinámico aquí -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    
 
     <!-- Incluye jQuery, Popper.js y Bootstrap JS desde un CDN -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Incluye Font Awesome JS desde un CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>    <!-- Incluye Font Awesome JS desde un CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <!-- DataTables JS -->
@@ -417,59 +548,127 @@
     console.log(`Branch Code: ${branchCode}`);
     
     const url = `/obtener_reporte?nombreReporte=${encodeURIComponent(nombreReporte)}&branch_code=${encodeURIComponent(branchCode)}`;
+
     fetch(url)
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('modalBody').innerHTML = html;
+        .then(response => response.text())
+        .then(html => {
+            // Insertar el contenido HTML en el modal
+            document.getElementById('modalBody').innerHTML = html;
 
-        // Asegúrate de que DataTables se inicialice después de agregar la tabla al DOM
-        $(document).ready(function() {
-    var table = $('#reporteTabla').DataTable({
-        paging: false,  // Desactiva la paginación si no la necesitas
-        scrollY: '50vh',  // Define la altura del scroll vertical
-        scrollX: true,    // Activa el scroll horizontal
-        fixedHeader: true, // Fija los encabezados al hacer scroll
-        initComplete: function () {
-            var api = this.api();
+            // Remover cualquier pie de tabla anterior
+            $('#reporteTabla tfoot').remove();
 
-            // Para cada columna, agregamos un `select` en el pie de página
-            api.columns().every(function () {
-                var column = this;
-                var select = $('select', column.footer()).empty();
+            // Inicializar los filtros
+            initializeFilters();
 
-                // Agregar una opción por defecto
-                select.append('<option value="">Filtrar por ' + $(column.header()).text() + '</option>');
+            // Actualizar los totales cuando se carga el reporte
+            actualizarTotales();
 
-                // Obtener valores únicos de la columna y agregarlos al `select`
-                var uniqueData = [];
+            // Mostrar el modal después de cargar el reporte
+            $('#reporteModal').modal('show');
+        })
+        .catch(error => {
+            console.error("Error al cargar el reporte:", error);
+            document.getElementById('modalBody').innerHTML = `<p>Error al cargar el reporte: ${error}</p>`;
+        });
+}
 
-                column.data().each(function (d, j) {
-                    if (uniqueData.indexOf(d) === -1) {
-                        uniqueData.push(d);
+// Llamar a la función de actualizar los totales cada vez que se aplique un filtro
+function initializeFilters() {
+    $('#reporteTabla thead th').each(function(index) {
+        if ($(this).find('select').length === 0) {
+            var select = $('<select><option value="">Filtrar por ' + $(this).text() + '</option></select>');
+
+            // Obtener valores únicos
+            var uniqueValues = [];
+            $('#reporteTabla tbody tr').each(function() {
+                var cellValue = $(this).find('td').eq(index).text();
+                if (uniqueValues.indexOf(cellValue) === -1) {
+                    uniqueValues.push(cellValue);
+                }
+            });
+
+            // Añadir los valores al select
+            uniqueValues.sort();
+            $.each(uniqueValues, function(i, value) {
+                select.append('<option value="' + value + '">' + value + '</option>');
+            });
+
+            $(this).append(select);
+
+            // Filtrar al cambiar el select
+            select.on('change', function() {
+                var selectedValue = $(this).val().toLowerCase();
+                $('#reporteTabla tbody tr').each(function() {
+                    var cellValue = $(this).find('td').eq(index).text().toLowerCase();
+                    if (selectedValue === "" || cellValue === selectedValue) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
                     }
                 });
 
-                uniqueData.sort().forEach(function (d) {
-                    select.append('<option value="' + d + '">' + d + '</option>');
-                });
-
-                // Evento para filtrar la tabla al cambiar la selección
-                select.on('change', function () {
-                    var val = $.fn.dataTable.util.escapeRegex($(this).val());
-
-                    column.search(val ? '^' + val + '$' : '', true, false).draw();
-                });
+                // Actualizar los totales después de filtrar
+                actualizarTotales();
             });
         }
     });
+
+    // Actualizar los totales después de inicializar los filtros
+    actualizarTotales();
+}
+
+
+function limpiarFiltros() {
+    // Restablecer todos los filtros en el encabezado (thead)
+    $('#reporteTabla thead select').each(function() {
+        $(this).val('');  // Reiniciar el valor del select a vacío
+    });
+
+    // Mostrar todas las filas de la tabla
+    $('#reporteTabla tbody tr').each(function() {
+        $(this).show();
+    });
+}
+
+// Agregar el evento al botón de "Limpiar Filtros"
+$(document).on('click', '#limpiarFiltrosBtn', function() {
+    limpiarFiltros();
 });
 
 
+function actualizarTotales() {
+    let totalesHeaderRow = $('#totalesHeaderRow');
+    let totalesDataRow = $('#totalesDataRow');
 
-        $('#reporteModal').modal('show');
+    totalesHeaderRow.empty();
+    totalesDataRow.empty();
+
+    // Recorre las columnas de la tabla para calcular los totales
+    $('#reporteTabla thead th').each(function(index) {
+        let columnaTitulo = $(this).text();
+        let sumaTotal = 0;
+        let filasConDatos = 0;
+
+        // Sumar las columnas numéricas
+        $('#reporteTabla tbody tr:visible').each(function() {
+            let valor = parseFloat($(this).find('td').eq(index).text().replace(',', '')) || 0;
+            if (!isNaN(valor) && valor !== 0) {
+                sumaTotal += valor;
+                filasConDatos++;
+            }
+        });
+
+        // Crear las celdas en la fila de totales
+        totalesHeaderRow.append(`<th>${columnaTitulo}</th>`);
+        totalesDataRow.append(`<td>Filas con datos: ${filasConDatos}<br>Suma: ${sumaTotal.toFixed(2)}</td>`);
     });
 
+    // Actualizar el total de filas visibles
+    let totalFilasVisibles = $('#reporteTabla tbody tr:visible').length;
+    $('#totalesContainer').append(`<p>Total filas visibles: ${totalFilasVisibles}</p>`);
 }
+
 
 
     </script>
