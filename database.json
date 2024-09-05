@@ -1,10 +1,10 @@
 {
     "host": "localhost",
     "usuario": "postgres",
-    "contrasena": "odoo",
+    "contrasena": "abcd1234",
     "base_de_datos": "Simdata",
-    "workng_dir": "C:\\Users\\aldoq\\OneDrive\\Escritorio\\Repositorio Pandas\\PandasPython\\2-Workng",
-    "sandbx": "C:\\Users\\aldoq\\OneDrive\\Escritorio\\Repositorio Pandas\\PandasPython\\3-Sandbx",
+    "workng_dir": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\2-Workng",
+    "sandbx": "C:\\Users\\Aldo Quintal\\Documents\\GithubPandas\\PandasPython\\3-Sandbx",
     "tipos_datos": [
         {
             "tipo": "character varying",

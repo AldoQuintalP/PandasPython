@@ -458,61 +458,52 @@
         });
 
         document.getElementById('fileInput').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file && file.name.endsWith('.zip')) {
-        resetTaskList();
-        const fileName = file.name;
-        const clientNumber = fileName.slice(0, 7); 
-        const branchCode = fileName.slice(3, 5);
-        const diaZip = fileName.slice(6, 8); // Obtener los últimos dos dígitos del ZIP para el día
+            const file = event.target.files[0];
+            if (file && file.name.endsWith('.zip')) {
+                resetTaskList();
+                const fileName = file.name;
+                const clientNumber = fileName.slice(0, 7); 
+                const branchCode = fileName.slice(3, 5);
+                const diaZip = fileName.slice(6, 8); // Obtener los últimos dos dígitos del ZIP para el día
 
-        const currentDate = new Date();
-        const currentDay = String(currentDate.getDate()).padStart(2, '0');
+                const currentDate = new Date();
+                const currentDay = String(currentDate.getDate()).padStart(2, '0');
 
-        const fechaValida = (diaZip === currentDay);
+                const fechaValida = (diaZip === currentDay);
 
-        startProgressBar();
-
-        // Iniciar la lectura de logs en tiempo real (antes de finalizar la barra de progreso)
-        obtenerLogsClienteEnTiempoReal(clientNumber);
-
-        setTimeout(() => {
-            fetch("{{ url_for('validar_cliente') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ clientNumber: clientNumber + branchCode })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const progressBar = document.getElementById('progressBar');
-                progressBar.style.width = '100%';
+                startProgressBar();
 
                 setTimeout(() => {
-                    validarTareas(data.clientExists, data.branchExists, fechaValida, data.reportes);
+                    fetch("{{ url_for('validar_cliente') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ clientNumber: clientNumber + branchCode })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const progressBar = document.getElementById('progressBar');
+                        progressBar.style.width = '100%';
+                        setTimeout(() => {
+                            validarTareas(data.clientExists, data.branchExists, fechaValida, data.reportes);
 
-                    if (!data.clientExists || !data.branchExists) {
-                        showAlert('danger', 'No se pudo cargar el archivo debido a fallos en las validaciones.');
-                    } else {
-                        // Si pasa todas las validaciones, se envía el archivo al servidor
-                        uploadFileToServer(file);
-                    }
-
-                    // Obtener los logs finales después de que se complete el proceso
-                    obtenerLogsFinales(clientNumber);
-                }, 500);
-            })
-            .catch(() => {
-                showAlert('danger', 'Hubo un problema al verificar el archivo. Intenta de nuevo.');
-                detenerLogsEnTiempoReal();
-            });
-        }, 2000);
-    } else {
-        showAlert('danger', 'Por favor, sube un archivo .zip válido.');
-    }
-});
-
+                            if (!data.clientExists || !data.branchExists) {
+                                showAlert('danger', 'No se pudo cargar el archivo debido a fallos en las validaciones.');
+                            } else {
+                                // Si pasa todas las validaciones, se envía el archivo al servidor
+                                uploadFileToServer(file);
+                            }
+                        }, 500);
+                    })
+                    .catch(() => {
+                        showAlert('danger', 'Hubo un problema al verificar el archivo. Intenta de nuevo.');
+                    });
+                }, 2000);
+            } else {
+                showAlert('danger', 'Por favor, sube un archivo .zip válido.');
+            }
+        });
 
         function validarTareas(clientExists, branchExists, fechaValida, reportes) {
             const tareaCliente = document.getElementById('tareaCliente');
@@ -571,48 +562,21 @@
         }
 
         function startProgressBar() {
-    const progressBar = document.getElementById('progressBar');
-    const progressContainer = document.getElementById('progressContainer');
-    progressContainer.style.display = 'block';
-    progressBar.style.width = '0%';
+            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.getElementById('progressContainer');
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
 
-    // Progresivamente aumentar la barra de progreso
-    let width = 0;
-    const interval = setInterval(() => {
-        if (width < 90) {
-            width += 1;
-            progressBar.style.width = width + '%';
-            progressBar.setAttribute('aria-valuenow', width);
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 10;
+                progressBar.style.width = width + '%';
+                progressBar.setAttribute('aria-valuenow', width);
+                if (width >= 100) {
+                    clearInterval(interval);
+                }
+            }, 200); // Cada incremento toma 200ms, completando en 2 segundos
         }
-    }, 1000); // Incrementar la barra cada segundo
-
-    // Enviar una solicitud al servidor para ejecutar el archivo y monitorear los logs
-    fetch('/upload_and_execute', {
-        method: 'POST',
-        body: new FormData(document.querySelector('form'))
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            clearInterval(interval);
-            // Completar la barra de progreso al 100% cuando el proceso termine
-            progressBar.style.width = '100%';
-            progressBar.setAttribute('aria-valuenow', 100);
-
-            // Mostrar los logs después de la ejecución
-            document.getElementById('logsContainer').innerHTML = `<pre>${data.logs}</pre>`;
-        } else {
-            clearInterval(interval);
-            // Mostrar el error si la ejecución falla
-            document.getElementById('logsContainer').innerHTML = `<p>Error: ${data.error}</p>`;
-        }
-    })
-    .catch(error => {
-        clearInterval(interval);
-        document.getElementById('logsContainer').innerHTML = `<p>Error: ${error.message}</p>`;
-    });
-}
-
 
         function uploadFileToServer(file) {
             const formData = new FormData();
@@ -851,30 +815,6 @@ function detenerLogsEnTiempoReal() {
         intervalId = null;
     }
 }
-
-function obtenerLogsFinales(cliente) {
-    const urlLogs = `/leer_logs/${cliente}`;
-    fetch(urlLogs)
-        .then(response => response.json())
-        .then(data => {
-            if (data.logs) {
-                document.getElementById('logsContainer').style.display = 'block';
-                document.getElementById('logContent').textContent = data.logs;
-
-                // Hacer scroll automático hacia abajo
-                const logContent = document.getElementById('logContent');
-                logContent.scrollTop = logContent.scrollHeight;
-            } else {
-                document.getElementById('logsContainer').style.display = 'block';
-                document.getElementById('logContent').textContent = 'No se encontraron logs.';
-            }
-        })
-        .catch(error => {
-            console.error('Error al obtener los logs:', error);
-            document.getElementById('logContent').textContent = 'Error al obtener los logs.';
-        });
-}
-
 
 
 

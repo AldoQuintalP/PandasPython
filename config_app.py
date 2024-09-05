@@ -999,7 +999,7 @@ def search_client_folder():
 @app.route('/validar_cliente', methods=['POST'])
 def validar_cliente():
     data = request.get_json()
-    
+    print(f'Datala: {data}')
     # Separar el número de cliente y el código de sucursal
     client_number = data.get('clientNumber')[0:4]  # Los primeros 4 caracteres
     branch_code = data.get('clientNumber')[4:6]  # Los siguientes 2 caracteres
@@ -1305,39 +1305,33 @@ def upload_and_execute():
     file = request.files['file']
     print(f'file: {file}')
     workng_dir = db_config.get('workng_dir', '')
-    print(f'Workdir in upload and Excet {workng_dir}')
     
     if not file or not file.filename.endswith('.zip'):
         return jsonify(success=False, error="No se ha proporcionado un archivo .zip válido.")
     
+    # Mover el archivo al directorio workng_dir
     try:
-        # Guardar el archivo en el directorio de trabajo
         file_path = os.path.join(workng_dir, file.filename)
         file.save(file_path)
         
-        # Ejecutar el script prueba.py como un proceso en segundo plano
-        command = 'python prueba.py'
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Ejecutar el script prueba.py
+        # Ruta al script de activación del entorno virtual en Windows
+        activate_env = os.path.join('.venv', 'Scripts', 'activate.bat')
 
-        log_file_path = os.path.join('CLIENTS', 'Logs', f'log_{datetime.now().strftime("%Y-%m-%d")}.txt')
-        
-        # Monitorear los logs mientras el proceso se está ejecutando
-        while process.poll() is None:
-            time.sleep(1)
-            # Leer los logs en tiempo real
-            with open(log_file_path, 'r', encoding='utf-8') as log_file:
-                logs = log_file.read()
-            
-            # Comprobar si el proceso ha terminado basado en el log
-            if "INFO - <--------------- Conexión a la base de datos cerrada. --------------->" in logs:
-                # Detener la barra de progreso y finalizar la ejecución
-                return jsonify(success=True, logs=logs)
-        
-        # Si el proceso termina sin generar el log final, devolver los logs leídos hasta el momento
-        return jsonify(success=True, logs=logs)
+        # Comando para ejecutar el script de activación seguido del script Python
+        command = f'{activate_env} && python prueba.py'
 
+        # Ejecutar el comando en un subprocess
+        result = subprocess.run(command, capture_output=True, text=True, shell=True)
+        
+        if result.returncode == 0:
+            return jsonify(success=True, output=result.stdout)
+        else:
+            return jsonify(success=False, error=result.stderr)
+    
     except Exception as e:
         return jsonify(success=False, error=str(e))
+
 
 
 def get_functions_from_file(file_path):

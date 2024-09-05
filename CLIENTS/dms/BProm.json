@@ -1197,20 +1197,93 @@
             "columnas": [
                 "NumeroParte",
                 "Descripcion",
-                "TipoParte",
                 "Almacen",
                 "Existencia",
                 "CostoUnitario$",
-                "Costo$",
+                "Costo$ (computed)",
                 "Precio$",
+                "Venta$ (computed)",
                 "UltimaCompra",
                 "UltimaVenta",
-                "FechaAlta",
+                "TipoParte",
                 "Clasificacion",
-                "Marca",
-                "Sucursal"
+                "FechaAlta",
+                "Disponible",
+                "Apartada",
+                "Proceso"
             ],
-            "formulas": {}
+            "formulas": {
+                "Costo$ (computed)": "Existencia * CostoUnitario$",
+                "Venta$ (computed)": "Existencia*Precio$",
+                "Almacen": "LimpiaTexto(Almacen)",
+                "Descripcion": "LimpiaTexto(Descripcion)"
+            },
+            "data_types": {
+                "NumeroParte": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "50"
+                },
+                "Almacen": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Existencia": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CostoUnitario$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Costo$ (computed)": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Precio$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Venta$ (computed)": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "UltimaCompra": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "UltimaVenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoParte": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Clasificacion": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaAlta": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Disponible": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Apartada": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Proceso": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
         },
         "REFMOS01": {
             "columnas": [
