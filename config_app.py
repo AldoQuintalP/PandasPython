@@ -14,6 +14,10 @@ import ast
 import logging
 import psycopg2
 import re
+from datetime import datetime
+import time
+
+
 
 # Configura Flask con la ruta para archivos estáticos
 app = Flask(__name__, static_url_path='/static')
@@ -1300,31 +1304,38 @@ def configuracion():
 def upload_and_execute():
     file = request.files['file']
     print(f'file: {file}')
-    workng_dir = "C:\\Users\\aldoq\\OneDrive\\Escritorio\\Repositorio Pandas\\PandasPython\\2-Workng"
+    workng_dir = db_config.get('workng_dir', '')
+    print(f'Workdir in upload and Excet {workng_dir}')
     
     if not file or not file.filename.endswith('.zip'):
         return jsonify(success=False, error="No se ha proporcionado un archivo .zip válido.")
     
-    # Mover el archivo al directorio workng_dir
     try:
+        # Guardar el archivo en el directorio de trabajo
         file_path = os.path.join(workng_dir, file.filename)
         file.save(file_path)
         
-        # Ejecutar el script prueba.py
-        # Ruta al script de activación del entorno virtual en Windows
-        activate_env = os.path.join('.venv', 'Scripts', 'activate.bat')
+        # Ejecutar el script prueba.py como un proceso en segundo plano
+        command = 'python prueba.py'
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        # Comando para ejecutar el script de activación seguido del script Python
-        command = f'{activate_env} && python prueba.py'
-
-        # Ejecutar el comando en un subprocess
-        result = subprocess.run(command, capture_output=True, text=True, shell=True)
+        log_file_path = os.path.join('CLIENTS', 'Logs', f'log_{datetime.now().strftime("%Y-%m-%d")}.txt')
         
-        if result.returncode == 0:
-            return jsonify(success=True, output=result.stdout)
-        else:
-            return jsonify(success=False, error=result.stderr)
-    
+        # Monitorear los logs mientras el proceso se está ejecutando
+        while process.poll() is None:
+            time.sleep(1)
+            # Leer los logs en tiempo real
+            with open(log_file_path, 'r', encoding='utf-8') as log_file:
+                logs = log_file.read()
+            
+            # Comprobar si el proceso ha terminado basado en el log
+            if "INFO - <--------------- Conexión a la base de datos cerrada. --------------->" in logs:
+                # Detener la barra de progreso y finalizar la ejecución
+                return jsonify(success=True, logs=logs)
+        
+        # Si el proceso termina sin generar el log final, devolver los logs leídos hasta el momento
+        return jsonify(success=True, logs=logs)
+
     except Exception as e:
         return jsonify(success=False, error=str(e))
 
@@ -1477,6 +1488,51 @@ def extraer_headers(sql_dump):
         
         return headers
     return None
+
+
+@app.route('/leer_logs/<cliente>', methods=['GET'])
+def leer_logs(cliente):
+    try:
+        cliente = str(cliente)[:4].lstrip('0')
+        fecha_actual = datetime.now().strftime('%Y-%m-%d')
+        log_file_path = os.path.join('CLIENTS', cliente, 'Logs', f'log_{fecha_actual}.txt')
+        print(f'log_file_path: {log_file_path}')
+
+        # Lista de codificaciones comunes a intentar
+        codificaciones = ['utf-8', 'ISO-8859-1', 'latin1', 'Windows-1252']
+        
+        logs = None
+        for codificacion in codificaciones:
+            try:
+                with open(log_file_path, 'r', encoding=codificacion) as log_file:
+                    logs = log_file.read()
+                print(f"Archivo leído exitosamente con la codificación: {codificacion}")
+                break  # Si se lee con éxito, salir del bucle
+            except UnicodeDecodeError:
+                print(f"Error al leer con la codificación {codificacion}, intentando otra...")
+                continue
+
+        # Si logs sigue siendo None, significa que no se pudo leer con ninguna codificación
+        if logs is None:
+            raise UnicodeDecodeError("No se pudo leer el archivo con las codificaciones probadas.")
+
+        # Filtrar logs desde el inicio del proceso hasta el cierre de la conexión
+        inicio = "<--------------- Inicia el proceso --------------->"
+        fin = "INFO - <--------------- Conexión a la base de datos cerrada. --------------->"
+
+        if inicio in logs and fin in logs:
+            logs_proceso = logs.split(inicio)[1].split(fin)[0] + fin
+        else:
+            logs_proceso = logs  # Si no encuentra inicio o fin, devolver los logs completos
+
+        return jsonify({'logs': logs_proceso})
+
+    except FileNotFoundError:
+        return jsonify({'logs': 'Archivo de logs no encontrado.'}), 404
+    except UnicodeDecodeError as e:
+        return jsonify({'logs': f'Error al leer los logs: {str(e)}'}), 500
+    except Exception as e:
+        return jsonify({'logs': f'Error inesperado: {str(e)}'}), 500
 
 
 

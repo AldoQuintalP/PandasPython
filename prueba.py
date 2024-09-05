@@ -173,6 +173,8 @@ def extraer_info_zip(nombre_zip):
 
 def procesar_archivo_zip():
     global workng_dir, sandbx, db_config, columnas_esperadas, reportes_selec, dms_name
+
+    
     
     try:
         with open('database.json', 'r', encoding='utf-8') as config_file:
@@ -194,6 +196,7 @@ def procesar_archivo_zip():
     
     workng_dir = config.get('workng_dir')
     sandbx = config.get('sandbx')
+    limpiar_carpeta(sandbx)
     
     for file_name in os.listdir(workng_dir):
         if file_name.endswith('.zip'):
@@ -308,15 +311,19 @@ def procesar_archivo_zip():
             version_servidor = "Desconocida"
 
         # Iterar sobre cada reporte y realizar las operaciones de creación de tabla e inserción
+        print(reportes)
         for reporte in reportes:
             print(f'Sucursal: {sucursal}')
-            print(f'Reporte__: {reporte}')
-
+        
             for item in reportes_selec:
                 if reporte in item and reporte == ''.join([i for i in item if not i.isdigit()]):
                     reporte = item
                     break
             print(f'Reporte ? : {reporte}')
+            #Tomamos el nombre del dms
+            dms_name = obtener_dms_por_reporte(reporte, config_data)
+            print(f'dms_name......: {dms_name}')
+
             nombre_tabla = f"{filtrar_letras(reporte)}{sucursal}"
             print(f'Nombre tabla: {nombre_tabla}')
             ruta_archivo = os.path.join(sandbx, f'{filtrar_letras(reporte)}{sucursal}.txt')
@@ -386,6 +393,8 @@ def procesar_archivo_zip():
             # Paso 1: Filtrar los campos que contienen '(computed)'
             campos_computed = [campo for campo in headers if '(computed)' in campo]
             encabezados2 = [campo for campo in headers if '(computed)' not in campo]
+            print(f'Campos Computed: {campos_computed}')
+            print(f'Encabeza2: {encabezados2}')
 
             # Paso 2: Verificar y ajustar el número de columnas en adjusted_rows
             adjusted_rows = [row[:len(encabezados2)] for row in adjusted_rows]
@@ -393,15 +402,18 @@ def procesar_archivo_zip():
             # Paso 3: Crear el DataFrame sin los campos calculados
             df = pd.DataFrame(adjusted_rows, columns=encabezados2)
             # Convertir las fechas en el DataFrame antes de la inserción
-            df = convertir_fechas_df(df, dms_name, reporte_name)
+            df = convertir_fechas_df(df, dms_name, reporte)
 
             # Paso 4: Aplicar las fórmulas a todas las columnas que tengan fórmulas en encabezados2
-            aplicar_formulas(df, dms_name, reporte_name)
+            print(df)
+            print(f'dms_name en eplicar ... {dms_name}')
+            print(f'reporte_name en aplicar ... {reporte}')
+            aplicar_formulas(df, dms_name, reporte)
 
             # Paso 5: Aplicar las fórmulas para las columnas calculadas (computed)
             print(f'Campos_computed: {campos_computed}')
             for campo_calculado in campos_computed:
-                formula = obtener_formula(dms_name, reporte_name, campo_calculado)
+                formula = obtener_formula(dms_name, reporte, campo_calculado)
                 print(f'Formula campo calculado: {formula}')
                 if formula:
                     try:
@@ -496,17 +508,6 @@ def procesar_archivo_zip():
                 longitudes_maximas = obtener_column_lengths(archivo_sql)
                 print(f'Longitudes_maximas _ {longitudes_maximas}')
                 
-                # datos_extraidos = extraer_datos_insert(archivo_sql)
-                # print(f'datos extraoidos : {datos_extraidos}')
-
-                # dataL = clean_and_split_list(datos_extraidos, longitudes_maximas)
-                # print(f'DataL ... {dataL}')
-
-                # #Mostrar los datos limpiados
-                # for fila in dataL:
-                #     errores = verificar_longitudes_y_ajustar(fila, longitudes_maximas)
-                #     print(f'Hooreres ::::: {errores}')
-
                 ejecutar_consulta(conexion, drop_query)
                 ejecutar_consulta(conexion, create_table_query)
                 ejecutar_consulta_insert(conexion, insert_query, df=df, max_lengths=longitudes_maximas, nombre_tabla=nombre_tabla, version_servidor=version_servidor, archivo_sql=archivo_sql, drop_query=drop_query,create_table_query=create_table_query)
@@ -1009,6 +1010,9 @@ def renombrar_columnas(headers):
     return new_headers
 
 def obtener_formula(dms_name, reporte_name, campo):
+    print(f'dms_name: {dms_name}')
+    print(f'Reporte_name: {reporte_name}')
+    print(f'Campo: {campo}')
     """
     Esta función busca y retorna la fórmula correspondiente a un campo específico dentro de un reporte
     de un DMS en particular.
@@ -1113,6 +1117,25 @@ def convertir_fechas_df(df, dms_name, reporte_name):
                 logging.error(f"Error al convertir la columna {col} a formato de fecha: {e}")
     
     return df
+
+
+def obtener_dms_por_reporte(reporte, config_data):
+    """
+    Función para obtener el DMS basado en un reporte específico.
+
+    :param reporte: El reporte que se está buscando (ejemplo: 'REFSER01').
+    :param config_data: El diccionario que contiene la información del JSON de configuración.
+    :return: El DMS correspondiente si se encuentra, de lo contrario None.
+    """
+    # Recorremos los registros dentro de la configuración
+    for registro in config_data.get('registros', []):
+        dms_data = registro.get('dms', {})
+        # Recorremos las claves y listas de reportes dentro de dms
+        for dms, reportes_lista in dms_data.items():
+            # Verificamos si el reporte está en la lista correspondiente
+            if reporte in reportes_lista:
+                return dms  # Retornamos el dms correspondiente si encontramos el reporte
+    return None
 
 # Ejemplo de uso
 procesar_archivo_zip()
