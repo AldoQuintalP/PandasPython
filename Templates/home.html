@@ -291,19 +291,52 @@
 
         #reportesList li a {
             text-decoration: none;
-            color: #007bff;
+            color: #080000;
             font-size: 18px;
             padding: 8px 12px;
             border-radius: 5px;
             transition: all 0.3s ease;
         }
 
-        #reportesList li a:hover {
-            background-color: #007bff;
-            color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
 
+
+        .upload-container:hover {
+        background-color: #d0d0d0;
+        border-color: #bbbbbb;
+    }
+
+    .task-item {
+        color: #4a4a4a;
+        display: flex;
+        align-items: center;
+    }
+
+    .task-item i {
+        margin-right: 10px;
+    }
+
+    #reportesList li {
+        background-color: #ffffff;
+        border: 1px solid #cccccc;
+        margin-bottom: 10px;
+        padding: 10px;
+        transition: background-color 0.3s;
+    }
+
+    #reportesList li:hover {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    #logContent {
+        font-family: "Courier New", Courier, monospace;
+        line-height: 1.5;
+    }
+
+    .card-header {
+        background-color: #343a40 !important;
+        color: #ffffff !important;
+    }
 
     </style>
 </head>
@@ -333,59 +366,66 @@
         </span>
     </div>
     
-    <!-- Contenido principal -->
-    <div id="main">
-        <div class="content">
-            <div class="container">
-                <div class="card mb-4 shadow-lg p-3 mb-5 bg-body-tertiary rounded">
-                    <div class="card-header">
-                        <h2>Procesamiento de Archivos</h2>
+<!-- Contenido principal -->
+<div id="main">
+    <div class="content">
+        <div class="container">
+            <div class="card mb-4 shadow-lg rounded border-0" style="background-color: #f5f5f5;">
+                <div class="card-header text-center" style="background-color: #343a40; color: #ffffff; border-bottom: 3px solid #6c757d; padding: 15px;">
+                    <h2 style="font-size: 1.5rem; letter-spacing: 0.5px; font-weight: 600;">Procesamiento de Archivos</h2>
+                </div>
+                <div class="card-body">
+                    <div id="alertContainer" class="alert alert-danger" style="display: none;"></div>
+                    <div id="upload-container" class="upload-container" style="background-color: #e0e0e0; border: 2px dashed #6c757d; padding: 30px; text-align: center; cursor: pointer; transition: background-color 0.3s;">
+                        <p style="color: #333333; font-size: 1.2rem;">Arrastra un archivo .zip aquí o haz clic para seleccionar uno</p>
+                        <input type="file" id="fileInput" accept=".zip" style="display: none;">
                     </div>
-                    <div class="card-body">
-                        <div id="alertContainer" class="alert alert-danger" style="display: none;"></div>
-                            <div id="upload-container" class="upload-container">
-                                <p>Arrastra un archivo .zip aquí o haz clic para seleccionar uno</p>
-                                <input type="file" id="fileInput" accept=".zip">
-                            </div>
-                            <div id="spinner" style="display: none; text-align: center; margin-top: 20px;">
-                                <i class="spinner-grow text-primary" style="font-size: 40px; color: #007bff;"></i>
-                                <p>Procesando archivo...</p>
-                            </div>
 
-                        <div id="fileInfo" style="margin-top: 20px;"></div>
-                    
-                        <!-- Barra de progreso, oculta por defecto -->
-                        <div id="progressContainer" style="display:none;">
-                            <div class="progress">
-                                <div id="progressBar" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        
-                        <div id="listaTareas">
-                            <div id="tareaCliente" class="task-item">
-                                <i class="fa fa-spinner fa-spin"></i> Validando cliente...
-                            </div>
-                            <div id="tareaSucursal" class="task-item">
-                                <i class="fa fa-spinner fa-spin"></i> Validando sucursal...
-                            </div>
-                            <div id="tareaFecha" class="task-item">
-                                <i class="fa fa-spinner fa-spin"></i> Validando fecha...
-                            </div>
-                        </div>
-                        <div id="listaReportes" style="display:none;">
-                            <h4>Reportes Disponibles:</h4>
-                            <ul id="reportesList"></ul>
-                        </div>
-                        <div id="logsContainer" style="display: block;">
-                            <h4>Logs del Proceso:</h4>
-                            <pre id="logContent" style="background-color: #f8f9fa; padding: 15px; border: 1px solid #ddd; border-radius: 10px; max-height: 300px; overflow-y: auto;"></pre>
-                        </div>                                               
+                    <div id="spinner" class="text-center mt-4" style="display: none;">
+                        <div class="spinner-grow" style="width: 3rem; height: 3rem; background-color: #6c757d;"></div>
+                        <p class="mt-3" style="color: #4a4a4a;">Procesando archivo...</p>
                     </div>
-                    
+
+                    <div id="fileInfo" class="mt-4"></div>
+
+                    <!-- Barra de progreso, oculta por defecto -->
+                    <div id="progressContainer" class="mt-4" style="display:none;">
+                        <div class="progress" style="height: 20px; background-color: #e0e0e0;">
+                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%; background-color: #6c757d;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de validaciones -->
+                    <div id="listaTareas" class="mt-4">
+                        <div id="tareaCliente" class="task-item" style="font-size: 1.1rem;">
+                            <i class="fa fa-spinner fa-spin" style="color: #6c757d;"></i> Validando cliente...
+                        </div>
+                        <div id="tareaSucursal" class="task-item mt-2" style="font-size: 1.1rem;">
+                            <i class="fa fa-spinner fa-spin" style="color: #6c757d;"></i> Validando sucursal...
+                        </div>
+                        <div id="tareaFecha" class="task-item mt-2" style="font-size: 1.1rem;">
+                            <i class="fa fa-spinner fa-spin" style="color: #6c757d;"></i> Validando fecha...
+                        </div>
+                    </div>
+
+                    <!-- Lista de reportes -->
+                    <div id="listaReportes" class="mt-4" style="display:none;">
+                        <h4 style="color: #4a4a4a; font-weight: bold;">Reportes Disponibles:</h4>
+                        <ul id="reportesList" class="list-group" style="border-radius: 5px;"></ul>
+                    </div>
+
+                    <!-- Logs del Proceso -->
+                    <div id="logsContainer" class="mt-4">
+                        <h4 style="color: #4a4a4a; font-weight: bold;">Logs del Proceso:</h4>
+                        <pre id="logContent" style="background-color: #f5f5f5; padding: 20px; border: 1px solid #cccccc; border-radius: 8px; max-height: 300px; overflow-y: auto; font-size: 0.9rem; color: #333;"></pre>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+
         
     <div class="modal fade" id="reporteModal" tabindex="-1" aria-labelledby="reporteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
@@ -557,10 +597,7 @@
                     li.innerHTML = `<a href="#" onclick="mostrarReporte('${reporteName}', '${branchCode}')">${reporteName}</a>`;
                     reportesList.appendChild(li);
                 });
-                listaReportes.style.display = 'block';
-            } else {
-                listaReportes.style.display = 'none';
-            }
+            } 
         }
 
         function resetTaskList() {
@@ -647,8 +684,6 @@
             // Mostrar el modal después de cargar el reporte
             $('#reporteModal').modal('show');
 
-            // Ahora que se cargó el archivo, obtener los logs
-            obtenerLogsCliente(branchCode);
         })
         .catch(error => {
             console.error("Error al cargar el reporte:", error);
@@ -838,7 +873,6 @@ function stopSpinner() {
 }
 
 
-// Verificar si el proceso ha finalizado revisando los logs
 function checkProcessFinished(fileName) {
     const clientNumber = fileName.slice(0, 4).replace(/^0+/, ''); // Extraer los primeros 4 dígitos del nombre del archivo ZIP (sin ceros a la izquierda)
 
@@ -848,20 +882,35 @@ function checkProcessFinished(fileName) {
         .then(data => {
             if (data.logs) {
                 const logLines = data.logs.split('\n');
-                const closedConnectionLog = logLines.find(line => line.includes("Conexion a la base de datos cerrada"));
-                console.log(closedConnectionLog)
-                if (closedConnectionLog) {
-                    const logTime = closedConnectionLog.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}/)[0];
-                    const logDate = new Date(logTime.replace(',', '.'));
-                    const currentTime = new Date();
 
-                    console.log(logDate)
-                    console.log(currentTime)
+                // Buscar la última ocurrencia de "Conexion a la base de datos cerrada"
+                const lastClosedConnectionLogIndex = logLines
+                    .map(line => line.includes("Conexion a la base de datos cerrada"))
+                    .lastIndexOf(true);
 
-                    if (logDate <= currentTime) {
-                        stopSpinner(); // Detener el spinner cuando el proceso haya terminado
-                        clearInterval(intervalId); // Detener la verificación periódica
+                // Buscar la primera ocurrencia de "Inicia el proceso"
+                const firstProcessStartIndex = logLines
+                    .map(line => line.includes("Inicia el proceso"))
+                    .lastIndexOf(true);
+
+                // Si se encuentran ambos logs, mostrar el rango correspondiente
+                if (firstProcessStartIndex !== -1 && lastClosedConnectionLogIndex !== -1) {
+                    const logsToShow = logLines.slice(firstProcessStartIndex, lastClosedConnectionLogIndex + 1).join('\n');
+                    document.getElementById('logContent').textContent = logsToShow;
+
+                    // Hacer scroll automático hacia el final para mostrar siempre la última línea del log
+                    const logContent = document.getElementById('logContent');
+                    logContent.scrollTop = logContent.scrollHeight;
+
+                    // Si se encuentra la última conexión cerrada, detener el proceso
+                    if (logLines[lastClosedConnectionLogIndex].includes("Conexion a la base de datos cerrada")) {
+                        stopSpinner();
+                        clearInterval(intervalId);
                         showAlert('success', 'El proceso ha terminado exitosamente.');
+
+                        // Mostrar el contenedor de "Reportes Disponibles" después de quitar el spinner
+                        const listaReportes = document.getElementById('listaReportes');
+                        listaReportes.style.display = 'block';
                     }
                 }
             }
@@ -873,6 +922,8 @@ function checkProcessFinished(fileName) {
         });
     }, 1000); // Verificar cada 1 segundo
 }
+
+
 
 
     </script>
