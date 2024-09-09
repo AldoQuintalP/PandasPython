@@ -763,76 +763,106 @@
         }
         
         function abrirEditarColumnasModal(tabName, reporte) {
-            fetch(`/edit_reporte/${reporte}?tab_name=${tabName}`)
-                .then(response => response.json())
-                .then(data => {
-                    const columnas = data.columnas || [];
-                    const columnList = document.getElementById('column-edit-list');
-                    columnList.innerHTML = '';
+    fetch(`/edit_reporte/${reporte}?tab_name=${tabName}`)
+        .then(response => response.json())
+        .then(data => {
+            const columnas = data.columnas || [];
+            const columnList = document.getElementById('column-edit-list');
+            columnList.innerHTML = '';
 
-                    columnas.forEach(col => {
-                        const listItem = document.createElement('li');
-                        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            columnas.forEach(col => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
 
-                        // Verificar si la columna es un campo calculado
-                        if (col.endsWith('(computed)')) {
-                            // Remover "(computed)" del nombre
-                            const displayName = col.replace(' (computed)', '');
-                            listItem.textContent = displayName;
+                // Verificamos si la columna es "computed"
+                const isComputedField = col.endsWith('(computed)');
 
-                            // Sombrear de gris
-                            listItem.style.backgroundColor = '#c1ea8c';
-                        } else {
-                            listItem.textContent = col;
-                        }
+                // Establecemos el atributo con el nombre completo para mantener "(computed)"
+                listItem.setAttribute('data-original-name', col);
 
-                        // Añadir botones de editar y eliminar
-                        const btnGroup = document.createElement('div');
-                        btnGroup.className = 'btn-group ml-auto';
+                // Mostramos solo el nombre sin "(computed)" en la vista visible
+                listItem.textContent = isComputedField ? col.replace(' (computed)', '') : col;
 
-                        const editBtn = document.createElement('button');
-                        editBtn.className = 'btn btn-warning btn-sm';
-                        editBtn.innerHTML = '<i class="fa fa-edit"></i>';
-                        editBtn.addEventListener('click', function() {
-                            editarColumna(tabName, reporte, col);
-                        });
+                // Pintamos el elemento si es computado
+                if (isComputedField) {
+                    listItem.style.backgroundColor = '#c1ea8c';  // Verde si es "computed"
+                }
 
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.className = 'btn btn-danger btn-sm';
-                        deleteBtn.innerHTML = '<i class="fa fa-trash-alt"></i>';
-                        deleteBtn.addEventListener('click', function() {
-                            eliminarColumna(tabName, reporte, col);
-                        });
+                // Añadir botones de editar y eliminar
+                const btnGroup = document.createElement('div');
+                btnGroup.className = 'btn-group ml-auto';
 
-                        btnGroup.appendChild(editBtn);
-                        btnGroup.appendChild(deleteBtn);
-                        listItem.appendChild(btnGroup);
-
-                        columnList.appendChild(listItem);
-                    });
-
-                    // Inicializar la funcionalidad de arrastrar y soltar
-                    new Sortable(columnList, {
-                        animation: 150,
-                        ghostClass: 'blue-background-class',
-                    });
-
-                    document.getElementById('editColumnModal').setAttribute('data-tab', tabName);
-                    document.getElementById('editColumnModal').setAttribute('data-reporte', reporte);
-
-                    $('#editColumnModal').modal('show');
-                })
-                .catch(error => {
-                    console.error('Error al cargar las columnas:', error);
-                    Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn btn-warning btn-sm';
+                editBtn.innerHTML = '<i class="fa fa-edit"></i>';
+                editBtn.addEventListener('click', function() {
+                    abrirModalEditarColumna(tabName, reporte, col);
                 });
-        }
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger btn-sm';
+                deleteBtn.innerHTML = '<i class="fa fa-trash-alt"></i>';
+                deleteBtn.addEventListener('click', function() {
+                    eliminarColumna(tabName, reporte, col);
+                });
+
+                btnGroup.appendChild(editBtn);
+                btnGroup.appendChild(deleteBtn);
+                listItem.appendChild(btnGroup);
+
+                columnList.appendChild(listItem);
+            });
+
+            // Inicializamos la funcionalidad de arrastrar y soltar
+            new Sortable(columnList, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+            });
+
+            document.getElementById('editColumnModal').setAttribute('data-tab', tabName);
+            document.getElementById('editColumnModal').setAttribute('data-reporte', reporte);
+
+            $('#editColumnModal').modal('show');
+        })
+        .catch(error => {
+            console.error('Error al cargar las columnas:', error);
+            Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
+        });
+}
+
+
+function abrirModalEditarColumna(tab, reporte, columna) {
+    // Establecer los atributos del modal
+    document.getElementById('editSpecificColumnModal').setAttribute('data-tab', tab);
+    document.getElementById('editSpecificColumnModal').setAttribute('data-reporte', reporte);
+    document.getElementById('editSpecificColumnModal').setAttribute('data-original-column', columna);
+
+    // Verificar si la columna es un campo computado y ocultar "(computed)"
+    const isComputedField = columna.endsWith('(computed)');
+    const computedFieldCheckbox = document.getElementById('computed_field_edit');
+
+    if (isComputedField) {
+        // Remover "(computed)" del nombre para mostrarlo en el modal
+        document.getElementById('edit_column_name').value = columna.replace(' (computed)', '');
+        computedFieldCheckbox.checked = true;
+    } else {
+        document.getElementById('edit_column_name').value = columna;
+        computedFieldCheckbox.checked = false;
+    }
+
+    // Mostrar el modal de edición de columna específica
+    $('#editSpecificColumnModal').modal('show');
+}
+
 
 
 document.getElementById('saveOrderBtn').addEventListener('click', function() {
-    console.log("Boton clicl saveorder")
+    console.log("Botón clic SaveOrder presionado");
+
     const columnEditList = document.getElementById('column-edit-list');
-    const ordenColumnas = Array.from(columnEditList.children).map(item => item.textContent.trim());
+
+    // Obtenemos el texto completo de cada columna, incluyendo "(computed)" si está presente
+    const ordenColumnas = Array.from(columnEditList.children).map(item => item.getAttribute('data-original-name').trim());
 
     const tabName = document.getElementById('editColumnModal').getAttribute('data-tab');
     const reporte = document.getElementById('editColumnModal').getAttribute('data-reporte');
@@ -842,7 +872,7 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
         return;
     }
 
-    // Enviar el nuevo orden al servidor
+    // Enviar el nuevo orden al servidor, incluyendo "(computed)" cuando corresponda
     fetch('/guardar-orden-columnas', {
         method: 'POST',
         body: new URLSearchParams({
@@ -868,6 +898,9 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
         Swal.fire('Error', 'No se pudo guardar el orden de las columnas', 'error');
     });
 });
+
+
+
 
 
 function editarColumna(tab, reporte, columna) {
@@ -900,35 +933,24 @@ function editarColumna(tab, reporte, columna) {
 
 
 
-// Evento para guardar los cambios al hacer clic en el botón de guardar en el modal
 document.getElementById('saveEditColumnBtn').addEventListener('click', function() {
     const newColumnName = document.getElementById('edit_column_name').value.trim();
+    const isComputedField = document.getElementById('computed_field_edit').checked; // Verificar si el checkbox está marcado
     const tabName = document.getElementById('editSpecificColumnModal').getAttribute('data-tab');
     const reporte = document.getElementById('editSpecificColumnModal').getAttribute('data-reporte');
     const originalColumnName = document.getElementById('editSpecificColumnModal').getAttribute('data-original-column');
-    
-    // Obtener todas las columnas actuales para evitar duplicados
-    const existingColumns = Array.from(document.getElementById('column-edit-list').children).map(item => item.textContent.trim());
 
-    // Comprobar si el nuevo nombre de la columna ya existe
-    if (existingColumns.includes(newColumnName) && newColumnName !== originalColumnName) {
-        Swal.fire('Error', 'El nombre de la columna ya existe. Por favor, elige otro nombre.', 'error');
-        return;
-    }
+    // Si es un campo computado, añadimos "(computed)" al nombre
+    const finalColumnName = isComputedField ? `${newColumnName} (computed)` : newColumnName;
 
-    if (!newColumnName) {
-        Swal.fire('Error', 'El nombre de la columna no puede estar vacío.', 'error');
-        return;
-    }
-
-    // Enviar el cambio al servidor si la validación es correcta
+    // Enviar el cambio al servidor
     fetch('/editar-columna', {
         method: 'POST',
         body: new URLSearchParams({
             tab_name: tabName,
             reporte: reporte,
             columna: originalColumnName,
-            nueva_columna: newColumnName
+            nueva_columna: finalColumnName  // Guardar el nombre completo con "(computed)" si aplica
         }),
     })
     .then(response => response.json())
