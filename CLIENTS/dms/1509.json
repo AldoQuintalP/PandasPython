@@ -8,7 +8,7 @@
         "REFCOM01",
         "REFOEP01",
         "REFSER01",
-        "Fidencio"
+        "VTAUSA11"
     ],
     "columnas_esperadas": {
         "INVNUE01": {
@@ -666,17 +666,67 @@
                 }
             }
         },
-        "Fidencio": {
+        "VTAUSA11": {
             "columnas": [
-                "Fecha",
-                "FechaInicial",
-                "Compra",
-                "Costo",
-                "VentaTOT",
-                "Venta"
+                "Cuenta",
+                "CentroCosto",
+                "Descripcion",
+                "Fecha (computed)",
+                "Debitos$",
+                "SaldoInicial$",
+                "Creditos$",
+                "Saldo$",
+                "TipoCuenta",
+                "Naturaleza",
+                "Sucursal"
             ],
             "formulas": {},
-            "data_types": {}
+            "data_types": {
+                "Cuenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "CentroCosto": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Fecha (computed)": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Debitos$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "SaldoInicial$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Creditos$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Saldo$": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "TipoCuenta": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Naturaleza": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Sucursal": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
         }
     }
 }

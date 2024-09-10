@@ -553,52 +553,64 @@
     }
 });
 
-        function validarTareas(clientExists, branchExists, fechaValida, reportes) {
-            const tareaCliente = document.getElementById('tareaCliente');
-            const tareaSucursal = document.getElementById('tareaSucursal');
-            const tareaFecha = document.getElementById('tareaFecha');
-            const listaReportes = document.getElementById('listaReportes');
-            const reportesList = document.getElementById('reportesList');
+function validarTareas(clientExists, branchExists, fechaValida, reportes) {
+    const tareaCliente = document.getElementById('tareaCliente');
+    const tareaSucursal = document.getElementById('tareaSucursal');
+    const tareaFecha = document.getElementById('tareaFecha');
+    const listaReportes = document.getElementById('listaReportes');
+    const reportesList = document.getElementById('reportesList');
 
-            if (tareaCliente) {
-                if (clientExists) {
-                    tareaCliente.innerHTML = '<i class="fa fa-check-circle text-success"></i> El cliente se encuentra registrado';
-                } else {
-                    tareaCliente.innerHTML = '<i class="fa fa-times-circle text-danger"></i> El cliente no está registrado';
-                }
-                tareaCliente.classList.add('visible');
-            }
-
-            if (tareaSucursal) {
-                if (branchExists) {
-                    tareaSucursal.innerHTML = '<i class="fa fa-check-circle text-success"></i> La sucursal se encuentra registrada';
-                } else {
-                    tareaSucursal.innerHTML = '<i class="fa fa-times-circle text-danger"></i> La sucursal no está registrada';
-                }
-                tareaSucursal.classList.add('visible');
-            }
-
-            if (tareaFecha) {
-                if (fechaValida) {
-                    tareaFecha.innerHTML = '<i class="fa fa-check-circle text-success"></i> El paquete es del día de hoy';
-                } else {
-                    tareaFecha.innerHTML = '<i class="fa fa-exclamation-circle text-warning" title="No es del día de hoy"></i> El paquete no es del día de hoy';
-                }
-                tareaFecha.classList.add('visible');
-            }
-
-            // Mostrar reportes si el cliente y la sucursal existen
-            if (clientExists && branchExists && reportes.length > 0) {
-                reportesList.innerHTML = ''; // Limpiar la lista de reportes anterior
-                const branchCode = document.getElementById('fileInput').files[0].name.slice(4, 6); // Obtener el branchCode del nombre del archivo
-                reportes.forEach(reporte => {
-                    const reporteName = `${reporte.slice(0, -2)}${branchCode}`; // Remover los últimos dos caracteres de reporte y agregar branchCode
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="#" onclick="mostrarReporte('${reporteName}', '${branchCode}')">${reporteName}</a>`;
-                    reportesList.appendChild(li);
-                });
-            } 
+    if (tareaCliente) {
+        if (clientExists) {
+            tareaCliente.innerHTML = '<i class="fa fa-check-circle text-success"></i> El cliente se encuentra registrado';
+        } else {
+            tareaCliente.innerHTML = '<i class="fa fa-times-circle text-danger"></i> El cliente no está registrado';
         }
+        tareaCliente.classList.add('visible');
+    }
+
+    if (tareaSucursal) {
+        if (branchExists) {
+            tareaSucursal.innerHTML = '<i class="fa fa-check-circle text-success"></i> La sucursal se encuentra registrada';
+        } else {
+            tareaSucursal.innerHTML = '<i class="fa fa-times-circle text-danger"></i> La sucursal no está registrada';
+        }
+        tareaSucursal.classList.add('visible');
+    }
+
+    if (tareaFecha) {
+        if (fechaValida) {
+            tareaFecha.innerHTML = '<i class="fa fa-check-circle text-success"></i> El paquete es del día de hoy';
+        } else {
+            tareaFecha.innerHTML = '<i class="fa fa-exclamation-circle text-warning" title="No es del día de hoy"></i> El paquete no es del día de hoy';
+        }
+        tareaFecha.classList.add('visible');
+    }
+
+    // Mostrar reportes si el cliente y la sucursal existen
+    if (clientExists && branchExists && reportes.length > 0) {
+        reportesList.innerHTML = ''; // Limpiar la lista de reportes anterior
+        const branchCode = document.getElementById('fileInput').files[0].name.slice(4, 6); // Obtener el branchCode del nombre del archivo
+        
+        reportes.forEach(reporte => {
+            let reporteName = reporte;
+            
+            // Comprobar si el reporte contiene "SERVTA" o "SERVTC" y ajustar según sea necesario
+            if (reporte.includes("SERVTA")) {
+                reporteName = `SERVTA${branchCode}`;
+            } else if (reporte.includes("SERVTC")) {
+                reporteName = `SERVTC${branchCode}`;
+            } else {
+                reporteName = `${reporte.slice(0, -2)}${branchCode}`; // Remover los últimos dos caracteres de reporte y agregar branchCode
+            }
+
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="#" onclick="mostrarReporte('${reporteName}', '${branchCode}')">${reporteName}</a>`;
+            reportesList.appendChild(li);
+        });
+    } 
+}
+
 
         function resetTaskList() {
             document.getElementById('tareaCliente').classList.remove('failed', 'visible');
@@ -668,7 +680,7 @@
     document.getElementById('reporteModalLabel').innerText = `Reporte: ${nombreReporte}`;
     
     const url = `/obtener_reporte?nombreReporte=${encodeURIComponent(nombreReporte)}&branch_code=${encodeURIComponent(branchCode)}`;
-
+    console.log(url)
     fetch(url)
         .then(response => response.text())
         .then(html => {

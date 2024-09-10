@@ -341,6 +341,46 @@
             white-space: pre-wrap; /* Para respetar los espacios y saltos de línea */
             word-wrap: break-word; /* Para que las palabras largas se dividan al final de la línea */
         }
+        .column-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Espacio entre las filas */
+        }
+
+        .column-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 100%; /* Asegurar que el ancho ocupe todo el contenedor */
+        }
+
+        .column-item span {
+            flex-grow: 1; /* El texto de la columna se expande para usar todo el espacio */
+            margin-right: 10px; /* Espacio entre el texto y los botones */
+            white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+        }
+
+        .computed {
+            background-color: #c1ea8c; /* Pintar en verde las columnas calculadas */
+        }
+
+        .column-item .btn-group {
+            display: flex;
+            gap: 5px; /* Espacio entre los botones */
+        }
+
+        .btn-group .btn {
+            padding: 0.375rem 0.5rem; /* Tamaño de los botones */
+        }
+        .cursor-pointer {
+            cursor: pointer; /* Cambia el cursor a "manita" */
+        }
+
+
 
     </style>
 </head>
@@ -511,9 +551,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <ul id="column-edit-list" class="list-group">
+                    <div id="column-edit-list" class="column-list">
                         <!-- Las columnas se cargarán aquí dinámicamente -->
-                    </ul>
+                    </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between align-items-center">
                     <!-- Botón para agregar una nueva columna -->
@@ -528,6 +568,9 @@
             </div>
         </div>
     </div>
+
+
+
 
     <!-- Modal para agregar filtro -->
     <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
@@ -827,34 +870,48 @@
             const columnList = document.getElementById('column-edit-list');
             columnList.innerHTML = '';
 
-            columnas.forEach(col => {
-                const listItem = document.createElement('li');
-                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            let fIndex = 1;  // Índice para las columnas que no son computadas
 
-                // Verificamos si la columna es "computed"
+            // Cargar las columnas en la lista
+            columnas.forEach((col) => {
+                const div = document.createElement('div');
+                div.className = 'column-item';
+                div.setAttribute('data-original-name', col); // Asignar el nombre original completo
+
+                // Verificar si la columna es "computed"
                 const isComputedField = col.endsWith('(computed)');
+                const cleanColName = isComputedField ? col.replace(' (computed)', '') : col; // Eliminar "(computed)" visualmente
 
-                // Establecemos el atributo con el nombre completo para mantener "(computed)"
-                listItem.setAttribute('data-original-name', col);
+                // Nombre de la columna
+                const colSpan = document.createElement('span');
+                colSpan.textContent = cleanColName; // Mostrar el nombre sin "(computed)"
+                colSpan.className = 'column-name';
 
-                // Mostramos solo el nombre sin "(computed)" en la vista visible
-                listItem.textContent = isComputedField ? col.replace(' (computed)', '') : col;
-
-                // Pintamos el elemento si es computado
-                if (isComputedField) {
-                    listItem.style.backgroundColor = '#c1ea8c';  // Verde si es "computed"
+                // Si no es columna calculada, agregamos la "F" con el número de índice
+                if (!isComputedField) {
+                    const fCol = document.createElement('span');
+                    fCol.className = 'f-column';
+                    fCol.textContent = `F${fIndex}`;  // F1, F2, F3, etc.
+                    fIndex++;  // Incrementar solo para las columnas no calculadas
+                    div.appendChild(fCol);
                 }
+
+                // Si es computed, pintamos de verde
+                if (isComputedField) {
+                    div.classList.add('computed');  // Añadir clase para pintar en verde
+                }
+
+                div.appendChild(colSpan);
 
                 // Añadir botones de filtro, editar y eliminar
                 const btnGroup = document.createElement('div');
                 btnGroup.className = 'btn-group ml-auto';
 
-                // Botón de filtro
                 const filterBtn = document.createElement('button');
                 filterBtn.className = 'btn btn-primary btn-sm';
                 filterBtn.innerHTML = '<i class="fa-solid fa-filter"></i>';
                 filterBtn.addEventListener('click', function() {
-                    abrirFiltroModal(col);  // Llamamos a la función que abre el modal de filtros
+                    abrirFiltroModal(col);
                 });
 
                 const editBtn = document.createElement('button');
@@ -871,18 +928,22 @@
                     eliminarColumna(tabName, reporte, col);
                 });
 
-                btnGroup.appendChild(filterBtn);  // Agregar el botón de filtro
-                btnGroup.appendChild(editBtn);    // Agregar el botón de editar
-                btnGroup.appendChild(deleteBtn);  // Agregar el botón de eliminar
-                listItem.appendChild(btnGroup);
+                btnGroup.appendChild(filterBtn);
+                btnGroup.appendChild(editBtn);
+                btnGroup.appendChild(deleteBtn);
+                div.appendChild(btnGroup);
 
-                columnList.appendChild(listItem);
+                columnList.appendChild(div);
             });
 
             // Inicializamos la funcionalidad de arrastrar y soltar
             new Sortable(columnList, {
                 animation: 150,
+                handle: '.column-item',  // Permitir arrastrar la fila completa
                 ghostClass: 'sortable-ghost',
+                onEnd: function() {
+                    actualizarFColumn();  // Actualizar la columna F después del reordenamiento
+                }
             });
 
             document.getElementById('editColumnModal').setAttribute('data-tab', tabName);
@@ -895,6 +956,29 @@
             Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
         });
 }
+
+// Función para actualizar los índices F después del reordenamiento
+function actualizarFColumn() {
+    let fIndex = 1;  // Reiniciar el índice
+
+    // Seleccionar todas las columnas que no sean computadas
+    document.querySelectorAll('#column-edit-list .column-item').forEach(function(columnItem) {
+        const originalName = columnItem.getAttribute('data-original-name');
+
+        if (!originalName.endsWith('(computed)')) {
+            const fCol = columnItem.querySelector('.f-column');
+            if (fCol) {
+                fCol.textContent = `F${fIndex}`;  // Actualizar el valor de "F"
+                fIndex++;  // Incrementar el índice para la siguiente columna no calculada
+            }
+        }
+    });
+}
+
+
+
+
+
 
 function abrirFiltroModal(columna) {
     document.getElementById('filter-column-name').textContent = columna;  // Actualiza el nombre de la columna en el modal
@@ -927,31 +1011,62 @@ function abrirModalEditarColumna(tab, reporte, columna) {
 }
 
 
-
 document.getElementById('saveOrderBtn').addEventListener('click', function() {
     console.log("Botón clic SaveOrder presionado");
 
-    const columnEditList = document.getElementById('column-edit-list');
+    const columnItems = document.querySelectorAll('.column-item');
+    let columnas = [];  // Almacena las columnas en el formato correcto para el JSON
 
-    // Obtenemos el texto completo de cada columna, incluyendo "(computed)" si está presente
-    const ordenColumnas = Array.from(columnEditList.children).map(item => item.getAttribute('data-original-name').trim());
+    // Verifica si hay columnas antes de proceder
+    if (!columnItems || columnItems.length === 0) {
+        Swal.fire('Error', 'No hay columnas para guardar.', 'error');
+        return;
+    }
+
+    columnItems.forEach(item => {
+        const originalName = item.getAttribute('data-original-name');  // Nombre original de la columna
+        if (originalName) {
+            columnas.push(originalName);  // Solo incluimos el nombre, sin el índice "F"
+        }
+    });
 
     const tabName = document.getElementById('editColumnModal').getAttribute('data-tab');
     const reporte = document.getElementById('editColumnModal').getAttribute('data-reporte');
 
+    // Verifica si el tabName o el reporte son null o están vacíos
     if (!tabName || !reporte) {
         Swal.fire('Error', 'El nombre de la pestaña y el reporte son necesarios', 'error');
         return;
     }
 
-    // Enviar el nuevo orden al servidor, incluyendo "(computed)" cuando corresponda
+    // Verifica si se ha ordenado correctamente alguna columna
+    if (columnas.length === 0) {
+        Swal.fire('Error', 'No se encontraron columnas válidas para guardar el orden.', 'error');
+        return;
+    }
+
+    // Estructura del JSON que se enviará al servidor
+    const jsonData = {
+        name: tabName,
+        reportes: [reporte],
+        columnas_esperadas: {
+            [reporte]: {
+                columnas: columnas,  // Lista de columnas sin el prefijo "F"
+                formulas: {},  // Puedes añadir las fórmulas aquí si es necesario
+                data_types: {}  // Puedes añadir los tipos de datos aquí si es necesario
+            }
+        }
+    };
+
+    console.log("Datos a enviar al servidor:", jsonData); // Debug: Verificación del JSON antes de enviar
+
+    // Enviar el nuevo orden al servidor
     fetch('/guardar-orden-columnas', {
         method: 'POST',
-        body: new URLSearchParams({
-            tab_name: tabName,
-            reporte: reporte,
-            columnas: JSON.stringify(ordenColumnas)
-        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData)  // Convertir el objeto a JSON antes de enviarlo
     })
     .then(response => response.json())
     .then(data => {

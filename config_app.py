@@ -745,24 +745,33 @@ def eliminar_columna():
 @login_required
 def guardar_orden_columnas():
     try:
-        tab_name = request.form.get('tab_name')
-        reporte = request.form.get('reporte')
-        columnas = request.form.get('columnas')
+        # Parsear el cuerpo de la solicitud como JSON
+        data = request.get_json()
 
+        tab_name = data.get('name')  # Obtener el nombre de la pestaña (DMS)
+        print(f'Tab_name: {tab_name}')
+        reporte = data.get('reportes')[0]  # Obtener el primer (y único) reporte
+        print(f'Reporte: {reporte}')
+        columnas = data.get('columnas_esperadas', {}).get(reporte, {}).get('columnas', [])
+        print(f'Columnas: {columnas}')
+
+        # Validar que los datos clave estén presentes
         if not tab_name or not reporte or not columnas:
             return jsonify({'success': False, 'error': 'Faltan datos para guardar el orden de columnas.'})
 
-        columnas_ordenadas = json.loads(columnas)
-
+        # Cargar la configuración actual del archivo JSON correspondiente
         config = cargar_config(tab_name)
         if config is None:
             return jsonify({'success': False, 'error': 'No se pudo cargar la configuración para la pestaña especificada.'})
 
+        # Verificar que el reporte exista en la configuración
         if reporte not in config['columnas_esperadas']:
             return jsonify({'success': False, 'error': 'El reporte no existe en la configuración.'})
 
-        config['columnas_esperadas'][reporte]['columnas'] = columnas_ordenadas
+        # Actualizar las columnas en la configuración
+        config['columnas_esperadas'][reporte]['columnas'] = columnas
 
+        # Guardar la nueva configuración en el archivo JSON
         config_path = os.path.join('CLIENTS', 'dms', f'{tab_name}.json')
         with open(config_path, 'w') as f:
             json.dump(config, f, indent=4)
@@ -771,6 +780,7 @@ def guardar_orden_columnas():
     except Exception as e:
         print(f"Error al guardar el orden de columnas: {e}")
         return jsonify({'success': False, 'error': str(e)})
+
     
 @app.route('/add-columna', methods=['POST'])
 @login_required
@@ -999,18 +1009,13 @@ def search_client_folder():
 @app.route('/validar_cliente', methods=['POST'])
 def validar_cliente():
     data = request.get_json()
-    print(f'Datala: {data}')
-    # Separar el número de cliente y el código de sucursal
     client_number = data.get('clientNumber')[0:4]  # Los primeros 4 caracteres
     branch_code = data.get('clientNumber')[4:6]  # Los siguientes 2 caracteres
     
     # Eliminar ceros a la izquierda del número de cliente
     client_number = client_number.lstrip('0')
-    
-    print(f'Numero de cliente: {client_number}')
-    print(f'Numero de Branch: {branch_code}')
 
-    # Buscar la carpeta del cliente en la carpeta CLIENTS
+    # Buscar la carpeta del cliente
     client_folder = os.path.join('CLIENTS', client_number)
 
     if os.path.exists(client_folder):
@@ -1021,34 +1026,22 @@ def validar_cliente():
                 branch_exists = False
                 reportes = []
 
-                # Recorrer todos los registros para verificar si el branch existe
+                # Verificar si el branch existe
                 for registro in config_data.get('registros', []):
                     if registro['branch'] == branch_code:
                         branch_exists = True
-                        # Obtener todos los reportes asociados al DMS en el branch
+                        # Obtener los reportes asociados al DMS
                         for dms, reportes_list in registro.get('dms', {}).items():
-                            reportes.extend(reportes_list)
+                            # Ajustar el nombre del reporte aquí
+                            reportes.extend([f"{reporte}{branch_code}" if "SERVTC" in reporte else reporte for reporte in reportes_list])
                         break
-                
-                # Cliente existe, verificar si la sucursal (branch) también existe
+
                 return jsonify({
                     'clientExists': True, 
                     'branchExists': branch_exists, 
-                    'branchCode': branch_code,  # Incluir branch_code en la respuesta
-                    'reportes': reportes
+                    'branchCode': branch_code,
+                    'reportes': reportes  # Devolver el nombre correcto del reporte
                 })
-        
-        # Si la carpeta del cliente existe pero no se encuentra el archivo config.json o el branch
-        return jsonify({
-            'clientExists': True, 
-            'branchExists': False, 
-            'branchCode': branch_code,  # Incluir branch_code en la respuesta
-            'reportes': []
-        })
-
-    # Si no existe la carpeta del cliente
-    return jsonify({'clientExists': False, 'branchExists': False, 'branchCode': branch_code, 'reportes': []})
-
 
 
 
@@ -1379,9 +1372,10 @@ def get_formulas():
 @app.route('/obtener_reporte', methods=['GET'])
 def obtener_reporte():
     nombre_reporte = request.args.get('nombreReporte')
+    print(f'Nombre Reporte: {nombre_reporte}')
     nombre_reporte = re.sub(r'\d+', '', nombre_reporte)
     branch_code = request.args.get('branch_code')  # Obtener el branch_code
-    print(f'Nombre Reporte: {nombre_reporte}')
+    
     print(f'Sucursal: {branch_code}')
 
     # Ruta del archivo SQL dump

@@ -1,0 +1,26 @@
+{
+    "name": "312",
+    "reportes": [
+        "VTAUSA"
+    ],
+    "columnas_esperadas": {
+        "VTAUSA": {
+            "columnas": [
+                "Fecha",
+                "Cuenta",
+                "CentroCosto",
+                "Descripcion",
+                "SaldoInicial$",
+                "VentaCosto$ (computed)",
+                "Debitos$",
+                "Creditos$",
+                "Naturaleza",
+                "Saldo$",
+                "TipoCuenta",
+                "Sucursal"
+            ],
+            "formulas": {},
+            "data_types": {}
+        }
+    }
+}

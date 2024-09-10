@@ -415,22 +415,40 @@ def procesar_archivo_zip():
                 if formula:
                     try:
                         print(df.columns)
-                        for col in df.columns:
-                            formula = formula.replace(col, f"df['{col}']")
-                        print(f'Formula ajustada: {formula}')
+                        # Crear una copia de los nombres de las columnas originales
+                        columnas_originales = df.columns.tolist()
+                        columnas_sin_simbolo = [col.replace('$', '') for col in columnas_originales]
+                        
+                        # Reemplazar temporalmente las columnas con símbolo $ quitando el $
+                        formula_sin_simbolo = formula.replace('$', '')
+                        
+                        # Ajustar la fórmula solo para columnas que coincidan exactamente con los nombres de las columnas sin símbolo $
+                        for col_original, col_sin_simbolo in zip(columnas_originales, columnas_sin_simbolo):
+                            # Usar una expresión regular para reemplazar coincidencias exactas de los nombres de las columnas
+                            formula_sin_simbolo = re.sub(rf'\b{col_sin_simbolo}\b', f"df['{col_original}']", formula_sin_simbolo)
+                        
+                        # Restaurar el símbolo $ en la fórmula, si estaba presente
+                        formula_ajustada = formula_sin_simbolo
+                        
+                        print(f'Formula ajustada: {formula_ajustada}')
                         
                         # Identificar las columnas en la fórmula
-                        columnas_en_formula = re.findall(r"df\['(.*?)'\]", formula)
+                        columnas_en_formula = re.findall(r"df\['(.*?)'\]", formula_ajustada)
                         
-                        # Convertir las columnas a tipo numérico, manejando errores y NaNs
+                        # Convertir las columnas que son fechas a tipo datetime, las otras a numérico
                         for col in columnas_en_formula:
-                            df[col] = pd.to_numeric(df[col], errors='coerce')
-                            if df[col].isnull().any():
-                                logging.warning(f"Valores no numéricos en la columna '{col}' fueron convertidos a 0.")
-                                df[col] = df[col].fillna(0)
+                            if "Fecha" in col:  # Si la columna tiene "Fecha", se convierte a datetime
+                                df[col] = pd.to_datetime(df[col], errors='coerce')
+                                if df[col].isnull().any():
+                                    logging.warning(f"Valores no válidos en la columna de fecha '{col}' fueron convertidos a NaT.")
+                            else:
+                                df[col] = pd.to_numeric(df[col], errors='coerce')
+                                if df[col].isnull().any():
+                                    logging.warning(f"Valores no numéricos en la columna '{col}' fueron convertidos a 0.")
+                                    df[col] = df[col].fillna(0)
                         
                         # Evaluar la fórmula
-                        df[campo_calculado] = eval(formula)
+                        df[campo_calculado] = eval(formula_ajustada)
                         logging.info(f"Fórmula aplicada a la columna calculada '{campo_calculado}'.")
 
                         # Renombrar la columna quitando '(computed)'
@@ -440,6 +458,7 @@ def procesar_archivo_zip():
 
                     except Exception as e:
                         logging.error(f"Error al aplicar la fórmula en la columna calculada '{campo_calculado}': {e}")
+
 
             # Paso 6: Reordenar las columnas para respetar la posición original de las columnas calculadas
             for campo_calculado in campos_computed:
@@ -454,8 +473,14 @@ def procesar_archivo_zip():
             # Obtener los nuevos encabezados después de aplicar las fórmulas y reordenar
             nuevos_encabezados = df.columns.to_list()
             print(f'Nuevos Encabezados: {nuevos_encabezados}')
+            
+            # Paso 7: Comprobamos si es un SERVTA
+            if re.sub(r'\d+', '', reporte) == 'SERVTA': 
+                print("Hay un SERVTA en el zip ************************************")
+                # Generar el DataFrame SERVTC
+                generar_servtc(df, sucursal, nuevos_encabezados)
 
-        
+                
             
             # Añadir columnas Client, Branch, Date
             df.insert(0, 'Client', cliente)
@@ -482,6 +507,13 @@ def procesar_archivo_zip():
 
             # Crear la consulta SQL para eliminar la tabla si existe
             drop_query = f"DROP TABLE IF EXISTS {nombre_tabla};"
+
+            # Convertir las columnas de fechas a formato de texto 'YYYY-MM-DD' antes de la inserción
+            for col in df.columns:
+                if pd.api.types.is_datetime64_any_dtype(df[col]):
+                    df[col] = df[col].dt.strftime('%Y-%m-%d')  # Convertir fechas a 'YYYY-MM-DD'
+                elif pd.api.types.is_timedelta64_dtype(df[col]):
+                    df[col] = df[col].dt.days  # Convertir Timedelta a número de días
 
             # Crear la consulta SQL para insertar los datos
             insert_query = f"INSERT INTO {nombre_tabla} ({', '.join(df.columns)}) VALUES "
@@ -1121,6 +1153,86 @@ def obtener_dms_por_reporte(reporte, config_data):
             if reporte in reportes_lista:
                 return dms  # Retornamos el dms correspondiente si encontramos el reporte
     return None
+
+
+def generar_servtc(df_servta, sucursal, nuevos_encabezados, nombre_carpeta='3-Sandbx'):
+    # Definir el nombre del archivo como SERVTC + Sucursal
+    nombre_archivo = f"SERVTC{sucursal}.txt"
+    
+    # Definir la ruta completa del archivo en la carpeta 3-Sandbx
+    ruta_archivo = os.path.join(nombre_carpeta, nombre_archivo)
+
+    # Definir todas las posibles columnas por las que deseas agrupar
+    columnas_a_agrupar = [
+        "FechaFactura", "FechaApertura", "FechaEntrega", "Factura", "Taller", 
+        "TipoOrden", "TipoPago", "NumeroOT", "NumeroAsesor", "NombreAsesor", 
+        "RFC", "NombreCliente", "Direccion", "Telefono", "CP", "Email", 
+        "Odometro", "Vin", "Marca", "Modelo", "Color", "Dias", "Año"
+    ]
+
+    # Definir las columnas que deben ser sumadas
+    columnas_a_sumar = [
+        "Venta$", "Costo$", "Utilidad$", "Margen", "VentaMO$", "DescuentoMO$", 
+        "CostoMO$", "VentaMateriales$", "DescuentoMateriales$", "CostoMateriales$", 
+        "VentaTOT$", "DescuentoTOT$", "CostoTOT$", "VentaPartes$", "DescuentoPartes$", 
+        "CostoPartes$", "VentaTotal$", "CostoTotal$"
+    ]
+
+    # Filtrar las columnas que existen en el DataFrame
+    columnas_a_agrupar_existentes = [col for col in columnas_a_agrupar if col in df_servta.columns]
+    columnas_a_sumar_existentes = [col for col in columnas_a_sumar if col in df_servta.columns]
+
+    # Convertir las columnas numéricas a formato numérico
+    for col in columnas_a_sumar_existentes:
+        df_servta[col] = pd.to_numeric(df_servta[col], errors='coerce')
+
+    # Agrupar por las columnas que existen y sumar las columnas numéricas
+    df_servtc = df_servta.groupby(columnas_a_agrupar_existentes)[columnas_a_sumar_existentes].sum().reset_index()
+
+    # Eliminar cualquier fila que contenga solo valores nulos o vacíos
+    df_servtc.dropna(how='all', inplace=True)
+
+    # Eliminar cualquier columna extra que pueda contener solo valores vacíos
+    df_servtc = df_servtc.loc[:, ~df_servtc.columns.str.contains('^Unnamed')]
+
+    # Hacer "match" con los nuevos encabezados
+    # Ajustar el DataFrame para hacer "match" con los nuevos encabezados
+    df_servtc.columns = nuevos_encabezados[:len(df_servtc.columns)]  # Ajustar a los nuevos encabezados
+
+    # Guardar el DataFrame resultante en un archivo .txt separado por |
+    df_servtc.to_csv(ruta_archivo, index=False, sep='|', encoding='utf-8')
+
+    logging.info(f"DataFrame SERVTC guardado como {ruta_archivo}")
+
+    return df_servtc
+
+
+
+def generar_insert_query(df, nombre_tabla):
+    """
+    Esta función genera una consulta SQL INSERT a partir de un DataFrame.
+    """
+    # Convertir las columnas de fechas a formato de texto 'YYYY-MM-DD' antes de la inserción
+    for col in df.columns:
+        if pd.api.types.is_datetime64_any_dtype(df[col]):
+            df[col] = df[col].dt.strftime('%Y-%m-%d')  # Convertir fechas a 'YYYY-MM-DD'
+        elif pd.api.types.is_timedelta64_dtype(df[col]):
+            df[col] = df[col].dt.days  # Convertir Timedelta a número de días
+
+    # Crear la consulta SQL para insertar los datos
+    insert_query = f"INSERT INTO {nombre_tabla} ({', '.join(df.columns)}) VALUES "
+
+    # Convertir cada fila del DataFrame en una tupla y eliminar valores vacíos al final
+    values_list = df.apply(lambda x: tuple([val for val in x if val != '']), axis=1).tolist()
+
+    # Asegurarse de que no haya ningún valor vacío al final de la fila
+    values_query = ', '.join([str(v).rstrip(', ') for v in values_list])
+
+    # Armar la consulta final
+    insert_query += values_query + ";"
+
+    return insert_query
+
 
 
 procesar_archivo_zip()
