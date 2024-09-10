@@ -405,9 +405,6 @@ def procesar_archivo_zip():
             df = convertir_fechas_df(df, dms_name, reporte)
 
             # Paso 4: Aplicar las fórmulas a todas las columnas que tengan fórmulas en encabezados2
-            print(df)
-            print(f'dms_name en eplicar ... {dms_name}')
-            print(f'reporte_name en aplicar ... {reporte}')
             aplicar_formulas(df, dms_name, reporte)
 
             # Paso 5: Aplicar las fórmulas para las columnas calculadas (computed)
@@ -1010,9 +1007,6 @@ def renombrar_columnas(headers):
     return new_headers
 
 def obtener_formula(dms_name, reporte_name, campo):
-    print(f'dms_name: {dms_name}')
-    print(f'Reporte_name: {reporte_name}')
-    print(f'Campo: {campo}')
     """
     Esta función busca y retorna la fórmula correspondiente a un campo específico dentro de un reporte
     de un DMS en particular.
@@ -1054,29 +1048,19 @@ def aplicar_formulas(df, dms_name, reporte):
         formula = obtener_formula(dms_name, reporte, columna)
         if formula:
             try:
-                # Reemplazar los nombres de las columnas en la fórmula por df['columna']
-                for col in df.columns:
-                    formula = formula.replace(col, f"df['{col}']")
-
-                # Identificar las columnas que participan en la fórmula
-                columnas_en_formula = re.findall(r"df\['(.*?)'\]", formula)
-
-                # Evaluar si la fórmula es para limpieza de texto o para operaciones numéricas
+                # Verificar si la fórmula contiene 'LimpiaTexto' o 'LimpiaEmail' para aplicar la función correspondiente
                 if 'LimpiaTexto' in formula:
-                    # Aplicar LimpiaTexto a la columna especificada
-                    df[columna] = eval(formula)
+                    df[columna] = df[columna].apply(LimpiaTexto)
+                elif 'LimpiaEmail' in formula:
+                    df[columna] = df[columna].apply(LimpiaEmail)
                 else:
                     # Convertir las columnas que participan en la fórmula a un tipo numérico
+                    columnas_en_formula = re.findall(r"df\['(.*?)'\]", formula)
                     for col in columnas_en_formula:
                         if df[col].dtype == 'object':
                             logging.info(f"Convirtiendo la columna '{col}' a numérico.")
                             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-
-                            # Verificar si la conversión fue exitosa
-                            if df[col].dtype == 'object':
-                                logging.error(f"La columna '{col}' no pudo ser convertida a numérico.")
-
-                    # Evaluar la fórmula para obtener el resultado
+                    # Evaluar cualquier otra fórmula que no sea de limpieza de texto
                     df[columna] = eval(formula)
 
                 logging.info(f"Fórmula '{formula}' aplicada a la columna '{columna}' en el reporte '{reporte}'.")
@@ -1086,6 +1070,7 @@ def aplicar_formulas(df, dms_name, reporte):
                 logging.error(f"Fórmula: {formula}")
         else:
             logging.info(f"No hay fórmula para la columna '{columna}' en el reporte '{reporte}'.")
+
 
 
 def convertir_fechas_df(df, dms_name, reporte_name):
@@ -1137,7 +1122,7 @@ def obtener_dms_por_reporte(reporte, config_data):
                 return dms  # Retornamos el dms correspondiente si encontramos el reporte
     return None
 
-# Ejemplo de uso
+
 procesar_archivo_zip()
 
 

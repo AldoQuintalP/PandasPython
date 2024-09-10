@@ -529,6 +529,63 @@
         </div>
     </div>
 
+    <!-- Modal para agregar filtro -->
+    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="filterModalLabel">Agregar Filtro para Factura</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <!-- Campo de texto donde el usuario puede ingresar la columna que desea filtrar -->
+            <div class="form-group">
+                <label for="filterColumn">Columna:</label>
+                <input type="text" class="form-control" id="filterColumn" value="Factura" readonly>
+            </div>
+    
+            <!-- Campo para seleccionar la condición (Ej: "No está vacío") -->
+            <div class="form-group">
+                <label for="condition">Condición:</label>
+                <select id="condition" class="form-control">
+                <option value="<>''">No está vacío</option>
+                <option value="=">=</option>
+                <option value="<>">No igual a</option>
+                </select>
+            </div>
+    
+            <!-- Campo de texto para ingresar el valor de comparación -->
+            <div class="form-group">
+                <label for="filterValue">Valor de comparación:</label>
+                <input type="text" class="form-control" id="filterValue" placeholder="Ej: FACTURA">
+            </div>
+    
+            <!-- Checkbox para incluir condición de 'Campo vacío' -->
+            <div class="form-group">
+                <input type="checkbox" id="includeEmptyField">
+                <label for="includeEmptyField">Campo vacío</label>
+            </div>
+    
+            <!-- Operación adicional para la función LEFT -->
+            <div class="form-group">
+                <input type="checkbox" id="useLeftFunction">
+                <label for="useLeftFunction">Aplicar función Left (Especifique número de caracteres):</label>
+                <input type="number" class="form-control" id="leftCharacters" min="1" value="7" disabled>
+            </div>
+            </div>
+    
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary" id="applyFilterBtn">Aplicar Filtro</button>
+            </div>
+        </div>
+        </div>
+    </div>
+  
+
+
 
     <!-- Modal para agregar una nueva columna -->
     <div class="modal fade" id="addNewColumnModal" tabindex="-1" role="dialog" aria-labelledby="addNewColumnModalLabel" aria-hidden="true">
@@ -788,9 +845,17 @@
                     listItem.style.backgroundColor = '#c1ea8c';  // Verde si es "computed"
                 }
 
-                // Añadir botones de editar y eliminar
+                // Añadir botones de filtro, editar y eliminar
                 const btnGroup = document.createElement('div');
                 btnGroup.className = 'btn-group ml-auto';
+
+                // Botón de filtro
+                const filterBtn = document.createElement('button');
+                filterBtn.className = 'btn btn-primary btn-sm';
+                filterBtn.innerHTML = '<i class="fa-solid fa-filter"></i>';
+                filterBtn.addEventListener('click', function() {
+                    abrirFiltroModal(col);  // Llamamos a la función que abre el modal de filtros
+                });
 
                 const editBtn = document.createElement('button');
                 editBtn.className = 'btn btn-warning btn-sm';
@@ -806,8 +871,9 @@
                     eliminarColumna(tabName, reporte, col);
                 });
 
-                btnGroup.appendChild(editBtn);
-                btnGroup.appendChild(deleteBtn);
+                btnGroup.appendChild(filterBtn);  // Agregar el botón de filtro
+                btnGroup.appendChild(editBtn);    // Agregar el botón de editar
+                btnGroup.appendChild(deleteBtn);  // Agregar el botón de eliminar
                 listItem.appendChild(btnGroup);
 
                 columnList.appendChild(listItem);
@@ -829,6 +895,12 @@
             Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
         });
 }
+
+function abrirFiltroModal(columna) {
+    document.getElementById('filter-column-name').textContent = columna;  // Actualiza el nombre de la columna en el modal
+    $('#addFilterModal').modal('show');  // Muestra el modal de filtro
+}
+
 
 
 function abrirModalEditarColumna(tab, reporte, columna) {
@@ -2256,6 +2328,62 @@ function eliminarFormula(reporte, columna) {
 }
 
 
+
+function abrirFiltroModal(columnName) {
+    const filterColumnNameElement = document.getElementById('filterColumnName');
+
+    // Verificamos si el elemento existe en el DOM
+    if (filterColumnNameElement) {
+        filterColumnNameElement.textContent = columnName;
+    } else {
+        console.error("El elemento filterColumnName no se encontró en el DOM.");
+    }
+
+    // Abrimos el modal
+    $('#filterModal').modal('show');
+}
+
+
+// Cuando el checkbox de Left Function esté seleccionado, habilitamos el input para el número de caracteres
+document.getElementById('useLeftFunction').addEventListener('change', function() {
+    document.getElementById('leftCharacters').disabled = !this.checked;
+});
+
+// Función para construir el filtro
+document.getElementById('applyFilterBtn').addEventListener('click', function() {
+    const column = document.getElementById('filterColumn').value;
+    const condition = document.getElementById('condition').value;
+    const filterValue = document.getElementById('filterValue').value;
+    const includeEmptyField = document.getElementById('includeEmptyField').checked;
+    const useLeftFunction = document.getElementById('useLeftFunction').checked;
+    const leftCharacters = document.getElementById('leftCharacters').value;
+
+    let filterExpression = "";
+
+    // Primera condición: columna no vacía
+    if (includeEmptyField) {
+        filterExpression += `[${column}]<>""`;
+    }
+
+    // Condición adicional con función LEFT
+    if (useLeftFunction) {
+        if (filterExpression !== "") {
+            filterExpression += " .and. ";
+        }
+        filterExpression += `left([${column}], ${leftCharacters}) ${condition} "${filterValue}"`;
+    } else {
+        if (filterExpression !== "") {
+            filterExpression += " .and. ";
+        }
+        filterExpression += `[${column}] ${condition} "${filterValue}"`;
+    }
+
+    // Mostrar el filtro generado en consola o puedes asignarlo a un campo oculto o procesarlo como necesites
+    console.log(filterExpression);
+    
+    // Aquí podrías cerrar el modal o hacer alguna acción con el filtro generado
+    $('#filterModal').modal('hide');
+});
 
 
 

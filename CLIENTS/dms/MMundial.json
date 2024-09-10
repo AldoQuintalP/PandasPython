@@ -7,9 +7,9 @@
     "columnas_esperadas": {
         "VTANUE01": {
             "columnas": [
-                "Fecha",
-                "Factura",
-                "FechaCierre"
+                "FechaCierre",
+                "Factura (computed)",
+                "Fecha"
             ],
             "formulas": {}
         },

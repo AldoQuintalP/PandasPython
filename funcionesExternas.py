@@ -2,6 +2,7 @@ from unidecode import unidecode
 import unicodedata
 from pyspark.sql import functions as F
 import pandas as pd
+import re
 
 def LimpiaCodigos(texto):
     #Se Eliminan caracteres especiales antes y despues del texto
@@ -117,16 +118,19 @@ def LimpiaTextov2(texto):
 
 
 def LimpiaEmail(texto):
+    # Convertir a mayúsculas y aplicar unidecode para eliminar acentos
+    temp = unidecode(texto.upper())
+    
     # Eliminar caracteres especiales antes y después del texto
-    temp = texto.upper()
-    temp = temp.strip("""-+*/._:,;{}[]&lt;&gt;^`¨~´¡!¿?\'()=&amp;%$#º°ª¬¢©®«»±£¤¥§¯µ¶·¸ÆæÇçØß÷Œ×ƒ½¼¾ðÐ¦þ\t¹²³“‘" """)
-    # Reemplazar caracteres especiales por letras
-    temp_rep = temp.upper().replace("Ã‘","N").replace("Ã‰","E").replace("Ã“","O").replace("Ãº","U")\
-    .replace("Ã­","I").replace("Ã±","N").replace("‰","A").replace("¢","O").replace("Ã³","O")\
-    .replace("/"," ").replace("-"," ").replace("_"," ")
-    # Eliminar acentos de letras Ej: Ã -> A 
-    final = unidecode(temp_rep)
+    temp = temp.strip("""-+*/._:,;{}[]&lt;&gt;^`¨~´¡!¿?'()=&amp;%$#º°ª¬¢©®«»±£¤¥§¯µ¶·¸ÆæÇçØß÷Œ×ƒ½¼¾ðÐ¦þ\t¹²³“‘" """)
+    
+    # Reemplazar caracteres especiales por letras o espacios
+    temp = temp.replace("N~", "N").replace("E~", "E").replace("O~", "O").replace("U~", "U")\
+               .replace("I~", "I").replace("/", " ").replace("-", " ").replace("_", " ")
 
+    # Eliminar cualquier carácter adicional no alfanumérico permitido en correos electrónicos
+    final = re.sub(r'[^A-Z0-9@._-]', '', temp)
+    
     return final
 
 

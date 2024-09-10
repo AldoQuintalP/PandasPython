@@ -7,7 +7,8 @@
         "MACP01",
         "REFCOM01",
         "REFOEP01",
-        "REFSER01"
+        "REFSER01",
+        "Fidencio"
     ],
     "columnas_esperadas": {
         "INVNUE01": {
@@ -515,7 +516,8 @@
             ],
             "formulas": {
                 "NombreCliente": "LimpiaTexto(NombreCliente)",
-                "VentaCosto$ (computed)": "VentaUnit$ * CostoUnit$"
+                "VentaCosto$ (computed)": "VentaUnit$ * CostoUnit$",
+                "Email": "LimpiaEmail(Email)"
             },
             "data_types": {
                 "NumeroOT": {
@@ -663,6 +665,18 @@
                     "length": null
                 }
             }
+        },
+        "Fidencio": {
+            "columnas": [
+                "Fecha",
+                "FechaInicial",
+                "Compra",
+                "Costo",
+                "VentaTOT",
+                "Venta"
+            ],
+            "formulas": {},
+            "data_types": {}
         }
     }
 }
