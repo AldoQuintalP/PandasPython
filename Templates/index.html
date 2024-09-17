@@ -380,6 +380,56 @@
             cursor: pointer; /* Cambia el cursor a "manita" */
         }
 
+        /* Clase para las columnas computed */
+        .column-item.bg-success {
+            background-color: #12cf51 !important;  /* Verde para las columnas computed */
+            color: white !important;  /* Texto en blanco */
+        }
+
+        .column-item i.fa {
+            font-size: 16px;
+            color: gray;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .column-item i.fa-eye-slash {
+            color: red;  /* O un color más discreto si lo prefieres */
+        }
+
+        .column-item i.fa-eye {
+            color: rgb(79, 179, 79);  /* O un color más discreto si lo prefieres */
+        }
+        /* Clase para íconos visibles */
+        .visible-icon {
+            opacity: 1;
+        }
+
+        /* Clase para íconos deshabilitados o invisibles */
+        .disabled-icon {
+            opacity: 0.3;
+        }
+        #column-list {
+            max-height: 300px; /* Ajusta la altura máxima a tu preferencia */
+            overflow-y: auto;  /* Habilita el scroll vertical */
+            padding: 5px;      /* Espacio interno opcional */
+            border: 1px solid #ddd;  /* Borde opcional */
+        }
+
+        .function-list, .operator-list {
+            max-height: 150px;  /* Puedes ajustar el valor según el diseño */
+            overflow-y: auto;
+        }
+
+        #ace-editor {
+            height: 400px;
+            width: 100%;
+        }
+        #column-list-ace {
+            max-height: 300px;  /* Ajusta esta altura a tu preferencia */
+            overflow-y: auto;   /* Habilita el scroll vertical */
+        }
+
 
 
     </style>
@@ -729,6 +779,8 @@
                 </div>
                 <div class="modal-body d-flex">
                     <div class="col-4">
+                        <h6>Buscar en Columnas:</h6>
+                        <input type="text" id="search-columns" class="form-control mb-3" placeholder="Buscar columna...">
                         <h6>Columnas Disponibles:</h6>
                         <ul id="column-list" class="list-group">
                             <!-- Las columnas se agregarán aquí dinámicamente -->
@@ -738,22 +790,14 @@
                         <h6>Fórmula para <span id="selected-column-name"></span>:</h6>
                         <!-- Div editable que permite contenido enriquecido -->
                         <textarea id="formula-text" class="form-control" rows="2"></textarea>
+                        <!-- Botón con el ícono de Python -->
+                        <button type="button" class="btn btn-outline-primary mt-2" id="openAceEditorBtn">
+                            <i class="fa-brands fa-python"></i> Fórmulas Avanzadas
+                        </button>                        
                         <h6 class="mt-4">Funciones de Excel:</h6>
                         <div class="function-list">
                             <ul id="excel-functions" class="list-group">
                                 <!-- Las funciones de funcionesExternas.py se agregarán aquí dinámicamente -->
-                            </ul>
-                        </div>
-                        <h6 class="mt-4">Operadores:</h6>
-                        <div class="operator-list">
-                            <ul id="operators" class="list-group">
-                                <li class="list-group-item">+</li>
-                                <li class="list-group-item">-</li>
-                                <li class="list-group-item">*</li>
-                                <li class="list-group-item">/</li>
-                                <li class="list-group-item">&lt;</li>
-                                <li class="list-group-item">&gt;</li>
-                                <li class="list-group-item">=</li>
                             </ul>
                         </div>
                     </div>
@@ -765,7 +809,41 @@
             </div>
         </div>
     </div>
-    
+
+    <!-- Modal para usar Ace Editor -->
+    <div class="modal fade" id="aceEditorModal" tabindex="-1" role="dialog" aria-labelledby="aceEditorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aceEditorModalLabel">Editor de Fórmula Avanzada</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex">
+                    <!-- Lista de columnas -->
+                    <div class="col-4">
+                        <h6>Buscar en Columnas:</h6>
+                        <input type="text" id="search-columns-ace" class="form-control mb-3" placeholder="Buscar columna...">
+                        <h6>Columnas Disponibles:</h6>
+                        <ul id="column-list-ace" class="list-group"></ul>
+                            <!-- Las columnas se agregarán aquí dinámicamente -->
+                        </ul>
+                        <input type="hidden" id="nombre-reporte" value="">
+                        <input type="hidden" id="nombre-tab" value="">
+                    </div>  
+                    <!-- Ace Editor -->
+                    <div class="col-8">
+                        <div id="ace-editor" style="height: 400px; width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="saveFormulaBtn">Guardar Fórmula</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- Modal para agregar nuevos reportes -->
@@ -837,7 +915,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <!-- Incluir Sortable.js desde un CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+  
 
     <script>
         function toggleNav() {
@@ -872,37 +952,39 @@
 
             let fIndex = 1;  // Índice para las columnas que no son computadas
 
-            // Cargar las columnas en la lista
             columnas.forEach((col) => {
                 const div = document.createElement('div');
-                div.className = 'column-item';
-                div.setAttribute('data-original-name', col); // Asignar el nombre original completo
+                div.className = 'column-item d-flex align-items-center justify-content-between';
+                div.setAttribute('data-original-name', col);
 
                 // Verificar si la columna es "computed"
                 const isComputedField = col.endsWith('(computed)');
-                const cleanColName = isComputedField ? col.replace(' (computed)', '') : col; // Eliminar "(computed)" visualmente
+                const cleanColName = isComputedField ? col.replace(' (computed)', '') : col;
 
                 // Nombre de la columna
                 const colSpan = document.createElement('span');
-                colSpan.textContent = cleanColName; // Mostrar el nombre sin "(computed)"
+                colSpan.textContent = cleanColName;
                 colSpan.className = 'column-name';
+
+                // Aplicar color verde si es computed
+                if (isComputedField) {
+                    div.classList.add('bg-success', 'text-white');  // Añadir color verde para columnas computed
+                }
 
                 // Si no es columna calculada, agregamos la "F" con el número de índice
                 if (!isComputedField) {
                     const fCol = document.createElement('span');
                     fCol.className = 'f-column';
-                    fCol.textContent = `F${fIndex}`;  // F1, F2, F3, etc.
-                    fIndex++;  // Incrementar solo para las columnas no calculadas
+                    fCol.textContent = `F${fIndex}`;
+                    fIndex++;
                     div.appendChild(fCol);
-                }
-
-                // Si es computed, pintamos de verde
-                if (isComputedField) {
-                    div.classList.add('computed');  // Añadir clase para pintar en verde
                 }
 
                 div.appendChild(colSpan);
 
+                // Ya no se crea el ícono de visibilidad ni el botón
+                // Puedes eliminar todo el bloque relacionado con visibilityIcon y visibilityButton
+                
                 // Añadir botones de filtro, editar y eliminar
                 const btnGroup = document.createElement('div');
                 btnGroup.className = 'btn-group ml-auto';
@@ -910,21 +992,23 @@
                 const filterBtn = document.createElement('button');
                 filterBtn.className = 'btn btn-primary btn-sm';
                 filterBtn.innerHTML = '<i class="fa-solid fa-filter"></i>';
-                filterBtn.addEventListener('click', function() {
+                
+                filterBtn.addEventListener('click', function () {
                     abrirFiltroModal(col);
                 });
 
                 const editBtn = document.createElement('button');
                 editBtn.className = 'btn btn-warning btn-sm';
                 editBtn.innerHTML = '<i class="fa fa-edit"></i>';
-                editBtn.addEventListener('click', function() {
+                
+                editBtn.addEventListener('click', function () {
                     abrirModalEditarColumna(tabName, reporte, col);
                 });
 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn btn-danger btn-sm';
                 deleteBtn.innerHTML = '<i class="fa fa-trash-alt"></i>';
-                deleteBtn.addEventListener('click', function() {
+                deleteBtn.addEventListener('click', function () {
                     eliminarColumna(tabName, reporte, col);
                 });
 
@@ -939,9 +1023,9 @@
             // Inicializamos la funcionalidad de arrastrar y soltar
             new Sortable(columnList, {
                 animation: 150,
-                handle: '.column-item',  // Permitir arrastrar la fila completa
+                handle: '.column-item',
                 ghostClass: 'sortable-ghost',
-                onEnd: function() {
+                onEnd: function () {
                     actualizarFColumn();  // Actualizar la columna F después del reordenamiento
                 }
             });
@@ -956,6 +1040,7 @@
             Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
         });
 }
+
 
 // Función para actualizar los índices F después del reordenamiento
 function actualizarFColumn() {
@@ -975,7 +1060,18 @@ function actualizarFColumn() {
     });
 }
 
-
+// Función para alternar la visibilidad de una columna usando clases CSS
+function toggleVisibility(icon) {
+    if (icon.classList.contains('visible-icon')) {
+        console.log("Cambiando a no visible (opacidad reducida)");
+        icon.classList.remove('visible-icon');
+        icon.classList.add('disabled-icon');
+    } else {
+        console.log("Cambiando a visible (opacidad normal)");
+        icon.classList.remove('disabled-icon');
+        icon.classList.add('visible-icon');
+    }
+}
 
 
 
@@ -1241,6 +1337,142 @@ function filtrarReportes(tabName, tabIndex) {
 }
 
 
+
+document.getElementById('search-columns').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const columnItems = document.querySelectorAll('#column-list li');
+    
+    columnItems.forEach(function(item) {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+            item.style.display = '';  // Mostrar elemento si coincide
+        } else {
+            item.style.display = 'none';  // Ocultar elemento si no coincide
+        }
+    });
+});
+
+
+// Declarar columnasDisponibles fuera de cualquier función para hacerlo global
+let columnasDisponibles = [];
+
+function openFunctionModal(tab, reporte, columnaSeleccionada) {
+    fetch(`/edit_reporte/${reporte}?tab_name=${tab}`)
+        .then(response => response.json())
+        .then(data => {
+            columnasDisponibles = data.columnas || [];  // Almacenar las columnas disponibles
+
+            const columnList = document.getElementById('column-list');
+            columnList.innerHTML = '';  // Limpiar cualquier contenido previo
+
+            columnasDisponibles.forEach(col => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.textContent = col;
+
+                // Aquí va el código de inserción en la posición del cursor
+                listItem.addEventListener('click', function() {
+                    const formulaText = document.getElementById('formula-text');
+                    if (formulaText) {
+                        // Inserta la columna donde está el cursor
+                        const startPos = formulaText.selectionStart;
+                        const endPos = formulaText.selectionEnd;
+
+                        // Obtener el texto antes y después del cursor
+                        const beforeInsert = formulaText.value.substring(0, startPos);
+                        const afterInsert = formulaText.value.substring(endPos, formulaText.value.length);
+
+                        // Insertar la columna en la posición del cursor
+                        formulaText.value = beforeInsert + col + afterInsert;
+
+                        // Posicionar el cursor después de la columna insertada
+                        const newCursorPosition = startPos + col.length;
+                        formulaText.setSelectionRange(newCursorPosition, newCursorPosition);
+                        formulaText.focus();
+                    } else {
+                        console.error("No se encontró el elemento con ID 'formula-text' en el DOM.");
+                    }
+                });
+
+                columnList.appendChild(listItem);
+            });
+
+            document.getElementById('selected-column-name').textContent = columnaSeleccionada;
+            document.getElementById('formula-text').value = '';
+            document.getElementById('functionModal').setAttribute('data-tab', tab);  // Aquí se asigna el tab_name
+            document.getElementById('functionModal').setAttribute('data-reporte', reporte);
+            document.getElementById('functionModal').setAttribute('data-columna', columnaSeleccionada);
+            $('#functionModal').modal('show');
+        })
+        .catch(error => {
+            console.error('Error al cargar las columnas:', error);
+            Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
+        });
+}
+
+
+
+document.getElementById('saveFormulaBtn').addEventListener('click', function() {
+    // Obtener el contenido del Ace Editor
+    const editor = ace.edit("ace-editor");
+    const formulaContent = editor.getValue();
+
+    // Asegurarse de que el contenido no esté vacío
+    if (!formulaContent.trim()) {
+        Swal.fire('Error', 'La fórmula no puede estar vacía', 'error');
+        return;
+    }
+
+    // Añadir paréntesis alrededor de la fórmula para marcar que es código Python
+    const pythonFormula = `(${formulaContent})`;
+
+    // Obtener los valores necesarios del modal
+    const tabName = document.getElementById('functionModal').getAttribute('data-tab');
+    const reporte = document.getElementById('functionModal').getAttribute('data-reporte');
+    const columna = document.getElementById('functionModal').getAttribute('data-columna');
+
+    // Verificar que los datos estén presentes
+    if (!tabName || !reporte || !columna) {
+        Swal.fire('Error', 'No se pudo guardar la fórmula porque faltan datos.', 'error');
+        return;
+    }
+
+    // Crear el objeto JSON para enviar al servidor
+    const formulaData = {
+        name: tabName,
+        reporte: reporte,
+        columna: columna,
+        formula: pythonFormula
+    };
+
+    // Enviar la fórmula al servidor para guardarla
+    fetch('/save-formula', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formulaData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire('Éxito', 'Fórmula guardada correctamente', 'success')
+            .then(() => {
+                $('#aceEditorModal').modal('hide');  // Cierra el modal de Ace Editor
+                // Puedes agregar alguna lógica adicional para recargar la lista de fórmulas o columnas si es necesario
+            });
+        } else {
+            Swal.fire('Error', data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error al guardar la fórmula:', error);
+        Swal.fire('Error', 'No se pudo guardar la fórmula', 'error');
+    });
+});
+
+
+
 // Botón para abrir el modal de agregar nueva columna
 document.getElementById('addNewColumnBtn').addEventListener('click', function() {
     $('#addNewColumnModal').modal('show');
@@ -1399,6 +1631,48 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
 
             $('#functionModal').on('show.bs.modal', cargarFuncionesExcel);
 
+
+            // Abrir el editor avanzado (Ace Editor) para fórmulas
+            document.getElementById('openAceEditorBtn').addEventListener('click', function() {
+                const reporte = document.getElementById('functionModal').getAttribute('data-reporte');
+                const columna = document.getElementById('functionModal').getAttribute('data-columna');
+                const formula = document.getElementById('formula-text').value;
+
+                abrirEditorFormulaAvanzada(reporte, columna, formula);
+            });
+
+            // Cargar las columnas en el modal "Editor de Fórmula Avanzada"
+            $('#aceEditorModal').on('shown.bs.modal', function () {
+                console.log("Se abrió el modal Editor de Fórmula Avanzada");
+
+                const editor = ace.edit("ace-editor");
+                editor.setTheme("ace/theme/monokai");
+                editor.session.setMode("ace/mode/python");
+
+                const columnList = document.getElementById('column-list-ace');
+                if (columnList) {
+                    columnList.innerHTML = '';  // Limpiar cualquier contenido previo
+
+                    if (columnasDisponibles.length > 0) {
+                        columnasDisponibles.forEach(col => {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'list-group-item';
+                            listItem.textContent = col;
+                            listItem.addEventListener('click', function () {
+                                editor.insert(col);  // Inserta la columna seleccionada en el editor
+                            });
+                            columnList.appendChild(listItem);
+                        });
+                    } else {
+                        columnList.innerHTML = '<li class="list-group-item">No hay columnas disponibles.</li>';
+                    }
+                } else {
+                    console.error("El elemento con ID 'column-list-ace' no se encontró en el DOM.");
+                }
+            });
+
+                        
+            
             document.getElementById('save-formula-btn').addEventListener('click', function() {
                 console.log("Boton presionado!!!!!!")
                 const tabName = document.getElementById('functionModal').getAttribute('data-tab');  // Obtener el nombre de la pestaña
@@ -1798,20 +2072,15 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
         });
 }
 
-
-
-
-
-
-
-
-
-        function editarFormula(reporte, columna, formula) {
+function editarFormula(reporte, columna, formula) {
     console.log("Editar fórmula:", { reporte, columna, formula }); // Debugging
 
     // Obtener el nombre de la pestaña activa
     const tabName = document.querySelector('.nav-tabs .nav-link.active').textContent.trim();
     console.log("Tab activa:", tabName); // Debugging
+
+    // Verificar si la fórmula está entre paréntesis, lo cual indica que es avanzada
+    const isFormulaAvanzada = formula.trim().startsWith('(') && formula.trim().endsWith(')');
 
     // Obtener las columnas directamente de la respuesta del servidor
     fetch(`/edit_reporte/${reporte}?tab_name=${tabName}`)
@@ -1820,31 +2089,41 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
             const columnas = data.columnas || [];
             console.log("Columnas disponibles:", columnas); // Debugging
 
-            // Limpiar la lista de columnas en el modal
+            if (isFormulaAvanzada) {
+                // Bloquea el área de texto si es una fórmula avanzada
+                document.getElementById('formula-text').setAttribute('readonly', true);
+                document.getElementById('formula-text').value = formula;
+                document.getElementById('openAceEditorBtn').style.display = 'inline-block';
+            } else {
+                // Desbloquear el área de texto si no es avanzada
+                document.getElementById('formula-text').removeAttribute('readonly');
+                document.getElementById('formula-text').value = formula;
+                document.getElementById('openAceEditorBtn').style.display = 'none';  // Ocultar el botón de fórmulas avanzadas
+            }
+
+            // Mostrar columnas disponibles para fórmulas simples
             const columnList = document.getElementById('column-list');
             columnList.innerHTML = '';
 
-            // Agregar columnas disponibles a la lista en el modal
             columnas.forEach(col => {
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item';
                 listItem.textContent = col;
                 listItem.addEventListener('click', () => {
-                    document.getElementById('formula-text').value += ` ${col}`;
+                    if (!isFormulaAvanzada) {
+                        document.getElementById('formula-text').value += ` ${col}`;
+                    }
                 });
                 columnList.appendChild(listItem);
             });
 
-            // Configurar el nombre de la columna y la fórmula en el modal
+            // Configurar el modal con la fórmula y columnas
             document.getElementById('selected-column-name').textContent = columna;
-            document.getElementById('formula-text').value = formula;
-
-            // Configurar los atributos del modal
             document.getElementById('functionModal').setAttribute('data-reporte', reporte);
             document.getElementById('functionModal').setAttribute('data-columna', columna);
-            document.getElementById('functionModal').setAttribute('data-tab', tabName); // Asegurar que el tab se establece
+            document.getElementById('functionModal').setAttribute('data-tab', tabName);
 
-            // Mostrar el modal de edición de fórmula
+            // Mostrar el modal
             $('#functionModal').modal('show');
         })
         .catch(error => {
@@ -1852,6 +2131,75 @@ document.getElementById('saveNewColumnBtn').addEventListener('click', function()
             Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
         });
 }
+
+
+// Función para abrir el editor avanzado en Ace
+function abrirEditorFormulaAvanzada(reporte, columna, formula) {
+    const editor = ace.edit("ace-editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/python");
+
+    try {
+        const formattedFormula = formula.replace(/\\n/g, '\n');
+        editor.setValue(formattedFormula);
+    } catch (error) {
+        console.error("Error al cargar la fórmula en Ace Editor:", error);
+        Swal.fire('Error', 'La fórmula no es válida para Ace Editor', 'error');
+        return;
+    }
+
+    // Limpiar y mostrar las columnas en el editor avanzado
+    const columnListAce = document.getElementById('column-list-ace');
+    columnListAce.innerHTML = '';
+    fetch(`/get_columns/${reporte}`)
+        .then(response => response.json())
+        .then(columnas => {
+            columnas.forEach(col => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.textContent = col;
+                listItem.addEventListener('click', () => {
+                    editor.insert(` ${col}`);
+                });
+                columnListAce.appendChild(listItem);
+            });
+        });
+
+    $('#aceEditorModal').modal('show');
+}
+
+// Función para abrir el modal de fórmula simple
+function abrirEditorFormulaSimple(reporte, columna, formula, columnas) {
+    // Limpiar la lista de columnas en el modal de fórmula sencilla
+    const columnList = document.getElementById('column-list');
+    columnList.innerHTML = '';
+
+    // Agregar columnas disponibles a la lista en el modal de fórmula sencilla
+    columnas.forEach(col => {
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item';
+        listItem.textContent = col;
+        listItem.addEventListener('click', () => {
+            document.getElementById('formula-text').value += ` ${col}`;
+        });
+        columnList.appendChild(listItem);
+    });
+
+    // Configurar el nombre de la columna y la fórmula en el modal de fórmula sencilla
+    document.getElementById('selected-column-name').textContent = columna;
+    document.getElementById('formula-text').value = formula;
+
+    // Configurar los atributos del modal de fórmula sencilla
+    document.getElementById('functionModal').setAttribute('data-reporte', reporte);
+    document.getElementById('functionModal').setAttribute('data-columna', columna);
+    document.getElementById('functionModal').setAttribute('data-tab', tabName); // Asegurar que el tab se establece
+
+    // Mostrar el modal de fórmula sencilla
+    $('#functionModal').modal('show');
+}
+
+
+
 
 
 document.getElementById('adddata').addEventListener('click', function() {
@@ -1995,59 +2343,6 @@ function eliminarFormula(reporte, columna) {
 
 
 
-
-    function openFunctionModal(tab, reporte, columnaSeleccionada) {
-        fetch(`/edit_reporte/${reporte}?tab_name=${tab}`)
-            .then(response => response.json())
-            .then(data => {
-                const columnas = data.columnas || [];
-                const columnList = document.getElementById('column-list');
-                columnList.innerHTML = '';
-
-                columnas.forEach(col => {
-                    const listItem = document.createElement('li');
-                    listItem.className = 'list-group-item';
-                    listItem.textContent = col;
-
-                    // Aquí va el código de inserción en la posición del cursor
-                    listItem.addEventListener('click', function() {
-                        const formulaText = document.getElementById('formula-text');
-                        if (formulaText) {
-                            // Inserta la columna donde está el cursor
-                            const startPos = formulaText.selectionStart;
-                            const endPos = formulaText.selectionEnd;
-
-                            // Obtener el texto antes y después del cursor
-                            const beforeInsert = formulaText.value.substring(0, startPos);
-                            const afterInsert = formulaText.value.substring(endPos, formulaText.value.length);
-
-                            // Insertar la columna en la posición del cursor
-                            formulaText.value = beforeInsert + col + afterInsert;
-
-                            // Posicionar el cursor después de la columna insertada
-                            const newCursorPosition = startPos + col.length;
-                            formulaText.setSelectionRange(newCursorPosition, newCursorPosition);
-                            formulaText.focus();
-                        } else {
-                            console.error("No se encontró el elemento con ID 'formula-text' en el DOM.");
-                        }
-                    });
-
-                    columnList.appendChild(listItem);
-                });
-
-                document.getElementById('selected-column-name').textContent = columnaSeleccionada;
-                document.getElementById('formula-text').value = '';
-                document.getElementById('functionModal').setAttribute('data-tab', tab);  // Aquí se asigna el tab_name
-                document.getElementById('functionModal').setAttribute('data-reporte', reporte);
-                document.getElementById('functionModal').setAttribute('data-columna', columnaSeleccionada);
-                $('#functionModal').modal('show');
-            })
-            .catch(error => {
-                console.error('Error al cargar las columnas:', error);
-                Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
-            });
-    }
 
 
 function clearFormulaText(formulaText) {
@@ -2501,59 +2796,6 @@ document.getElementById('applyFilterBtn').addEventListener('click', function() {
 });
 
 
-
-    function openFunctionModal(tab, reporte, columnaSeleccionada) {
-        fetch(`/edit_reporte/${reporte}?tab_name=${tab}`)
-            .then(response => response.json())
-            .then(data => {
-                const columnas = data.columnas || [];
-                const columnList = document.getElementById('column-list');
-                columnList.innerHTML = '';
-
-                columnas.forEach(col => {
-                    const listItem = document.createElement('li');
-                    listItem.className = 'list-group-item';
-                    listItem.textContent = col;
-
-                    // Aquí va el código de inserción en la posición del cursor
-                    listItem.addEventListener('click', function() {
-                        const formulaText = document.getElementById('formula-text');
-                        if (formulaText) {
-                            // Inserta la columna donde está el cursor
-                            const startPos = formulaText.selectionStart;
-                            const endPos = formulaText.selectionEnd;
-
-                            // Obtener el texto antes y después del cursor
-                            const beforeInsert = formulaText.value.substring(0, startPos);
-                            const afterInsert = formulaText.value.substring(endPos, formulaText.value.length);
-
-                            // Insertar la columna en la posición del cursor
-                            formulaText.value = beforeInsert + col + afterInsert;
-
-                            // Posicionar el cursor después de la columna insertada
-                            const newCursorPosition = startPos + col.length;
-                            formulaText.setSelectionRange(newCursorPosition, newCursorPosition);
-                            formulaText.focus();
-                        } else {
-                            console.error("No se encontró el elemento con ID 'formula-text' en el DOM.");
-                        }
-                    });
-
-                    columnList.appendChild(listItem);
-                });
-
-                document.getElementById('selected-column-name').textContent = columnaSeleccionada;
-                document.getElementById('formula-text').value = '';
-                document.getElementById('functionModal').setAttribute('data-tab', tab);  // Aquí se asigna el tab_name
-                document.getElementById('functionModal').setAttribute('data-reporte', reporte);
-                document.getElementById('functionModal').setAttribute('data-columna', columnaSeleccionada);
-                $('#functionModal').modal('show');
-            })
-            .catch(error => {
-                console.error('Error al cargar las columnas:', error);
-                Swal.fire('Error', 'No se pudieron cargar las columnas disponibles', 'error');
-            });
-    }
 
 
 function duplicarReporte(tab, reporte) {

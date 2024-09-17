@@ -337,6 +337,30 @@
         background-color: #343a40 !important;
         color: #ffffff !important;
     }
+    #loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo gris oscuro con transparencia */
+    z-index: 1050; /* Asegúrate de que esté por encima de todos los elementos */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .loading-content {
+        text-align: center;
+        color: white;
+    }
+
+    .loading-content p {
+        margin-top: 15px;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
 
     </style>
 </head>
@@ -467,7 +491,19 @@
             </div>
         </div>
     </div>
-    
+
+    <!-- Overlay de carga -->
+    <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 9999; justify-content: center; align-items: center;">
+        <div class="loading-content" style="text-align: center; color: white;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p id="loadingMessage">Un momento por favor...</p> <!-- Mensaje dinámico -->
+        </div>
+    </div>
+
+
+
     <!-- Incluye jQuery, Popper.js y Bootstrap JS desde un CDN -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
@@ -672,15 +708,69 @@ function validarTareas(clientExists, branchExists, fechaValida, reportes) {
             }
         }
 
-        function mostrarReporte(nombreReporte, branchCode) {
+        let loadingMessages = [
+    "Cargando datos...",
+    "Validando información...",
+    "Preparando el reporte...",
+    "Un momento por favor...",
+    "Obteniendo datos del servidor...",
+    "Procesando solicitud...",
+    "Configurando la vista del reporte...",
+    "Verificando el estado del sistema...",
+    "Sincronizando información...",
+    "Calculando totales...",
+    "Cargando recursos necesarios...",
+    "Aplicando los últimos detalles...",
+    "Finalizando operación...",
+];
+
+let messageInterval;
+
+function getRandomMessage() {
+    return loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+}
+
+function showLoadingOverlay() {
+    const overlay = document.getElementById('loadingOverlay');
+    const messageElement = document.getElementById('loadingMessage');
+
+    if (overlay && messageElement) {
+        // Mostrar el overlay
+        overlay.style.display = 'flex';
+
+        // Cambiar los mensajes de manera aleatoria cada 2 segundos
+        messageElement.textContent = getRandomMessage(); // Mostrar el primer mensaje aleatorio
+        messageInterval = setInterval(() => {
+            messageElement.textContent = getRandomMessage();
+        }, 1500);
+    } else {
+        console.error("No se pudo encontrar el overlay o el elemento de mensaje.");
+    }
+}
+
+function hideLoadingOverlay() {
+    const overlay = document.getElementById('loadingOverlay');
+
+    if (overlay) {
+        // Ocultar el overlay
+        overlay.style.display = 'none';
+
+        // Detener los mensajes dinámicos
+        clearInterval(messageInterval);
+    }
+}
+
+function mostrarReporte(nombreReporte, branchCode) {
     console.log(`Nombre Reporte: ${nombreReporte}`);
     console.log(`Branch Code: ${branchCode}`);
+    
+    // Mostrar el overlay y los mensajes dinámicos
+    showLoadingOverlay();
     
     // Actualizar dinámicamente el título del modal
     document.getElementById('reporteModalLabel').innerText = `Reporte: ${nombreReporte}`;
     
     const url = `/obtener_reporte?nombreReporte=${encodeURIComponent(nombreReporte)}&branch_code=${encodeURIComponent(branchCode)}`;
-    console.log(url)
     fetch(url)
         .then(response => response.text())
         .then(html => {
@@ -696,12 +786,18 @@ function validarTareas(clientExists, branchExists, fechaValida, reportes) {
             // Mostrar el modal después de cargar el reporte
             $('#reporteModal').modal('show');
 
+            // Ocultar el overlay de carga
+            hideLoadingOverlay();
         })
         .catch(error => {
             console.error("Error al cargar el reporte:", error);
             document.getElementById('modalBody').innerHTML = `<p>Error al cargar el reporte: ${error}</p>`;
+            
+            // Ocultar el overlay en caso de error
+            hideLoadingOverlay();
         });
 }
+
 
 function obtenerLogsCliente(cliente) {
     const urlLogs = `/leer_logs/${cliente}`;

@@ -120,7 +120,7 @@ def extraer_columnas_valores_longitudes(consulta):
         valores = [val.strip().strip("'") for val in match_valores.group(1).split(',')]
 
         # Placeholder para las longitudes máximas
-        longitudes_maximas = [25] * len(columnas)  # Placeholder, ajusta esto según tu esquema real
+        longitudes_maximas = [25] * len(columnas)
 
         return columnas, valores, longitudes_maximas
     
@@ -144,8 +144,29 @@ def inferir_tipo_dato(nombre_columna, dms_name, reporte_name):
     with open(dms_path, 'r') as file:
         dms_data = json.load(file)
     
-    # Acceder al tipo de dato de la columna en el JSON del DMS
-    columna_info = dms_data.get('columnas_esperadas', {}).get(reporte_name, {}).get('data_types', {}).get(nombre_columna, {})
+    # Obtener el diccionario de tipos de datos
+    data_types = dms_data.get('columnas_esperadas', {}).get(reporte_name, {}).get('data_types', {})
+
+    # Buscar coincidencias aproximadas para la columna con '(computed)' si es necesario
+    nombre_columna_limpio = re.sub(r'\s*\(.*?\)', '', nombre_columna).strip()
+    columna_info = None
+
+    # Verificar si la columna existe tal cual en el JSON
+    if nombre_columna in data_types:
+        columna_info = data_types[nombre_columna]
+    else:
+        # Buscar columnas que contengan el nombre limpio
+        for key in data_types:
+            if key.startswith(nombre_columna_limpio):
+                columna_info = data_types[key]
+                break
+
+    # Si no se encuentra la columna, devolver un tipo de dato por defecto
+    if not columna_info:
+        logging.warning(f"No se encontró información de tipo de dato para la columna: {nombre_columna}")
+        return 'VARCHAR(255)'
+
+    # Obtener el tipo de dato
     tipo_dato = columna_info.get('tipo', 'VARCHAR(255)')
     
     # Si el tipo de dato es 'character varying', incluir la longitud
@@ -401,13 +422,16 @@ def procesar_archivo_zip():
 
             # Paso 3: Crear el DataFrame sin los campos calculados
             df = pd.DataFrame(adjusted_rows, columns=encabezados2)
-            # Convertir las fechas en el DataFrame antes de la inserción
-            df = convertir_fechas_df(df, dms_name, reporte)
+            print("*******************************************************************")
+            print(df)
+            
+            # Paso de la muerte : Infiere tipos de datos 
+            df = asignar_tipos_de_datos(df, dms_name, reporte)
+            print(df.info())
+            print("*******************************************************************")
+            print(df)
 
-            # Paso 4: Aplicar las fórmulas a todas las columnas que tengan fórmulas en encabezados2
-            aplicar_formulas(df, dms_name, reporte)
-
-            # Paso 5: Aplicar las fórmulas para las columnas calculadas (computed)
+            # Paso 4: Aplicar las fórmulas para las columnas calculadas (computed)
             print(f'Campos_computed: {campos_computed}')
             for campo_calculado in campos_computed:
                 formula = obtener_formula(dms_name, reporte, campo_calculado)
@@ -427,17 +451,40 @@ def procesar_archivo_zip():
                             # Usar una expresión regular para reemplazar coincidencias exactas de los nombres de las columnas
                             formula_sin_simbolo = re.sub(rf'\b{col_sin_simbolo}\b', f"df['{col_original}']", formula_sin_simbolo)
                         
-                        # Restaurar el símbolo $ en la fórmula, si estaba presente
-                        formula_ajustada = formula_sin_simbolo
-                        
+                        # Si la fórmula contiene '(computed)', eliminarlo y ajustar la fórmula
+                        formula_ajustada = formula_sin_simbolo.replace(' (computed)', '')
+
                         print(f'Formula ajustada: {formula_ajustada}')
                         
-                        # Identificar las columnas en la fórmula
+                        # Verificar si la fórmula es Ctod y aplicarla
+                        if 'Ctod' in formula_ajustada:
+                            # Extraer solo el formato de fecha del Ctod (p. ej. "d/m/y")
+                            match = re.search(r'Ctod\("([^"]+)"\)', formula_ajustada)
+                            if match:
+                                # Obtener el formato de fecha (orden) de la fórmula Ctod
+                                orden = match.group(1).strip()
+
+                                # Usar la fecha actual del día
+                                fecha_actual = datetime.now().strftime('%d/%m/%Y')
+
+                                # Aplicar la función Ctod a la fecha actual
+                                df[campo_calculado] = Ctod(fecha_actual, orden)
+                                logging.info(f"Fórmula Ctod aplicada en la columna '{campo_calculado}' con formato '{orden}' usando la fecha actual.")
+                                
+                                # Renombrar la columna quitando '(computed)' si es necesario
+                                nuevo_nombre = campo_calculado.replace(' (computed)', '')
+                                df.rename(columns={campo_calculado: nuevo_nombre}, inplace=True)
+                                logging.info(f"El encabezado de la columna '{campo_calculado}' fue cambiado a '{nuevo_nombre}'.")
+                                continue  # Saltamos el resto de esta iteración para aplicar la siguiente fórmula después
+                            else:
+                                logging.warning(f"No se pudieron extraer los parámetros de la fórmula Ctod en la columna {campo_calculado}.")
+
+                        # Identificar las columnas en la fórmula (cuando no es Ctod)
                         columnas_en_formula = re.findall(r"df\['(.*?)'\]", formula_ajustada)
                         
                         # Convertir las columnas que son fechas a tipo datetime, las otras a numérico
                         for col in columnas_en_formula:
-                            if "Fecha" in col:  # Si la columna tiene "Fecha", se convierte a datetime
+                            if "Fecha" in col or "date" in col.lower():  # Si la columna tiene "Fecha", se convierte a datetime
                                 df[col] = pd.to_datetime(df[col], errors='coerce')
                                 if df[col].isnull().any():
                                     logging.warning(f"Valores no válidos en la columna de fecha '{col}' fueron convertidos a NaT.")
@@ -447,11 +494,23 @@ def procesar_archivo_zip():
                                     logging.warning(f"Valores no numéricos en la columna '{col}' fueron convertidos a 0.")
                                     df[col] = df[col].fillna(0)
                         
-                        # Evaluar la fórmula
-                        df[campo_calculado] = eval(formula_ajustada)
-                        logging.info(f"Fórmula aplicada a la columna calculada '{campo_calculado}'.")
+                        # Verificar si la fórmula es una resta entre fechas
+                        if len(columnas_en_formula) == 2 and any(df[col].dtype == 'datetime64[ns]' for col in columnas_en_formula):
+                            # Realizar la resta de fechas (diferencia en días) y convertir el resultado a string
+                            df[campo_calculado] = (df[columnas_en_formula[0]] - df[columnas_en_formula[1]]).dt.days.astype(str)
+                            logging.info(f"Fórmula aplicada para restar fechas en la columna '{campo_calculado}' (diferencia en días).")
+                        else:
+                            # Verificar si la fórmula es VentasNetas
+                            if 'VentasNetas' in formula_ajustada:
+                                # Aplicar la función VentasNetas con las columnas correctas
+                                df[campo_calculado] = ventasNetas(df['Venta$'], df['Costo$'])
+                            else:
+                                # Evaluar la fórmula ajustada para otros casos
+                                df[campo_calculado] = eval(formula_ajustada)
+                            
+                            logging.info(f"Fórmula aplicada a la columna calculada '{campo_calculado}'.")
 
-                        # Renombrar la columna quitando '(computed)'
+                        # Renombrar la columna quitando '(computed)' si es necesario
                         nuevo_nombre = campo_calculado.replace(' (computed)', '')
                         df.rename(columns={campo_calculado: nuevo_nombre}, inplace=True)
                         logging.info(f"El encabezado de la columna '{campo_calculado}' fue cambiado a '{nuevo_nombre}'.")
@@ -460,6 +519,9 @@ def procesar_archivo_zip():
                         logging.error(f"Error al aplicar la fórmula en la columna calculada '{campo_calculado}': {e}")
 
 
+            # Paso 5: Aplicar las fórmulas a todas las columnas que tengan fórmulas en encabezados2
+            aplicar_formulas(df, dms_name, reporte)
+
             # Paso 6: Reordenar las columnas para respetar la posición original de las columnas calculadas
             for campo_calculado in campos_computed:
                 nuevo_nombre = campo_calculado.replace('(computed)', '').strip()
@@ -467,9 +529,12 @@ def procesar_archivo_zip():
                     pos_original = encabezados_esperados.index(campo_calculado)
                     encabezados_esperados[pos_original] = nuevo_nombre  # Actualizar el nombre sin '(computed)'
 
-            # Asegurar que las columnas estén en el orden esperado
-            df = df[encabezados_esperados]
-
+            try:
+                # Asegurar que las columnas estén en el orden esperado
+                df = df[encabezados_esperados]
+            except KeyError as e:
+                logging.error(f"Una o más columnas computadas no tienen fórmula asignada {e}.")
+                
             # Obtener los nuevos encabezados después de aplicar las fórmulas y reordenar
             nuevos_encabezados = df.columns.to_list()
             print(f'Nuevos Encabezados: {nuevos_encabezados}')
@@ -479,22 +544,21 @@ def procesar_archivo_zip():
                 print("Hay un SERVTA en el zip ************************************")
                 # Generar el DataFrame SERVTC
                 generar_servtc(df, sucursal, nuevos_encabezados)
-
-                
-            
+                        
             # Añadir columnas Client, Branch, Date
             df.insert(0, 'Client', cliente)
             df.insert(1, 'Branch', sucursal)
-            df.insert(2, 'Date', fecha_actual)
+            #df.insert(2, 'Date', fecha_actual)
 
             # Limpiar datos (si es necesario)
-            df.fillna('', inplace=True)  # Rellenar valores nulos con cadenas vacías
+            #df = df.replace({np.nan: ''})
+            # Rellenar valores nulos con cadenas vacías
 
             # Crear la consulta SQL para crear la tabla
             create_table_query = f"CREATE TABLE IF NOT EXISTS {nombre_tabla} (\n"
-            create_table_query += "    Client character varying(255),\n"
-            create_table_query += "    Branch character varying(255),\n"
-            create_table_query += "    Date character varying(20),\n"
+            create_table_query += "    Client character varying(4),\n"
+            create_table_query += "    Branch character varying(2),\n"
+            #create_table_query += "    Date character varying(20),\n"
             
             for a in nuevos_encabezados:
                 tipo_dato = inferir_tipo_dato(a, dms_name, reporte)
@@ -507,19 +571,42 @@ def procesar_archivo_zip():
 
             # Crear la consulta SQL para eliminar la tabla si existe
             drop_query = f"DROP TABLE IF EXISTS {nombre_tabla};"
+            
 
-            # Convertir las columnas de fechas a formato de texto 'YYYY-MM-DD' antes de la inserción
+            #####################################################
+            #               PEDAZO AJUSTAR                      #
+            #####################################################
+
+            # Obtener las columnas de tipo datetime
+            datetime_columns = df.select_dtypes(include=['datetime64']).columns
+
+            # Convertir los encabezados a una lista
+            encabezados_datetime = datetime_columns.tolist()
+
+            # Mostrar la lista de encabezados de las columnas datetime
+            print(encabezados_datetime)
+            print(f'Reporte ... {reporte}')
+            query_alter = generar_query_alter_table(reporte, encabezados_datetime, sucursal)
+
+            # Convertir columnas de fecha a formato 'YYYY-MM-DD' antes de la inserción
             for col in df.columns:
                 if pd.api.types.is_datetime64_any_dtype(df[col]):
-                    df[col] = df[col].dt.strftime('%Y-%m-%d')  # Convertir fechas a 'YYYY-MM-DD'
-                elif pd.api.types.is_timedelta64_dtype(df[col]):
-                    df[col] = df[col].dt.days  # Convertir Timedelta a número de días
+                    # Convertir a formato 'YYYY-MM-DD' y reemplazar NaT con None (que será convertido a NULL en SQL)
+                    df[col] = df[col].dt.strftime('%Y-%m-%d').replace({pd.NaT: None, 'None': None, None: None})
+                elif pd.api.types.is_numeric_dtype(df[col]):
+                    # Para las columnas numéricas, reemplazar NaN o None con 0
+                    df[col] = df[col].replace({np.nan: 0, None: 0, 'None': 0})
+                else:
+                    # Para las demás columnas, reemplazar NaN y None con una cadena vacía
+                    df[col] = df[col].replace({np.nan: '', None: '', 'None': ''})
 
-            # Crear la consulta SQL para insertar los datos
+            # Al generar la consulta SQL, asegurarse de que los valores None se sustituyan por NULL en la cadena SQL
             insert_query = f"INSERT INTO {nombre_tabla} ({', '.join(df.columns)}) VALUES "
-            values_list = df.apply(lambda x: tuple(x), axis=1).tolist()
-            values_query = ', '.join([str(v) for v in values_list])
+            insert_query = insert_query.replace("None", "NULL")
+            values_list = df.apply(lambda x: tuple('NULL' if v is None else v for v in x), axis=1).tolist()
+            values_query = ', '.join([str(v).replace("'NULL'", "NULL") for v in values_list])  # Reemplazar 'NULL' con NULL sin comillas
             insert_query += values_query + ";"
+
 
             # Guardar las consultas SQL en un archivo .sql.dump
             consultas = [
@@ -539,6 +626,10 @@ def procesar_archivo_zip():
                 
                 ejecutar_consulta(conexion, drop_query)
                 ejecutar_consulta(conexion, create_table_query)
+                # Ejecutamos la consulta una vez la tabla ya creada 
+                if encabezados_datetime:
+                    ejecutar_query_alter_table(db_config, query_alter)
+
                 ejecutar_consulta_insert(conexion, insert_query, df=df, max_lengths=longitudes_maximas, nombre_tabla=nombre_tabla, version_servidor=version_servidor, archivo_sql=archivo_sql, drop_query=drop_query,create_table_query=create_table_query)
 
                 
@@ -1085,6 +1176,14 @@ def aplicar_formulas(df, dms_name, reporte):
                     df[columna] = df[columna].apply(LimpiaTexto)
                 elif 'LimpiaEmail' in formula:
                     df[columna] = df[columna].apply(LimpiaEmail)
+                elif 'FormulaMargen' in formula:
+                    # Aquí modificamos para siempre pasar 'Venta$' y 'Costo$'
+                    df[columna] = df.apply(lambda row: FormulaMargen(row['Venta$'], row['Costo$']), axis=1)
+                elif 'FormulaUtilidad' in formula:
+                    # Aquí modificamos para siempre pasar 'Venta$' y 'Costo$'
+                    df[columna] = df.apply(lambda row: FormulaUtilidad(row['Venta$'], row['Costo$']), axis=1)
+                elif 'LimpiaCodigos' in formula:
+                    df[columna] = df[columna].apply(LimpiaCodigos)
                 else:
                     # Convertir las columnas que participan en la fórmula a un tipo numérico
                     columnas_en_formula = re.findall(r"df\['(.*?)'\]", formula)
@@ -1212,13 +1311,7 @@ def generar_insert_query(df, nombre_tabla):
     """
     Esta función genera una consulta SQL INSERT a partir de un DataFrame.
     """
-    # Convertir las columnas de fechas a formato de texto 'YYYY-MM-DD' antes de la inserción
-    for col in df.columns:
-        if pd.api.types.is_datetime64_any_dtype(df[col]):
-            df[col] = df[col].dt.strftime('%Y-%m-%d')  # Convertir fechas a 'YYYY-MM-DD'
-        elif pd.api.types.is_timedelta64_dtype(df[col]):
-            df[col] = df[col].dt.days  # Convertir Timedelta a número de días
-
+    
     # Crear la consulta SQL para insertar los datos
     insert_query = f"INSERT INTO {nombre_tabla} ({', '.join(df.columns)}) VALUES "
 
@@ -1233,8 +1326,124 @@ def generar_insert_query(df, nombre_tabla):
 
     return insert_query
 
+def asignar_tipos_de_datos(df, dms_name, reporte_name):
+    for col in df.columns:
+        # Inferir el tipo de dato para la columna usando la función existente
+        tipo_dato = inferir_tipo_dato(col, dms_name, reporte_name)
+        logging.info(f"Inferido tipo de dato para '{col}': {tipo_dato}")
+        
+        # Asignar el tipo de dato correcto según la inferencia
+        try:
+            if 'VARCHAR' in tipo_dato.upper() or 'character varying' in tipo_dato:
+                df[col] = df[col].astype(str)  # Convertir a string
+                logging.info(f"Columna '{col}' convertida a string")
+                
+            elif 'DATE' in tipo_dato.upper() or 'datetime' in tipo_dato.lower():
+                # Convertir la columna a formato datetime sin especificar el formato
+                try:
+                    df[col] = pd.to_datetime(df[col], errors='coerce')
+                    logging.info(f"Columna '{col}' convertida a formato datetime")
+                except Exception as e:
+                    logging.error(f"Error al convertir la columna '{col}' a datetime: {e}")
+                    df[col] = pd.to_datetime(df[col], errors='coerce')  # Intento sin formato si falla
+
+            elif 'double precision' in tipo_dato.lower():  # Manejo para double precision
+                df[col] = pd.to_numeric(df[col], errors='coerce')  # Convertir a numérico de doble precisión
+                logging.info(f"Columna '{col}' convertida a double precision")
+                
+            elif 'int' in tipo_dato.lower() or 'integer' in tipo_dato.lower():
+                df[col] = pd.to_numeric(df[col], errors='coerce', downcast='integer')  # Convertir a entero
+                logging.info(f"Columna '{col}' convertida a integer")
+
+            elif isinstance(df[col].iloc[0], pd.Timedelta):
+                # Convertir Timedelta a número de días
+                df[col] = df[col].dt.days.fillna(0).astype(int).astype(str)  # Convertir a número de días y luego a string
+                logging.info(f"Columna '{col}' convertida a número de días desde Timedelta como string")
+                
+            else:
+                logging.warning(f"No se pudo inferir un tipo de dato claro para la columna '{col}', usando 'object'.")
+                df[col] = df[col].astype(object)  # Convertir a tipo object como fallback
+            
+        except Exception as e:
+            logging.error(f"Error al convertir la columna '{col}': {e}")
+            df[col] = df[col].astype(object)  # Fallback en caso de error
+
+    # Devolver el DataFrame con los tipos de datos actualizados
+    return df
 
 
+
+
+
+
+
+def limpiar_data_frame_para_sql(df):
+    """
+    Limpia el DataFrame para asegurar que las fechas vacías sean None (NULL en SQL) y
+    los demás valores vacíos sean cadenas vacías ('').
+    """
+    for col in df.columns:
+        if pd.api.types.is_datetime64_any_dtype(df[col]):
+            # Convertir fechas válidas a 'YYYY-MM-DD' y reemplazar fechas vacías por None
+            df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) else None)
+        else:
+            # Para otras columnas, reemplazar NaN con cadena vacía ('')
+            df[col] = df[col].replace({np.nan: ''})
+    
+    return df
+
+def generar_query_alter_table(reporte, columnas_date, sucursal):
+    """
+    Genera dinámicamente una consulta SQL para modificar las columnas de tipo DATE de un reporte
+    y permitir valores NULL en esas columnas.
+
+    :param reporte: El nombre del reporte (tabla) para el cual se generará la consulta.
+    :param columnas_date: Lista de nombres de columnas de tipo DATE que se deben modificar.
+    :return: Una cadena con la consulta SQL ALTER TABLE generada dinámicamente.
+    """
+    # Comparamos si es SERVTC
+    if reporte == "SERVTC":
+        reporte= reporte + sucursal
+    # Base de la consulta
+    query = f"ALTER TABLE {reporte}\n"
+
+    # Agregar dinámicamente las modificaciones de las columnas
+    for columna in columnas_date:
+        query += f"    ALTER COLUMN {columna} DROP NOT NULL,\n"
+
+    # Eliminar la última coma y agregar el punto y coma
+    query = query.rstrip(",\n") + ";\n"
+
+    return query
+
+
+def ejecutar_query_alter_table(db_config, query):
+    """
+    Ejecuta la consulta SQL generada para modificar las columnas de tipo DATE y permitir NULL.
+
+    :param db_config: Diccionario con la configuración de la base de datos (host, usuario, contrasena, base_de_datos).
+    :param query: La consulta SQL a ejecutar.
+    """
+
+    try:
+        # Establecer la conexión con la base de datos
+        conexion = psycopg2.connect(
+            host=db_config['host'],
+            user=db_config['usuario'],
+            password=db_config['contrasena'],
+            database=db_config['base_de_datos']
+        )
+        cursor = conexion.cursor()
+        logging.info("Conexión a la base de datos establecida.")
+
+        # Ejecutar la consulta SQL
+        cursor.execute(query)
+        conexion.commit()
+        logging.info(f"Consulta ALTER TABLE ejecutada con éxito:\n{query}")
+
+    except (Exception, Error) as error:
+        logging.error(f"Error al ejecutar la consulta ALTER TABLE: {error}")
+    
 procesar_archivo_zip()
 
 

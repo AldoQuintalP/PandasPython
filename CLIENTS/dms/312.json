@@ -1,26 +1,561 @@
 {
     "name": "312",
     "reportes": [
-        "VTAUSA"
+        "SERVTA01",
+        "SERVTC",
+        "INVUSA01"
     ],
     "columnas_esperadas": {
-        "VTAUSA": {
+        "SERVTA01": {
             "columnas": [
-                "Fecha",
-                "Cuenta",
-                "CentroCosto",
+                "F1",
+                "Factura",
+                "FechaFactura",
+                "NumeroOT",
+                "FechaApertura",
+                "FechaEntrega",
+                "CodigoOperacion",
                 "Descripcion",
-                "SaldoInicial$",
-                "VentaCosto$ (computed)",
-                "Debitos$",
-                "Creditos$",
-                "Naturaleza",
-                "Saldo$",
-                "TipoCuenta",
-                "Sucursal"
+                "TipoOperacion",
+                "Venta$ (computed)",
+                "Costo$ (computed)",
+                "CostoMO$",
+                "CostoMateriales$",
+                "CostoTOT$",
+                "CostoPartes$",
+                "VentaMO$",
+                "VentaMateriales$",
+                "VentaTOT$",
+                "VentaPartes$",
+                "DescuentoMO$",
+                "DescuentoMateriales$",
+                "DescuentoTOT$",
+                "DescuentoPartes$",
+                "CostoTotal$",
+                "VentaTotal$",
+                "Utilidad$",
+                "Margen",
+                "Taller",
+                "NumeroAsesor",
+                "NombreAsesor",
+                "NombreCliente",
+                "RFC",
+                "Direccion",
+                "Telefono",
+                "CP",
+                "Email",
+                "Odometro",
+                "Vin",
+                "A\u00f1o",
+                "Marca",
+                "Modelo",
+                "Color",
+                "Interior",
+                "TipoOrden",
+                "TipoPago",
+                "Dias (computed)"
+            ],
+            "formulas": {
+                "Costo$ (computed)": "CostoMO+CostoTOT+CostoMateriales",
+                "Dias (computed)": "FechaFactura-FechaApertura",
+                "Factura": "LimpiaCodigos(Factura)",
+                "Interior": "LimpiaTexto(Interior)",
+                "Marca": "LimpiaTexto(Marca)",
+                "Margen": "FormulaMargen(Margen)",
+                "Venta$ (computed)": "VentaMO$+VentaTOT$+VentaMateriales$-DescuentoMO$-DescuentoMateriales$-DescuentoTOT$",
+                "Utilidad$": "FormulaUtilidad(Utilidad$)"
+            },
+            "data_types": {
+                "F1": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Factura": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "FechaFactura": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "NumeroOT": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "FechaApertura": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "FechaEntrega": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "CodigoOperacion": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Descripcion": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "TipoOperacion": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Venta$ (computed)": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Costo$ (computed)": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoMO$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoMateriales$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoTOT$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoPartes$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaMO$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaMateriales$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaTOT$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaPartes$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "DescuentoMO$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "DescuentoMateriales$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "DescuentoTOT$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "DescuentoPartes$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoTotal$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaTotal$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Utilidad$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Margen": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Taller": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "NumeroAsesor": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "NombreAsesor": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "NombreCliente": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "RFC": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Direccion": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Telefono": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "CP": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Email": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Odometro": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Vin": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "A\u00f1o": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Marca": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Modelo": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Color": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Interior": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "TipoOrden": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "TipoPago": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Dias (computed)": {
+                    "tipo": "character varying",
+                    "length": "80"
+                }
+            }
+        },
+        "SERVTC": {
+            "columnas": [
+                "FechaFactura",
+                "FechaApertura",
+                "FechaEntrega",
+                "Factura",
+                "Taller",
+                "TipoOrden",
+                "TipoPago",
+                "NumeroOT",
+                "NumeroAsesor",
+                "NombreAsesor",
+                "RFC",
+                "NombreCliente",
+                "Direccion",
+                "Telefono",
+                "CP",
+                "Email",
+                "Odometro",
+                "Vin",
+                "A\u00f1o",
+                "Marca",
+                "Modelo",
+                "Color",
+                "Dias",
+                "Venta$",
+                "Costo$",
+                "Utilidad$",
+                "Margen",
+                "VentaMO$",
+                "DescuentoMO$",
+                "CostoMO$",
+                "VentaMateriales$",
+                "VentaTOT$",
+                "DecuentoTOT$",
+                "CostoTOT$",
+                "VentaPartes$",
+                "DescuentoPartes$",
+                "CostoPartes$",
+                "VentaTotal$",
+                "CostoTotal$"
             ],
             "formulas": {},
-            "data_types": {}
+            "data_types": {
+                "FechaFactura": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "FechaApertura": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "FechaEntrega": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Factura": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Taller": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "TipoOrden": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "TipoPago": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "NumeroOT": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "NumeroAsesor": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "NombreAsesor": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "RFC": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "NombreCliente": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Direccion": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Telefono": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "CP": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Email": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Odometro": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Vin": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "A\u00f1o": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Marca": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Modelo": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Color": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Dias": {
+                    "tipo": "character varying",
+                    "length": "80"
+                },
+                "Venta$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Costo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Utilidad$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Margen": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaMO$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "DescuentoMO$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoMO$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaMateriales$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaTOT$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "DecuentoTOT$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoTOT$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaPartes$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "DescuentoPartes$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoPartes$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "VentaTotal$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoTotal$": {
+                    "tipo": "double precision",
+                    "length": null
+                }
+            }
+        },
+        "INVUSA01": {
+            "columnas": [
+                "Date (computed)",
+                "F1",
+                "Vin",
+                "NumeroInventario",
+                "A\u00f1o",
+                "Marca",
+                "Modelo",
+                "Version",
+                "Color",
+                "Interior",
+                "Costo$",
+                "Isan$",
+                "CostoCompra$",
+                "Dias (computed)",
+                "FechaCompra",
+                "Status",
+                "Tipocompra"
+            ],
+            "formulas": {
+                "Color": "LimpiaTexto(Color)",
+                "Dias (computed)": "Date (computed)-FechaCompra",
+                "Interior": "LimpiaTexto(Interior)",
+                "Marca": "LimpiaTexto(Marca)",
+                "Modelo": "LimpiaTexto(Modelo)",
+                "NumeroInventario": "LimpiaCodigos(NumeroInventario)",
+                "Status": "LimpiaTexto(Status)",
+                "Version": "LimpiaTexto(Version)",
+                "Vin": "LimpiaCodigos(Vin)",
+                "Date (computed)": "Ctod(\"d/m/y\")"
+            },
+            "data_types": {
+                "Date (computed)": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "F1": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Vin": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "NumeroInventario": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "A\u00f1o": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Marca": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Modelo": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Version": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Color": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Interior": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Costo$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Isan$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "CostoCompra$": {
+                    "tipo": "double precision",
+                    "length": null
+                },
+                "Dias (computed)": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "FechaCompra": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Status": {
+                    "tipo": "character varying",
+                    "length": "25"
+                },
+                "Tipocompra": {
+                    "tipo": "character varying",
+                    "length": "25"
+                }
+            }
         }
     }
 }

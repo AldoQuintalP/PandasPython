@@ -1519,9 +1519,25 @@ def leer_logs(cliente):
     except Exception as e:
         print(f'Error inesperado: {str(e)}')
         return jsonify({'logs': f'Error inesperado: {str(e)}'}), 500
+    
 
+@app.route('/api/get-columnas', methods=['GET'])
+def get_columnas():
+    reporte = request.args.get('reporte')
+    tab_name = request.args.get('tab_name')  # Obtener la pestaña (DMS) donde se encuentra el reporte
 
+    if not reporte or not tab_name:
+        return jsonify({'success': False, 'error': 'Pestaña y reporte son necesarios.'})
 
+    config = cargar_config(tab_name)  # Función que carga la configuración del DMS correspondiente
+
+    if reporte not in config['columnas_esperadas']:
+        return jsonify({'success': False, 'error': 'El reporte no existe.'})
+
+    # Obtener las columnas del reporte
+    columnas = config['columnas_esperadas'][reporte].get('columnas', [])
+
+    return jsonify({'success': True, 'columnas': columnas})
 
 
 
