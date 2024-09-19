@@ -422,15 +422,9 @@ def procesar_archivo_zip():
 
             # Paso 3: Crear el DataFrame sin los campos calculados
             df = pd.DataFrame(adjusted_rows, columns=encabezados2)
-            print("*******************************************************************")
-            print(df)
-            print(df[['Factura', 'FechaCompra', 'FechaEntrega']])
             
             # Paso de la muerte : Infiere tipos de datos 
             df = asignar_tipos_de_datos(df, dms_name, reporte)
-            print(df.info())
-            print("*******************************************************************")
-            print(df[['Factura', 'FechaCompra', 'FechaEntrega']])
 
             # Paso 4: Aplicar las fórmulas para las columnas calculadas (computed)
             print(f'Campos_computed: {campos_computed}')
@@ -439,7 +433,6 @@ def procesar_archivo_zip():
                 print(f'Formula campo calculado: {formula}')
                 if formula:
                     try:
-                        print(df.columns)
                         # Crear una copia de los nombres de las columnas originales
                         columnas_originales = df.columns.tolist()
                         columnas_sin_simbolo = [col.replace('$', '') for col in columnas_originales]
