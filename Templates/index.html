@@ -430,6 +430,14 @@
             overflow-y: auto;   /* Habilita el scroll vertical */
         }
 
+        .hidden {
+            opacity: 0.5; /* Hacer la fila semi-transparente */
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .visible {
+            opacity: 1; /* Totalmente visible */
+        }
 
 
     </style>
@@ -957,9 +965,13 @@
                 div.className = 'column-item d-flex align-items-center justify-content-between';
                 div.setAttribute('data-original-name', col);
 
+                // Verificar si la columna está marcada como oculta
+                const isHidden = col.startsWith('*') && col.endsWith('*');
+                const cleanedColName = isHidden ? col.slice(1, -1) : col;
+
                 // Verificar si la columna es "computed"
-                const isComputedField = col.endsWith('(computed)');
-                const cleanColName = isComputedField ? col.replace(' (computed)', '') : col;
+                const isComputedField = cleanedColName.endsWith('(computed)');
+                const cleanColName = isComputedField ? cleanedColName.replace(' (computed)', '') : cleanedColName;
 
                 // Nombre de la columna
                 const colSpan = document.createElement('span');
@@ -968,7 +980,12 @@
 
                 // Aplicar color verde si es computed
                 if (isComputedField) {
-                    div.classList.add('bg-success', 'text-white');  // Añadir color verde para columnas computed
+                    div.classList.add('bg-success', 'text-white');
+                }
+
+                // Aplicar estilo de oculto si es necesario
+                if (isHidden) {
+                    div.style.opacity = '0.5';
                 }
 
                 // Si no es columna calculada, agregamos la "F" con el número de índice
@@ -982,45 +999,29 @@
 
                 div.appendChild(colSpan);
 
-                // Ya no se crea el ícono de visibilidad ni el botón
-                // Puedes eliminar todo el bloque relacionado con visibilityIcon y visibilityButton
-                
+                // Botón de visibilidad
+                const visibilityBtn = document.createElement('button');
+                visibilityBtn.className = 'btn btn-info btn-sm';
+                visibilityBtn.innerHTML = '<i class="fa ' + (isHidden ? 'fa-eye-slash' : 'fa-eye') + '"></i>';
+                visibilityBtn.addEventListener('click', function() {
+                    toggleVisibility(div, this);
+                });
+
                 // Añadir botones de filtro, editar y eliminar
                 const btnGroup = document.createElement('div');
                 btnGroup.className = 'btn-group ml-auto';
+                btnGroup.appendChild(visibilityBtn);
 
-                const filterBtn = document.createElement('button');
-                filterBtn.className = 'btn btn-primary btn-sm';
-                filterBtn.innerHTML = '<i class="fa-solid fa-filter"></i>';
-                
-                filterBtn.addEventListener('click', function () {
-                    abrirFiltroModal(col);
-                });
+                const filterBtn = createActionButton('fa-filter', 'btn-primary', () => abrirFiltroModal(cleanColName));
+                const editBtn = createActionButton('fa-edit', 'btn-warning', () => abrirModalEditarColumna(tabName, reporte, cleanColName));
+                const deleteBtn = createActionButton('fa-trash-alt', 'btn-danger', () => eliminarColumna(tabName, reporte, cleanColName));
 
-                const editBtn = document.createElement('button');
-                editBtn.className = 'btn btn-warning btn-sm';
-                editBtn.innerHTML = '<i class="fa fa-edit"></i>';
-                
-                editBtn.addEventListener('click', function () {
-                    abrirModalEditarColumna(tabName, reporte, col);
-                });
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn btn-danger btn-sm';
-                deleteBtn.innerHTML = '<i class="fa fa-trash-alt"></i>';
-                deleteBtn.addEventListener('click', function () {
-                    eliminarColumna(tabName, reporte, col);
-                });
-
-                btnGroup.appendChild(filterBtn);
-                btnGroup.appendChild(editBtn);
-                btnGroup.appendChild(deleteBtn);
+                btnGroup.append(editBtn, deleteBtn);
                 div.appendChild(btnGroup);
 
                 columnList.appendChild(div);
             });
 
-            // Inicializamos la funcionalidad de arrastrar y soltar
             new Sortable(columnList, {
                 animation: 150,
                 handle: '.column-item',
@@ -1042,6 +1043,15 @@
 }
 
 
+function createActionButton(icon, btnClass, action) {
+    const button = document.createElement('button');
+    button.className = `btn ${btnClass} btn-sm`;
+    button.innerHTML = `<i class="fa ${icon}"></i>`;
+    button.addEventListener('click', action);
+    return button;
+}
+
+
 // Función para actualizar los índices F después del reordenamiento
 function actualizarFColumn() {
     let fIndex = 1;  // Reiniciar el índice
@@ -1060,16 +1070,25 @@ function actualizarFColumn() {
     });
 }
 
-// Función para alternar la visibilidad de una columna usando clases CSS
-function toggleVisibility(icon) {
-    if (icon.classList.contains('visible-icon')) {
-        console.log("Cambiando a no visible (opacidad reducida)");
-        icon.classList.remove('visible-icon');
-        icon.classList.add('disabled-icon');
+function toggleVisibility(div, button) {
+    // Verificar si la columna está actualmente visible o no
+    const isCurrentlyHidden = div.style.opacity === '0.5';
+
+    // Cambiar la visibilidad
+    if (isCurrentlyHidden) {
+        // Hacer la columna visible
+        div.style.opacity = '1';
+        button.innerHTML = '<i class="fa fa-eye"></i>';
+        // Eliminar asteriscos del nombre original para marcar como visible
+        const originalName = div.getAttribute('data-original-name');
+        div.setAttribute('data-original-name', originalName.replace(/\*/g, ''));
     } else {
-        console.log("Cambiando a visible (opacidad normal)");
-        icon.classList.remove('disabled-icon');
-        icon.classList.add('visible-icon');
+        // Ocultar la columna
+        div.style.opacity = '0.5';
+        button.innerHTML = '<i class="fa fa-eye-slash"></i>';
+        // Añadir asteriscos al nombre original para marcar como oculto
+        const originalName = div.getAttribute('data-original-name');
+        div.setAttribute('data-original-name', `*${originalName}*`);
     }
 }
 
@@ -1122,7 +1141,10 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
     columnItems.forEach(item => {
         const originalName = item.getAttribute('data-original-name');  // Nombre original de la columna
         if (originalName) {
-            columnas.push(originalName);  // Solo incluimos el nombre, sin el índice "F"
+            // Verificar si la columna está oculta y modificar el nombre para incluir asteriscos
+            const isHidden = item.classList.contains('hidden');
+            const columnName = isHidden ? `*${originalName}*` : originalName;
+            columnas.push(columnName);  // Incluimos el nombre, posiblemente modificado con asteriscos
         }
     });
 
@@ -1147,7 +1169,7 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
         reportes: [reporte],
         columnas_esperadas: {
             [reporte]: {
-                columnas: columnas,  // Lista de columnas sin el prefijo "F"
+                columnas: columnas,  // Lista de columnas, incluidas las ocultas entre asteriscos
                 formulas: {},  // Puedes añadir las fórmulas aquí si es necesario
                 data_types: {}  // Puedes añadir los tipos de datos aquí si es necesario
             }

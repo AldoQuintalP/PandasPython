@@ -423,6 +423,10 @@ def procesar_archivo_zip():
             # Paso 3: Crear el DataFrame sin los campos calculados
             df = pd.DataFrame(adjusted_rows, columns=encabezados2)
             
+            # Identificar y eliminar columnas marcadas con asteriscos
+            columns_to_hide = [col for col in df.columns if col.startswith('*') and col.endswith('*')]
+            df.drop(columns=columns_to_hide, inplace=True)  # Eliminar las columnas del DataFrame
+
             # Paso de la muerte : Infiere tipos de datos 
             df = asignar_tipos_de_datos(df, dms_name, reporte)
 
