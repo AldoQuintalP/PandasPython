@@ -424,12 +424,13 @@ def procesar_archivo_zip():
             df = pd.DataFrame(adjusted_rows, columns=encabezados2)
             print("*******************************************************************")
             print(df)
+            print(df[['Factura', 'FechaCompra', 'FechaEntrega']])
             
             # Paso de la muerte : Infiere tipos de datos 
             df = asignar_tipos_de_datos(df, dms_name, reporte)
             print(df.info())
             print("*******************************************************************")
-            print(df)
+            print(df[['Factura', 'FechaCompra', 'FechaEntrega']])
 
             # Paso 4: Aplicar las fórmulas para las columnas calculadas (computed)
             print(f'Campos_computed: {campos_computed}')
@@ -1203,38 +1204,6 @@ def aplicar_formulas(df, dms_name, reporte):
             logging.info(f"No hay fórmula para la columna '{columna}' en el reporte '{reporte}'.")
 
 
-
-def convertir_fechas_df(df, dms_name, reporte_name):
-    """
-    Esta función busca las columnas de tipo DATE en el DataFrame y las convierte al formato 'yyyy-mm-dd'.
-    """
-    # Obtener las columnas que son de tipo DATE en el DMS
-    dms_path = os.path.join('CLIENTS', 'dms', f'{dms_name}.json')
-    
-    if not os.path.exists(dms_path):
-        logging.error(f"No se encontró el archivo {dms_path} para el DMS {dms_name}.")
-        return df
-
-    with open(dms_path, 'r') as file:
-        dms_data = json.load(file)
-    
-    # Acceder al tipo de dato de la columna en el JSON del DMS
-    columnas_tipo_date = [
-        col for col, info in dms_data.get('columnas_esperadas', {}).get(reporte_name, {}).get('data_types', {}).items()
-        if info.get('tipo') == 'DATE'
-    ]
-    
-    # Convertir las columnas de tipo DATE al formato 'yyyy-mm-dd'
-    for col in columnas_tipo_date:
-        if col in df.columns:
-            try:
-                df[col] = pd.to_datetime(df[col], format='%d/%m/%Y').dt.strftime('%Y-%m-%d')
-            except Exception as e:
-                logging.error(f"Error al convertir la columna {col} a formato de fecha: {e}")
-    
-    return df
-
-
 def obtener_dms_por_reporte(reporte, config_data):
     """
     Función para obtener el DMS basado en un reporte específico.
@@ -1339,10 +1308,10 @@ def asignar_tipos_de_datos(df, dms_name, reporte_name):
                 logging.info(f"Columna '{col}' convertida a string")
                 
             elif 'DATE' in tipo_dato.upper() or 'datetime' in tipo_dato.lower():
-                # Convertir la columna a formato datetime sin especificar el formato
+                # Convertir la columna a formato datetime con el formato correcto
                 try:
-                    df[col] = pd.to_datetime(df[col], errors='coerce')
-                    logging.info(f"Columna '{col}' convertida a formato datetime")
+                    df[col] = pd.to_datetime(df[col], format='%d/%m/%Y', errors='coerce')
+                    logging.info(f"Columna '{col}' convertida a formato datetime con formato '%d/%m/%Y'")
                 except Exception as e:
                     logging.error(f"Error al convertir la columna '{col}' a datetime: {e}")
                     df[col] = pd.to_datetime(df[col], errors='coerce')  # Intento sin formato si falla
@@ -1372,25 +1341,6 @@ def asignar_tipos_de_datos(df, dms_name, reporte_name):
     return df
 
 
-
-
-
-
-
-def limpiar_data_frame_para_sql(df):
-    """
-    Limpia el DataFrame para asegurar que las fechas vacías sean None (NULL en SQL) y
-    los demás valores vacíos sean cadenas vacías ('').
-    """
-    for col in df.columns:
-        if pd.api.types.is_datetime64_any_dtype(df[col]):
-            # Convertir fechas válidas a 'YYYY-MM-DD' y reemplazar fechas vacías por None
-            df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) else None)
-        else:
-            # Para otras columnas, reemplazar NaN con cadena vacía ('')
-            df[col] = df[col].replace({np.nan: ''})
-    
-    return df
 
 def generar_query_alter_table(reporte, columnas_date, sucursal):
     """
