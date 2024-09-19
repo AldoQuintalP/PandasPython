@@ -521,17 +521,18 @@ def procesar_archivo_zip():
             aplicar_formulas(df, dms_name, reporte)
 
             # Paso 6: Reordenar las columnas para respetar la posición original de las columnas calculadas
-            for campo_calculado in campos_computed:
-                nuevo_nombre = campo_calculado.replace('(computed)', '').strip()
-                if nuevo_nombre in df.columns:
-                    pos_original = encabezados_esperados.index(campo_calculado)
-                    encabezados_esperados[pos_original] = nuevo_nombre  # Actualizar el nombre sin '(computed)'
+            nuevos_encabezados = [campo.replace('(computed)', '').strip() for campo in encabezados_esperados]  # Preparar una lista de encabezados sin la marca 'computed'
+            columnas_actuales = list(df.columns)  # Columnas actuales después de eliminar o modificar
+
+            # Mapear el orden original al DataFrame actual, ajustando solo si las columnas están presentes
+            orden_final = [col for col in nuevos_encabezados if col in columnas_actuales]
 
             try:
-                # Asegurar que las columnas estén en el orden esperado
-                df = df[encabezados_esperados]
+                # Asegurar que las columnas estén en el orden especificado por el JSON
+                df = df[orden_final]
             except KeyError as e:
-                logging.error(f"Una o más columnas computadas no tienen fórmula asignada {e}.")
+                logging.error(f"Una o más columnas especificadas en el JSON no están presentes en el DataFrame: {e}")
+
                 
             # Obtener los nuevos encabezados después de aplicar las fórmulas y reordenar
             nuevos_encabezados = df.columns.to_list()

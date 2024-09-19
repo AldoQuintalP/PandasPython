@@ -1,0 +1,211 @@
+2024-09-19 16:46:30,485 - INFO - <--------------- Inicia el proceso --------------->
+2024-09-19 16:46:30,726 - INFO - Archivo descomprimido en C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx
+2024-09-19 16:46:30,737 - INFO - Archivo renombrado de VTAUSA01.TXT a VTAUSA01.txt
+2024-09-19 16:46:30,825 - INFO - Conexión a la base de datos establecida.
+2024-09-19 16:46:30,826 - INFO - Versión del servidor PostgreSQL: PostgreSQL 16.3, compiled by Visual C++ build 1938, 64-bit
+2024-09-19 16:46:30,839 - INFO - El documento VTAUSA01 no trae columnas.
+2024-09-19 16:46:30,855 - INFO - Inferido tipo de dato para 'F1': character varying(80)
+2024-09-19 16:46:30,857 - INFO - Columna 'F1' convertida a string
+2024-09-19 16:46:30,858 - INFO - Inferido tipo de dato para 'Factura': character varying(80)
+2024-09-19 16:46:30,859 - INFO - Columna 'Factura' convertida a string
+2024-09-19 16:46:30,860 - INFO - Inferido tipo de dato para 'FechaFactura': DATE
+2024-09-19 16:46:30,862 - INFO - Columna 'FechaFactura' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:46:30,864 - INFO - Inferido tipo de dato para 'TipoVenta': character varying(80)
+2024-09-19 16:46:30,864 - INFO - Columna 'TipoVenta' convertida a string
+2024-09-19 16:46:30,866 - INFO - Inferido tipo de dato para 'TipoPago': character varying(80)
+2024-09-19 16:46:30,866 - INFO - Columna 'TipoPago' convertida a string
+2024-09-19 16:46:30,867 - INFO - Inferido tipo de dato para 'Vin': character varying(80)
+2024-09-19 16:46:30,868 - INFO - Columna 'Vin' convertida a string
+2024-09-19 16:46:30,869 - INFO - Inferido tipo de dato para 'NumeroInventario': character varying(80)
+2024-09-19 16:46:30,869 - INFO - Columna 'NumeroInventario' convertida a string
+2024-09-19 16:46:30,870 - INFO - Inferido tipo de dato para 'Isan$': double precision
+2024-09-19 16:46:30,871 - INFO - Columna 'Isan$' convertida a double precision
+2024-09-19 16:46:30,872 - INFO - Inferido tipo de dato para 'Costo$': double precision
+2024-09-19 16:46:30,873 - INFO - Columna 'Costo$' convertida a double precision
+2024-09-19 16:46:30,874 - INFO - Inferido tipo de dato para 'Venta$': double precision
+2024-09-19 16:46:30,875 - INFO - Columna 'Venta$' convertida a double precision
+2024-09-19 16:46:30,875 - INFO - Inferido tipo de dato para 'Utilidad$': double precision
+2024-09-19 16:46:30,876 - INFO - Columna 'Utilidad$' convertida a double precision
+2024-09-19 16:46:30,878 - INFO - Inferido tipo de dato para 'Margen': double precision
+2024-09-19 16:46:30,878 - INFO - Columna 'Margen' convertida a double precision
+2024-09-19 16:46:30,879 - INFO - Inferido tipo de dato para 'Año': character varying(80)
+2024-09-19 16:46:30,880 - INFO - Columna 'Año' convertida a string
+2024-09-19 16:46:30,881 - INFO - Inferido tipo de dato para 'Marca': character varying(80)
+2024-09-19 16:46:30,882 - INFO - Columna 'Marca' convertida a string
+2024-09-19 16:46:30,883 - INFO - Inferido tipo de dato para 'Modelo': character varying(80)
+2024-09-19 16:46:30,884 - INFO - Columna 'Modelo' convertida a string
+2024-09-19 16:46:30,885 - INFO - Inferido tipo de dato para 'Color': character varying(80)
+2024-09-19 16:46:30,886 - INFO - Columna 'Color' convertida a string
+2024-09-19 16:46:30,887 - INFO - Inferido tipo de dato para 'Interior': character varying(80)
+2024-09-19 16:46:30,887 - INFO - Columna 'Interior' convertida a string
+2024-09-19 16:46:30,888 - INFO - Inferido tipo de dato para 'NumeroVendedor': character varying(80)
+2024-09-19 16:46:30,889 - INFO - Columna 'NumeroVendedor' convertida a string
+2024-09-19 16:46:30,890 - INFO - Inferido tipo de dato para 'NombreVendedor': character varying(80)
+2024-09-19 16:46:30,890 - INFO - Columna 'NombreVendedor' convertida a string
+2024-09-19 16:46:30,891 - INFO - Inferido tipo de dato para 'FechaCompra': DATE
+2024-09-19 16:46:30,892 - INFO - Columna 'FechaCompra' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:46:30,893 - INFO - Inferido tipo de dato para 'FechaEntrega': DATE
+2024-09-19 16:46:30,894 - INFO - Columna 'FechaEntrega' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:46:30,895 - INFO - Inferido tipo de dato para 'NombreCliente': character varying(80)
+2024-09-19 16:46:30,896 - INFO - Columna 'NombreCliente' convertida a string
+2024-09-19 16:46:30,898 - INFO - Inferido tipo de dato para 'RFC': character varying(80)
+2024-09-19 16:46:30,899 - INFO - Columna 'RFC' convertida a string
+2024-09-19 16:46:30,900 - INFO - Inferido tipo de dato para 'Direccion': character varying(80)
+2024-09-19 16:46:30,900 - INFO - Columna 'Direccion' convertida a string
+2024-09-19 16:46:30,901 - INFO - Inferido tipo de dato para 'Telefono': character varying(80)
+2024-09-19 16:46:30,902 - INFO - Columna 'Telefono' convertida a string
+2024-09-19 16:46:30,903 - INFO - Inferido tipo de dato para 'CP': character varying(80)
+2024-09-19 16:46:30,903 - INFO - Columna 'CP' convertida a string
+2024-09-19 16:46:30,904 - INFO - Inferido tipo de dato para 'Email': character varying(80)
+2024-09-19 16:46:30,905 - INFO - Columna 'Email' convertida a string
+2024-09-19 16:46:30,908 - INFO - Fórmula Ctod aplicada en la columna 'Date (computed)' con formato 'd/m/y' usando la fecha actual.
+2024-09-19 16:46:30,909 - INFO - El encabezado de la columna 'Date (computed)' fue cambiado a 'Date'.
+2024-09-19 16:46:30,912 - INFO - Fórmula aplicada a la columna calculada 'VentasNetas$ (computed)'.
+2024-09-19 16:46:30,913 - INFO - El encabezado de la columna 'VentasNetas$ (computed)' fue cambiado a 'VentasNetas$'.
+2024-09-19 16:46:30,913 - INFO - No hay fórmula para la columna 'F1' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,958 - INFO - Fórmula 'LimpiaCodigos(Factura)' aplicada a la columna 'Factura' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,959 - INFO - No hay fórmula para la columna 'FechaFactura' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,960 - INFO - Fórmula 'LimpiaTexto(TipoVenta)' aplicada a la columna 'TipoVenta' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,962 - INFO - Fórmula 'LimpiaTexto(TipoPago)' aplicada a la columna 'TipoPago' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,963 - INFO - Fórmula 'LimpiaCodigos(Vin)' aplicada a la columna 'Vin' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,964 - INFO - Fórmula 'LimpiaCodigos(NumeroInventario)' aplicada a la columna 'NumeroInventario' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,966 - INFO - No hay fórmula para la columna 'Isan$' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,967 - INFO - No hay fórmula para la columna 'Costo$' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,968 - INFO - No hay fórmula para la columna 'Venta$' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,971 - INFO - No hay fórmula para la columna 'Utilidad$' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,974 - INFO - Fórmula 'FormulaMargen(Margen)' aplicada a la columna 'Margen' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,976 - INFO - No hay fórmula para la columna 'Año' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,977 - INFO - Fórmula 'LimpiaTexto(Marca)' aplicada a la columna 'Marca' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,978 - INFO - Fórmula 'LimpiaTexto(Modelo)' aplicada a la columna 'Modelo' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,980 - INFO - Fórmula 'LimpiaTexto(Color)' aplicada a la columna 'Color' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,981 - INFO - Fórmula 'LimpiaTexto(Interior)' aplicada a la columna 'Interior' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,982 - INFO - Fórmula 'LimpiaCodigos(NumeroVendedor)' aplicada a la columna 'NumeroVendedor' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,983 - INFO - Fórmula 'LimpiaTexto(NombreVendedor)' aplicada a la columna 'NombreVendedor' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,985 - INFO - No hay fórmula para la columna 'FechaCompra' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,986 - INFO - No hay fórmula para la columna 'FechaEntrega' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,987 - INFO - Fórmula 'LimpiaTexto(NombreCliente)' aplicada a la columna 'NombreCliente' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,988 - INFO - Fórmula 'LimpiaCodigos(RFC)' aplicada a la columna 'RFC' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,989 - INFO - Fórmula 'LimpiaTexto(Direccion)' aplicada a la columna 'Direccion' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,990 - ERROR - Error al aplicar la fórmula en la columna calculada 'Telefono': name 'Telefono' is not defined
+2024-09-19 16:46:30,991 - ERROR - Fórmula: ttelefono(Telefono)
+2024-09-19 16:46:30,992 - INFO - Fórmula 'LimpiaCodigos(CP)' aplicada a la columna 'CP' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,993 - INFO - Fórmula 'LimpiaEmail(Email)' aplicada a la columna 'Email' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,994 - INFO - No hay fórmula para la columna 'Date' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:30,995 - INFO - No hay fórmula para la columna 'VentasNetas$' en el reporte 'VTAUSA01'.
+2024-09-19 16:46:31,035 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\VTAUSA01.sql.dump
+2024-09-19 16:46:31,054 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:46:31,078 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:46:31,237 - INFO - Conexión a la base de datos establecida.
+2024-09-19 16:46:31,243 - INFO - Consulta ALTER TABLE ejecutada con éxito:
+ALTER TABLE VTAUSA01
+    ALTER COLUMN Date DROP NOT NULL,
+    ALTER COLUMN FechaFactura DROP NOT NULL,
+    ALTER COLUMN FechaCompra DROP NOT NULL,
+    ALTER COLUMN FechaEntrega DROP NOT NULL;
+
+2024-09-19 16:46:31,246 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:46:31,247 - INFO - <--------------- Conexion a la base de datos cerrada. --------------->
+2024-09-19 16:47:55,441 - INFO - <--------------- Inicia el proceso --------------->
+2024-09-19 16:47:55,668 - INFO - Archivo descomprimido en C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx
+2024-09-19 16:47:55,674 - INFO - Archivo renombrado de VTAUSA01.TXT a VTAUSA01.txt
+2024-09-19 16:47:55,810 - INFO - Conexión a la base de datos establecida.
+2024-09-19 16:47:55,811 - INFO - Versión del servidor PostgreSQL: PostgreSQL 16.3, compiled by Visual C++ build 1938, 64-bit
+2024-09-19 16:47:55,824 - INFO - El documento VTAUSA01 no trae columnas.
+2024-09-19 16:47:55,830 - INFO - Inferido tipo de dato para 'Factura': character varying(80)
+2024-09-19 16:47:55,831 - INFO - Columna 'Factura' convertida a string
+2024-09-19 16:47:55,832 - INFO - Inferido tipo de dato para 'FechaFactura': DATE
+2024-09-19 16:47:55,834 - INFO - Columna 'FechaFactura' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:47:55,836 - INFO - Inferido tipo de dato para 'TipoVenta': character varying(80)
+2024-09-19 16:47:55,837 - INFO - Columna 'TipoVenta' convertida a string
+2024-09-19 16:47:55,838 - INFO - Inferido tipo de dato para 'TipoPago': character varying(80)
+2024-09-19 16:47:55,839 - INFO - Columna 'TipoPago' convertida a string
+2024-09-19 16:47:55,840 - INFO - Inferido tipo de dato para 'Vin': character varying(80)
+2024-09-19 16:47:55,841 - INFO - Columna 'Vin' convertida a string
+2024-09-19 16:47:55,841 - INFO - Inferido tipo de dato para 'NumeroInventario': character varying(80)
+2024-09-19 16:47:55,842 - INFO - Columna 'NumeroInventario' convertida a string
+2024-09-19 16:47:55,843 - INFO - Inferido tipo de dato para 'Isan$': double precision
+2024-09-19 16:47:55,844 - INFO - Columna 'Isan$' convertida a double precision
+2024-09-19 16:47:55,845 - INFO - Inferido tipo de dato para 'Costo$': double precision
+2024-09-19 16:47:55,846 - INFO - Columna 'Costo$' convertida a double precision
+2024-09-19 16:47:55,847 - INFO - Inferido tipo de dato para 'Venta$': double precision
+2024-09-19 16:47:55,848 - INFO - Columna 'Venta$' convertida a double precision
+2024-09-19 16:47:55,849 - INFO - Inferido tipo de dato para 'Utilidad$': double precision
+2024-09-19 16:47:55,850 - INFO - Columna 'Utilidad$' convertida a double precision
+2024-09-19 16:47:55,851 - INFO - Inferido tipo de dato para 'Margen': double precision
+2024-09-19 16:47:55,852 - INFO - Columna 'Margen' convertida a double precision
+2024-09-19 16:47:55,854 - INFO - Inferido tipo de dato para 'Año': character varying(80)
+2024-09-19 16:47:55,855 - INFO - Columna 'Año' convertida a string
+2024-09-19 16:47:55,856 - INFO - Inferido tipo de dato para 'Marca': character varying(80)
+2024-09-19 16:47:55,857 - INFO - Columna 'Marca' convertida a string
+2024-09-19 16:47:55,858 - INFO - Inferido tipo de dato para 'Modelo': character varying(80)
+2024-09-19 16:47:55,859 - INFO - Columna 'Modelo' convertida a string
+2024-09-19 16:47:55,860 - INFO - Inferido tipo de dato para 'Color': character varying(80)
+2024-09-19 16:47:55,861 - INFO - Columna 'Color' convertida a string
+2024-09-19 16:47:55,862 - INFO - Inferido tipo de dato para 'Interior': character varying(80)
+2024-09-19 16:47:55,864 - INFO - Columna 'Interior' convertida a string
+2024-09-19 16:47:55,865 - INFO - Inferido tipo de dato para 'NumeroVendedor': character varying(80)
+2024-09-19 16:47:55,866 - INFO - Columna 'NumeroVendedor' convertida a string
+2024-09-19 16:47:55,867 - INFO - Inferido tipo de dato para 'NombreVendedor': character varying(80)
+2024-09-19 16:47:55,868 - INFO - Columna 'NombreVendedor' convertida a string
+2024-09-19 16:47:55,869 - INFO - Inferido tipo de dato para 'FechaCompra': DATE
+2024-09-19 16:47:55,870 - INFO - Columna 'FechaCompra' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:47:55,871 - INFO - Inferido tipo de dato para 'FechaEntrega': DATE
+2024-09-19 16:47:55,873 - INFO - Columna 'FechaEntrega' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:47:55,874 - INFO - Inferido tipo de dato para 'NombreCliente': character varying(80)
+2024-09-19 16:47:55,875 - INFO - Columna 'NombreCliente' convertida a string
+2024-09-19 16:47:55,876 - INFO - Inferido tipo de dato para 'RFC': character varying(80)
+2024-09-19 16:47:55,877 - INFO - Columna 'RFC' convertida a string
+2024-09-19 16:47:55,878 - INFO - Inferido tipo de dato para 'Direccion': character varying(80)
+2024-09-19 16:47:55,879 - INFO - Columna 'Direccion' convertida a string
+2024-09-19 16:47:55,881 - INFO - Inferido tipo de dato para 'Telefono': character varying(80)
+2024-09-19 16:47:55,882 - INFO - Columna 'Telefono' convertida a string
+2024-09-19 16:47:55,883 - INFO - Inferido tipo de dato para 'CP': character varying(80)
+2024-09-19 16:47:55,883 - INFO - Columna 'CP' convertida a string
+2024-09-19 16:47:55,885 - INFO - Inferido tipo de dato para 'Email': character varying(80)
+2024-09-19 16:47:55,886 - INFO - Columna 'Email' convertida a string
+2024-09-19 16:47:55,890 - INFO - Fórmula Ctod aplicada en la columna 'Date (computed)' con formato 'd/m/y' usando la fecha actual.
+2024-09-19 16:47:55,891 - INFO - El encabezado de la columna 'Date (computed)' fue cambiado a 'Date'.
+2024-09-19 16:47:55,895 - INFO - Fórmula aplicada a la columna calculada 'VentasNetas$ (computed)'.
+2024-09-19 16:47:55,896 - INFO - El encabezado de la columna 'VentasNetas$ (computed)' fue cambiado a 'VentasNetas$'.
+2024-09-19 16:47:55,899 - INFO - Fórmula 'LimpiaCodigos(Factura)' aplicada a la columna 'Factura' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,900 - INFO - No hay fórmula para la columna 'FechaFactura' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,902 - INFO - Fórmula 'LimpiaTexto(TipoVenta)' aplicada a la columna 'TipoVenta' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,903 - INFO - Fórmula 'LimpiaTexto(TipoPago)' aplicada a la columna 'TipoPago' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,905 - INFO - Fórmula 'LimpiaCodigos(Vin)' aplicada a la columna 'Vin' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,906 - INFO - Fórmula 'LimpiaCodigos(NumeroInventario)' aplicada a la columna 'NumeroInventario' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,907 - INFO - No hay fórmula para la columna 'Isan$' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,909 - INFO - No hay fórmula para la columna 'Costo$' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,910 - INFO - No hay fórmula para la columna 'Venta$' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,912 - INFO - No hay fórmula para la columna 'Utilidad$' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,914 - INFO - Fórmula 'FormulaMargen(Margen)' aplicada a la columna 'Margen' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,916 - INFO - No hay fórmula para la columna 'Año' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,917 - INFO - Fórmula 'LimpiaTexto(Marca)' aplicada a la columna 'Marca' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,918 - INFO - Fórmula 'LimpiaTexto(Modelo)' aplicada a la columna 'Modelo' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,919 - INFO - Fórmula 'LimpiaTexto(Color)' aplicada a la columna 'Color' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,921 - INFO - Fórmula 'LimpiaTexto(Interior)' aplicada a la columna 'Interior' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,922 - INFO - Fórmula 'LimpiaCodigos(NumeroVendedor)' aplicada a la columna 'NumeroVendedor' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,923 - INFO - Fórmula 'LimpiaTexto(NombreVendedor)' aplicada a la columna 'NombreVendedor' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,924 - INFO - No hay fórmula para la columna 'FechaCompra' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,925 - INFO - No hay fórmula para la columna 'FechaEntrega' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,927 - INFO - Fórmula 'LimpiaTexto(NombreCliente)' aplicada a la columna 'NombreCliente' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,930 - INFO - Fórmula 'LimpiaCodigos(RFC)' aplicada a la columna 'RFC' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,931 - INFO - Fórmula 'LimpiaTexto(Direccion)' aplicada a la columna 'Direccion' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,932 - ERROR - Error al aplicar la fórmula en la columna calculada 'Telefono': name 'Telefono' is not defined
+2024-09-19 16:47:55,933 - ERROR - Fórmula: ttelefono(Telefono)
+2024-09-19 16:47:55,934 - INFO - Fórmula 'LimpiaCodigos(CP)' aplicada a la columna 'CP' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,936 - INFO - Fórmula 'LimpiaEmail(Email)' aplicada a la columna 'Email' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,937 - INFO - No hay fórmula para la columna 'Date' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,938 - INFO - No hay fórmula para la columna 'VentasNetas$' en el reporte 'VTAUSA01'.
+2024-09-19 16:47:55,983 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\VTAUSA01.sql.dump
+2024-09-19 16:47:56,006 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:47:56,014 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:47:56,086 - INFO - Conexión a la base de datos establecida.
+2024-09-19 16:47:56,091 - INFO - Consulta ALTER TABLE ejecutada con éxito:
+ALTER TABLE VTAUSA01
+    ALTER COLUMN Date DROP NOT NULL,
+    ALTER COLUMN FechaFactura DROP NOT NULL,
+    ALTER COLUMN FechaCompra DROP NOT NULL,
+    ALTER COLUMN FechaEntrega DROP NOT NULL;
+
+2024-09-19 16:47:56,095 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:47:56,095 - INFO - <--------------- Conexion a la base de datos cerrada. --------------->

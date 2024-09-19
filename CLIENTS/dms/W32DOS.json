@@ -829,7 +829,7 @@
         "VTAUSA01": {
             "columnas": [
                 "Date (computed)",
-                "F1",
+                "*F1*",
                 "Factura",
                 "FechaFactura",
                 "TipoVenta",
