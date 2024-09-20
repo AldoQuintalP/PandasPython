@@ -8,7 +8,7 @@
     "columnas_esperadas": {
         "SERVTA01": {
             "columnas": [
-                "F1",
+                "*F1*",
                 "Factura",
                 "FechaFactura",
                 "NumeroOT",

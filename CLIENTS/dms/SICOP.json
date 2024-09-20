@@ -1,5 +1,212 @@
 {
     "name": "SICOP",
-    "reportes": [],
-    "columnas_esperadas": {}
+    "reportes": [
+        "SEGUMI01",
+        "PROSPE01",
+        "VENTAS01"
+    ],
+    "columnas_esperadas": {
+        "SEGUMI01": {
+            "columnas": [
+                "Date (computed)",
+                "idProspecto",
+                "idSeguimiento",
+                "FechaRegistro",
+                "FechaProgramada",
+                "FechaCumplida",
+                "Exitosa",
+                "idEjecutivo",
+                "NombreEjecutivo",
+                "Reprogramada",
+                "Clientid"
+            ],
+            "formulas": {
+                "Date (computed)": "Ctod(\"d/m/y\")",
+                "Clientid": "LimpiaCodigos(Clientid)",
+                "Exitosa": "LimpiaTexto(Exitosa)",
+                "idEjecutivo": "LimpiaCodigos(idEjecutivo)",
+                "idProspecto": "LimpiaCodigos(idProspecto)",
+                "idSeguimiento": "LimpiaCodigos(idSeguimiento)",
+                "NombreEjecutivo": "LimpiaTexto(NombreEjecutivo)"
+            },
+            "data_types": {
+                "Date (computed)": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "idProspecto": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "idSeguimiento": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "FechaRegistro": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "FechaProgramada": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "FechaCumplida": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Exitosa": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "idEjecutivo": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "NombreEjecutivo": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "Reprogramada": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "Clientid": {
+                    "tipo": "character varying",
+                    "length": "60"
+                }
+            }
+        },
+        "PROSPE01": {
+            "columnas": [
+                "Date (computed)",
+                "idProspecto",
+                "FechaPrimerContacto",
+                "Inactivo",
+                "PrimerContacto",
+                "IdFuente",
+                "NombreFuente",
+                "SubCampana",
+                "idEjecutivo",
+                "NombreEjecutivo",
+                "ClientId",
+                "Demostracion",
+                "Urgente",
+                "Queja",
+                "Calidad"
+            ],
+            "formulas": {
+                "Date (computed)": "Ctod(\"d/m/y\")",
+                "Demostracion": "LimpiaTexto(Demostracion)",
+                "idEjecutivo": "LimpiaCodigos(idEjecutivo)",
+                "IdFuente": "LimpiaCodigos(IdFuente)",
+                "idProspecto": "LimpiaCodigos(idProspecto)",
+                "Inactivo": "LimpiaTexto(Inactivo)",
+                "NombreEjecutivo": "LimpiaTexto(NombreEjecutivo)",
+                "NombreFuente": "LimpiaTexto(NombreFuente)",
+                "PrimerContacto": "LimpiaTexto(PrimerContacto)",
+                "Queja": "LimpiaTexto(Queja)",
+                "SubCampana": "LimpiaTexto(SubCampana)",
+                "Urgente": "LimpiaTexto(Urgente)"
+            },
+            "data_types": {
+                "Date (computed)": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "idProspecto": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "FechaPrimerContacto": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "Inactivo": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "PrimerContacto": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "IdFuente": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "NombreFuente": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "SubCampana": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "idEjecutivo": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "NombreEjecutivo": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "ClientId": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "Demostracion": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "Urgente": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "Queja": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "Calidad": {
+                    "tipo": "character varying",
+                    "length": "60"
+                }
+            }
+        },
+        "VENTAS01": {
+            "columnas": [
+                "Date (computed)",
+                "idProspecto",
+                "Factura",
+                "FechaFactura",
+                "ClientId"
+            ],
+            "formulas": {
+                "Date (computed)": "Ctod(\"d/m/y\")",
+                "ClientId": "LimpiaCodigos(ClientId)",
+                "Factura": "LimpiaCodigos(Factura)",
+                "idProspecto": "LimpiaCodigos(idProspecto)"
+            },
+            "data_types": {
+                "Date (computed)": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "idProspecto": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "Factura": {
+                    "tipo": "character varying",
+                    "length": "60"
+                },
+                "FechaFactura": {
+                    "tipo": "DATE",
+                    "length": null
+                },
+                "ClientId": {
+                    "tipo": "character varying",
+                    "length": "60"
+                }
+            }
+        }
+    }
 }

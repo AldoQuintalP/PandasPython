@@ -209,3 +209,867 @@ ALTER TABLE VTAUSA01
 
 2024-09-19 16:47:56,095 - INFO - Consulta ejecutada con éxito.
 2024-09-19 16:47:56,095 - INFO - <--------------- Conexion a la base de datos cerrada. --------------->
+2024-09-19 16:54:28,087 - INFO - <--------------- Inicia el proceso --------------->
+2024-09-19 16:54:28,339 - INFO - Archivo descomprimido en C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx
+2024-09-19 16:54:28,343 - INFO - Archivo renombrado de SERVTA01.TXT a SERVTA01.txt
+2024-09-19 16:54:28,427 - INFO - Conexión a la base de datos establecida.
+2024-09-19 16:54:28,428 - INFO - Versión del servidor PostgreSQL: PostgreSQL 16.3, compiled by Visual C++ build 1938, 64-bit
+2024-09-19 16:54:28,462 - INFO - El documento SERVTA01 no trae columnas.
+2024-09-19 16:54:28,474 - INFO - <--------------- Conexion a la base de datos cerrada. --------------->
+2024-09-19 16:54:46,530 - INFO - <--------------- Inicia el proceso --------------->
+2024-09-19 16:54:46,798 - INFO - Archivo descomprimido en C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx
+2024-09-19 16:54:46,801 - INFO - Archivo renombrado de SERVTA01.TXT a SERVTA01.txt
+2024-09-19 16:54:46,885 - INFO - Conexión a la base de datos establecida.
+2024-09-19 16:54:46,886 - INFO - Versión del servidor PostgreSQL: PostgreSQL 16.3, compiled by Visual C++ build 1938, 64-bit
+2024-09-19 16:54:46,919 - INFO - El documento SERVTA01 no trae columnas.
+2024-09-19 16:54:47,022 - INFO - Inferido tipo de dato para 'Factura': character varying(80)
+2024-09-19 16:54:47,023 - INFO - Columna 'Factura' convertida a string
+2024-09-19 16:54:47,024 - INFO - Inferido tipo de dato para 'FechaFactura': DATE
+2024-09-19 16:54:47,028 - INFO - Columna 'FechaFactura' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:54:47,029 - INFO - Inferido tipo de dato para 'NumeroOT': character varying(80)
+2024-09-19 16:54:47,030 - INFO - Columna 'NumeroOT' convertida a string
+2024-09-19 16:54:47,031 - INFO - Inferido tipo de dato para 'FechaApertura': DATE
+2024-09-19 16:54:47,033 - INFO - Columna 'FechaApertura' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:54:47,034 - INFO - Inferido tipo de dato para 'FechaEntrega': DATE
+2024-09-19 16:54:47,037 - INFO - Columna 'FechaEntrega' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:54:47,038 - INFO - Inferido tipo de dato para 'CodigoOperacion': character varying(80)
+2024-09-19 16:54:47,039 - INFO - Columna 'CodigoOperacion' convertida a string
+2024-09-19 16:54:47,040 - INFO - Inferido tipo de dato para 'Descripcion': character varying(80)
+2024-09-19 16:54:47,041 - INFO - Columna 'Descripcion' convertida a string
+2024-09-19 16:54:47,042 - INFO - Inferido tipo de dato para 'TipoOperacion': character varying(80)
+2024-09-19 16:54:47,043 - INFO - Columna 'TipoOperacion' convertida a string
+2024-09-19 16:54:47,043 - INFO - Inferido tipo de dato para 'CostoMO$': double precision
+2024-09-19 16:54:47,045 - INFO - Columna 'CostoMO$' convertida a double precision
+2024-09-19 16:54:47,046 - INFO - Inferido tipo de dato para 'CostoMateriales$': double precision
+2024-09-19 16:54:47,048 - INFO - Columna 'CostoMateriales$' convertida a double precision
+2024-09-19 16:54:47,049 - INFO - Inferido tipo de dato para 'CostoTOT$': double precision
+2024-09-19 16:54:47,051 - INFO - Columna 'CostoTOT$' convertida a double precision
+2024-09-19 16:54:47,052 - INFO - Inferido tipo de dato para 'CostoPartes$': double precision
+2024-09-19 16:54:47,054 - INFO - Columna 'CostoPartes$' convertida a double precision
+2024-09-19 16:54:47,055 - INFO - Inferido tipo de dato para 'VentaMO$': double precision
+2024-09-19 16:54:47,058 - INFO - Columna 'VentaMO$' convertida a double precision
+2024-09-19 16:54:47,059 - INFO - Inferido tipo de dato para 'VentaMateriales$': double precision
+2024-09-19 16:54:47,061 - INFO - Columna 'VentaMateriales$' convertida a double precision
+2024-09-19 16:54:47,062 - INFO - Inferido tipo de dato para 'VentaTOT$': double precision
+2024-09-19 16:54:47,064 - INFO - Columna 'VentaTOT$' convertida a double precision
+2024-09-19 16:54:47,065 - INFO - Inferido tipo de dato para 'VentaPartes$': double precision
+2024-09-19 16:54:47,067 - INFO - Columna 'VentaPartes$' convertida a double precision
+2024-09-19 16:54:47,068 - INFO - Inferido tipo de dato para 'DescuentoMO$': double precision
+2024-09-19 16:54:47,070 - INFO - Columna 'DescuentoMO$' convertida a double precision
+2024-09-19 16:54:47,070 - INFO - Inferido tipo de dato para 'DescuentoMateriales$': double precision
+2024-09-19 16:54:47,073 - INFO - Columna 'DescuentoMateriales$' convertida a double precision
+2024-09-19 16:54:47,074 - INFO - Inferido tipo de dato para 'DescuentoTOT$': double precision
+2024-09-19 16:54:47,076 - INFO - Columna 'DescuentoTOT$' convertida a double precision
+2024-09-19 16:54:47,077 - INFO - Inferido tipo de dato para 'DescuentoPartes$': double precision
+2024-09-19 16:54:47,078 - INFO - Columna 'DescuentoPartes$' convertida a double precision
+2024-09-19 16:54:47,080 - INFO - Inferido tipo de dato para 'CostoTotal$': double precision
+2024-09-19 16:54:47,082 - INFO - Columna 'CostoTotal$' convertida a double precision
+2024-09-19 16:54:47,082 - INFO - Inferido tipo de dato para 'VentaTotal$': double precision
+2024-09-19 16:54:47,085 - INFO - Columna 'VentaTotal$' convertida a double precision
+2024-09-19 16:54:47,086 - INFO - Inferido tipo de dato para 'Utilidad$': double precision
+2024-09-19 16:54:47,089 - INFO - Columna 'Utilidad$' convertida a double precision
+2024-09-19 16:54:47,090 - INFO - Inferido tipo de dato para 'Margen': double precision
+2024-09-19 16:54:47,092 - INFO - Columna 'Margen' convertida a double precision
+2024-09-19 16:54:47,093 - INFO - Inferido tipo de dato para 'Taller': character varying(80)
+2024-09-19 16:54:47,094 - INFO - Columna 'Taller' convertida a string
+2024-09-19 16:54:47,094 - INFO - Inferido tipo de dato para 'NumeroAsesor': character varying(80)
+2024-09-19 16:54:47,095 - INFO - Columna 'NumeroAsesor' convertida a string
+2024-09-19 16:54:47,095 - INFO - Inferido tipo de dato para 'NombreAsesor': character varying(80)
+2024-09-19 16:54:47,096 - INFO - Columna 'NombreAsesor' convertida a string
+2024-09-19 16:54:47,096 - INFO - Inferido tipo de dato para 'NombreCliente': character varying(80)
+2024-09-19 16:54:47,097 - INFO - Columna 'NombreCliente' convertida a string
+2024-09-19 16:54:47,098 - INFO - Inferido tipo de dato para 'RFC': character varying(80)
+2024-09-19 16:54:47,098 - INFO - Columna 'RFC' convertida a string
+2024-09-19 16:54:47,099 - INFO - Inferido tipo de dato para 'Direccion': character varying(80)
+2024-09-19 16:54:47,099 - INFO - Columna 'Direccion' convertida a string
+2024-09-19 16:54:47,100 - INFO - Inferido tipo de dato para 'Telefono': character varying(80)
+2024-09-19 16:54:47,100 - INFO - Columna 'Telefono' convertida a string
+2024-09-19 16:54:47,101 - INFO - Inferido tipo de dato para 'CP': character varying(80)
+2024-09-19 16:54:47,102 - INFO - Columna 'CP' convertida a string
+2024-09-19 16:54:47,103 - INFO - Inferido tipo de dato para 'Email': character varying(80)
+2024-09-19 16:54:47,103 - INFO - Columna 'Email' convertida a string
+2024-09-19 16:54:47,104 - INFO - Inferido tipo de dato para 'Odometro': character varying(80)
+2024-09-19 16:54:47,104 - INFO - Columna 'Odometro' convertida a string
+2024-09-19 16:54:47,105 - INFO - Inferido tipo de dato para 'Vin': character varying(80)
+2024-09-19 16:54:47,106 - INFO - Columna 'Vin' convertida a string
+2024-09-19 16:54:47,107 - INFO - Inferido tipo de dato para 'Año': character varying(80)
+2024-09-19 16:54:47,108 - INFO - Columna 'Año' convertida a string
+2024-09-19 16:54:47,108 - INFO - Inferido tipo de dato para 'Marca': character varying(80)
+2024-09-19 16:54:47,109 - INFO - Columna 'Marca' convertida a string
+2024-09-19 16:54:47,110 - INFO - Inferido tipo de dato para 'Modelo': character varying(80)
+2024-09-19 16:54:47,110 - INFO - Columna 'Modelo' convertida a string
+2024-09-19 16:54:47,111 - INFO - Inferido tipo de dato para 'Color': character varying(80)
+2024-09-19 16:54:47,111 - INFO - Columna 'Color' convertida a string
+2024-09-19 16:54:47,112 - INFO - Inferido tipo de dato para 'Interior': character varying(80)
+2024-09-19 16:54:47,113 - INFO - Columna 'Interior' convertida a string
+2024-09-19 16:54:47,113 - INFO - Inferido tipo de dato para 'TipoOrden': character varying(80)
+2024-09-19 16:54:47,114 - INFO - Columna 'TipoOrden' convertida a string
+2024-09-19 16:54:47,114 - INFO - Inferido tipo de dato para 'TipoPago': character varying(80)
+2024-09-19 16:54:47,116 - INFO - Columna 'TipoPago' convertida a string
+2024-09-19 16:54:47,148 - INFO - Fórmula aplicada a la columna calculada 'Venta$ (computed)'.
+2024-09-19 16:54:47,149 - INFO - El encabezado de la columna 'Venta$ (computed)' fue cambiado a 'Venta$'.
+2024-09-19 16:54:47,152 - INFO - Fórmula aplicada a la columna calculada 'Costo$ (computed)'.
+2024-09-19 16:54:47,153 - INFO - El encabezado de la columna 'Costo$ (computed)' fue cambiado a 'Costo$'.
+2024-09-19 16:54:47,170 - INFO - Fórmula aplicada para restar fechas en la columna 'Dias (computed)' (diferencia en días).
+2024-09-19 16:54:47,171 - INFO - El encabezado de la columna 'Dias (computed)' fue cambiado a 'Dias'.
+2024-09-19 16:54:47,179 - INFO - Fórmula 'LimpiaCodigos(Factura)' aplicada a la columna 'Factura' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,180 - INFO - No hay fórmula para la columna 'FechaFactura' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,180 - INFO - No hay fórmula para la columna 'NumeroOT' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,181 - INFO - No hay fórmula para la columna 'FechaApertura' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,181 - INFO - No hay fórmula para la columna 'FechaEntrega' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,182 - INFO - No hay fórmula para la columna 'CodigoOperacion' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,182 - INFO - No hay fórmula para la columna 'Descripcion' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,183 - INFO - No hay fórmula para la columna 'TipoOperacion' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,183 - INFO - No hay fórmula para la columna 'CostoMO$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,184 - INFO - No hay fórmula para la columna 'CostoMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,185 - INFO - No hay fórmula para la columna 'CostoTOT$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,186 - INFO - No hay fórmula para la columna 'CostoPartes$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,187 - INFO - No hay fórmula para la columna 'VentaMO$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,188 - INFO - No hay fórmula para la columna 'VentaMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,188 - INFO - No hay fórmula para la columna 'VentaTOT$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,189 - INFO - No hay fórmula para la columna 'VentaPartes$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,189 - INFO - No hay fórmula para la columna 'DescuentoMO$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,190 - INFO - No hay fórmula para la columna 'DescuentoMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,191 - INFO - No hay fórmula para la columna 'DescuentoTOT$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,192 - INFO - No hay fórmula para la columna 'DescuentoPartes$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,192 - INFO - No hay fórmula para la columna 'CostoTotal$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,193 - INFO - No hay fórmula para la columna 'VentaTotal$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,240 - INFO - Fórmula 'FormulaUtilidad(Utilidad$)' aplicada a la columna 'Utilidad$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,284 - INFO - Fórmula 'FormulaMargen(Margen)' aplicada a la columna 'Margen' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,286 - INFO - No hay fórmula para la columna 'Taller' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,287 - INFO - No hay fórmula para la columna 'NumeroAsesor' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,289 - INFO - No hay fórmula para la columna 'NombreAsesor' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,290 - INFO - No hay fórmula para la columna 'NombreCliente' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,291 - INFO - No hay fórmula para la columna 'RFC' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,291 - INFO - No hay fórmula para la columna 'Direccion' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,293 - INFO - No hay fórmula para la columna 'Telefono' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,294 - INFO - No hay fórmula para la columna 'CP' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,295 - INFO - No hay fórmula para la columna 'Email' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,296 - INFO - No hay fórmula para la columna 'Odometro' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,297 - INFO - No hay fórmula para la columna 'Vin' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,299 - INFO - No hay fórmula para la columna 'Año' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,309 - INFO - Fórmula 'LimpiaTexto(Marca)' aplicada a la columna 'Marca' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,310 - INFO - No hay fórmula para la columna 'Modelo' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,312 - INFO - No hay fórmula para la columna 'Color' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,321 - INFO - Fórmula 'LimpiaTexto(Interior)' aplicada a la columna 'Interior' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,322 - INFO - No hay fórmula para la columna 'TipoOrden' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,323 - INFO - No hay fórmula para la columna 'TipoPago' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,324 - INFO - No hay fórmula para la columna 'Venta$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,326 - INFO - No hay fórmula para la columna 'Costo$' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,327 - INFO - No hay fórmula para la columna 'Dias' en el reporte 'SERVTA01'.
+2024-09-19 16:54:47,394 - INFO - DataFrame SERVTC guardado como 3-Sandbx\SERVTC01.txt
+2024-09-19 16:54:47,637 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\SERVTA01.sql.dump
+2024-09-19 16:54:47,713 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:54:47,758 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:54:47,851 - INFO - Conexión a la base de datos establecida.
+2024-09-19 16:54:47,859 - INFO - Consulta ALTER TABLE ejecutada con éxito:
+ALTER TABLE SERVTA01
+    ALTER COLUMN FechaFactura DROP NOT NULL,
+    ALTER COLUMN FechaApertura DROP NOT NULL,
+    ALTER COLUMN FechaEntrega DROP NOT NULL;
+
+2024-09-19 16:54:48,320 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:54:48,340 - INFO - Al menos una columna de SERVTC01 coincide con las columnas esperadas en la configuración.
+2024-09-19 16:54:48,373 - INFO - Inferido tipo de dato para 'FechaFactura': DATE
+2024-09-19 16:54:48,375 - INFO - Columna 'FechaFactura' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:54:48,376 - INFO - Inferido tipo de dato para 'FechaApertura': DATE
+2024-09-19 16:54:48,378 - INFO - Columna 'FechaApertura' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:54:48,379 - INFO - Inferido tipo de dato para 'FechaEntrega': DATE
+2024-09-19 16:54:48,380 - INFO - Columna 'FechaEntrega' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 16:54:48,381 - INFO - Inferido tipo de dato para 'Factura': character varying(80)
+2024-09-19 16:54:48,382 - INFO - Columna 'Factura' convertida a string
+2024-09-19 16:54:48,383 - INFO - Inferido tipo de dato para 'Taller': character varying(80)
+2024-09-19 16:54:48,384 - INFO - Columna 'Taller' convertida a string
+2024-09-19 16:54:48,384 - INFO - Inferido tipo de dato para 'TipoOrden': character varying(80)
+2024-09-19 16:54:48,385 - INFO - Columna 'TipoOrden' convertida a string
+2024-09-19 16:54:48,386 - INFO - Inferido tipo de dato para 'TipoPago': character varying(80)
+2024-09-19 16:54:48,386 - INFO - Columna 'TipoPago' convertida a string
+2024-09-19 16:54:48,387 - INFO - Inferido tipo de dato para 'NumeroOT': character varying(80)
+2024-09-19 16:54:48,389 - INFO - Columna 'NumeroOT' convertida a string
+2024-09-19 16:54:48,390 - INFO - Inferido tipo de dato para 'NumeroAsesor': character varying(80)
+2024-09-19 16:54:48,391 - INFO - Columna 'NumeroAsesor' convertida a string
+2024-09-19 16:54:48,392 - INFO - Inferido tipo de dato para 'NombreAsesor': character varying(80)
+2024-09-19 16:54:48,392 - INFO - Columna 'NombreAsesor' convertida a string
+2024-09-19 16:54:48,393 - INFO - Inferido tipo de dato para 'RFC': character varying(80)
+2024-09-19 16:54:48,394 - INFO - Columna 'RFC' convertida a string
+2024-09-19 16:54:48,395 - INFO - Inferido tipo de dato para 'NombreCliente': character varying(80)
+2024-09-19 16:54:48,396 - INFO - Columna 'NombreCliente' convertida a string
+2024-09-19 16:54:48,397 - INFO - Inferido tipo de dato para 'Direccion': character varying(80)
+2024-09-19 16:54:48,397 - INFO - Columna 'Direccion' convertida a string
+2024-09-19 16:54:48,398 - INFO - Inferido tipo de dato para 'Telefono': character varying(80)
+2024-09-19 16:54:48,399 - INFO - Columna 'Telefono' convertida a string
+2024-09-19 16:54:48,400 - INFO - Inferido tipo de dato para 'CP': character varying(80)
+2024-09-19 16:54:48,400 - INFO - Columna 'CP' convertida a string
+2024-09-19 16:54:48,400 - INFO - Inferido tipo de dato para 'Email': character varying(80)
+2024-09-19 16:54:48,400 - INFO - Columna 'Email' convertida a string
+2024-09-19 16:54:48,400 - INFO - Inferido tipo de dato para 'Odometro': character varying(80)
+2024-09-19 16:54:48,404 - INFO - Columna 'Odometro' convertida a string
+2024-09-19 16:54:48,405 - INFO - Inferido tipo de dato para 'Vin': character varying(80)
+2024-09-19 16:54:48,406 - INFO - Columna 'Vin' convertida a string
+2024-09-19 16:54:48,407 - INFO - Inferido tipo de dato para 'Año': character varying(80)
+2024-09-19 16:54:48,408 - INFO - Columna 'Año' convertida a string
+2024-09-19 16:54:48,409 - INFO - Inferido tipo de dato para 'Marca': character varying(80)
+2024-09-19 16:54:48,410 - INFO - Columna 'Marca' convertida a string
+2024-09-19 16:54:48,411 - INFO - Inferido tipo de dato para 'Modelo': character varying(80)
+2024-09-19 16:54:48,412 - INFO - Columna 'Modelo' convertida a string
+2024-09-19 16:54:48,413 - INFO - Inferido tipo de dato para 'Color': character varying(80)
+2024-09-19 16:54:48,414 - INFO - Columna 'Color' convertida a string
+2024-09-19 16:54:48,415 - INFO - Inferido tipo de dato para 'Dias': character varying(80)
+2024-09-19 16:54:48,415 - INFO - Columna 'Dias' convertida a string
+2024-09-19 16:54:48,417 - INFO - Inferido tipo de dato para 'Venta$': double precision
+2024-09-19 16:54:48,418 - INFO - Columna 'Venta$' convertida a double precision
+2024-09-19 16:54:48,419 - INFO - Inferido tipo de dato para 'Costo$': double precision
+2024-09-19 16:54:48,420 - INFO - Columna 'Costo$' convertida a double precision
+2024-09-19 16:54:48,421 - INFO - Inferido tipo de dato para 'Utilidad$': double precision
+2024-09-19 16:54:48,423 - INFO - Columna 'Utilidad$' convertida a double precision
+2024-09-19 16:54:48,424 - INFO - Inferido tipo de dato para 'Margen': double precision
+2024-09-19 16:54:48,425 - INFO - Columna 'Margen' convertida a double precision
+2024-09-19 16:54:48,427 - INFO - Inferido tipo de dato para 'VentaMO$': double precision
+2024-09-19 16:54:48,428 - INFO - Columna 'VentaMO$' convertida a double precision
+2024-09-19 16:54:48,429 - INFO - Inferido tipo de dato para 'DescuentoMO$': double precision
+2024-09-19 16:54:48,430 - INFO - Columna 'DescuentoMO$' convertida a double precision
+2024-09-19 16:54:48,430 - INFO - Inferido tipo de dato para 'CostoMO$': double precision
+2024-09-19 16:54:48,431 - INFO - Columna 'CostoMO$' convertida a double precision
+2024-09-19 16:54:48,432 - INFO - Inferido tipo de dato para 'VentaMateriales$': double precision
+2024-09-19 16:54:48,433 - INFO - Columna 'VentaMateriales$' convertida a double precision
+2024-09-19 16:54:48,433 - INFO - Inferido tipo de dato para 'VentaTOT$': double precision
+2024-09-19 16:54:48,435 - INFO - Columna 'VentaTOT$' convertida a double precision
+2024-09-19 16:54:48,436 - INFO - Inferido tipo de dato para 'DecuentoTOT$': double precision
+2024-09-19 16:54:48,437 - INFO - Columna 'DecuentoTOT$' convertida a double precision
+2024-09-19 16:54:48,438 - INFO - Inferido tipo de dato para 'CostoTOT$': double precision
+2024-09-19 16:54:48,439 - INFO - Columna 'CostoTOT$' convertida a double precision
+2024-09-19 16:54:48,440 - INFO - Inferido tipo de dato para 'VentaPartes$': double precision
+2024-09-19 16:54:48,441 - INFO - Columna 'VentaPartes$' convertida a double precision
+2024-09-19 16:54:48,442 - INFO - Inferido tipo de dato para 'DescuentoPartes$': double precision
+2024-09-19 16:54:48,443 - INFO - Columna 'DescuentoPartes$' convertida a double precision
+2024-09-19 16:54:48,444 - INFO - Inferido tipo de dato para 'CostoPartes$': double precision
+2024-09-19 16:54:48,445 - INFO - Columna 'CostoPartes$' convertida a double precision
+2024-09-19 16:54:48,446 - INFO - Inferido tipo de dato para 'VentaTotal$': double precision
+2024-09-19 16:54:48,447 - INFO - Columna 'VentaTotal$' convertida a double precision
+2024-09-19 16:54:48,448 - INFO - Inferido tipo de dato para 'CostoTotal$': double precision
+2024-09-19 16:54:48,449 - INFO - Columna 'CostoTotal$' convertida a double precision
+2024-09-19 16:54:48,475 - INFO - No hay fórmula para la columna 'FechaFactura' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,476 - INFO - No hay fórmula para la columna 'FechaApertura' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,477 - INFO - No hay fórmula para la columna 'FechaEntrega' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,477 - INFO - No hay fórmula para la columna 'Factura' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,478 - INFO - No hay fórmula para la columna 'Taller' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,479 - INFO - No hay fórmula para la columna 'TipoOrden' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,480 - INFO - No hay fórmula para la columna 'TipoPago' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,481 - INFO - No hay fórmula para la columna 'NumeroOT' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,481 - INFO - No hay fórmula para la columna 'NumeroAsesor' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,482 - INFO - No hay fórmula para la columna 'NombreAsesor' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,483 - INFO - No hay fórmula para la columna 'RFC' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,484 - INFO - No hay fórmula para la columna 'NombreCliente' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,485 - INFO - No hay fórmula para la columna 'Direccion' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,486 - INFO - No hay fórmula para la columna 'Telefono' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,487 - INFO - No hay fórmula para la columna 'CP' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,488 - INFO - No hay fórmula para la columna 'Email' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,489 - INFO - No hay fórmula para la columna 'Odometro' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,490 - INFO - No hay fórmula para la columna 'Vin' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,491 - INFO - No hay fórmula para la columna 'Año' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,491 - INFO - No hay fórmula para la columna 'Marca' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,492 - INFO - No hay fórmula para la columna 'Modelo' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,493 - INFO - No hay fórmula para la columna 'Color' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,493 - INFO - No hay fórmula para la columna 'Dias' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,494 - INFO - No hay fórmula para la columna 'Venta$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,495 - INFO - No hay fórmula para la columna 'Costo$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,496 - INFO - No hay fórmula para la columna 'Utilidad$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,497 - INFO - No hay fórmula para la columna 'Margen' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,498 - INFO - No hay fórmula para la columna 'VentaMO$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,500 - INFO - No hay fórmula para la columna 'DescuentoMO$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,500 - INFO - No hay fórmula para la columna 'CostoMO$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,501 - INFO - No hay fórmula para la columna 'VentaMateriales$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,502 - INFO - No hay fórmula para la columna 'VentaTOT$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,502 - INFO - No hay fórmula para la columna 'DecuentoTOT$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,505 - INFO - No hay fórmula para la columna 'CostoTOT$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,506 - INFO - No hay fórmula para la columna 'VentaPartes$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,507 - INFO - No hay fórmula para la columna 'DescuentoPartes$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,508 - INFO - No hay fórmula para la columna 'CostoPartes$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,509 - INFO - No hay fórmula para la columna 'VentaTotal$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,510 - INFO - No hay fórmula para la columna 'CostoTotal$' en el reporte 'SERVTC'.
+2024-09-19 16:54:48,572 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\SERVTC01.sql.dump
+2024-09-19 16:54:48,596 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:54:48,612 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:54:48,710 - INFO - Conexión a la base de datos establecida.
+2024-09-19 16:54:48,717 - INFO - Consulta ALTER TABLE ejecutada con éxito:
+ALTER TABLE SERVTC01
+    ALTER COLUMN FechaFactura DROP NOT NULL,
+    ALTER COLUMN FechaApertura DROP NOT NULL,
+    ALTER COLUMN FechaEntrega DROP NOT NULL;
+
+2024-09-19 16:54:48,773 - INFO - Consulta ejecutada con éxito.
+2024-09-19 16:54:48,774 - INFO - <--------------- Conexion a la base de datos cerrada. --------------->
+2024-09-19 16:58:10,554 - INFO - <--------------- Inicia el proceso --------------->
+2024-09-19 16:58:10,765 - INFO - Archivo descomprimido en C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx
+2024-09-19 16:58:10,787 - INFO - Archivo renombrado de SERVTA01.TXT a SERVTA01.txt
+2024-09-19 16:58:10,855 - INFO - Conexión a la base de datos establecida.
+2024-09-19 16:58:10,869 - INFO - Versión del servidor PostgreSQL: PostgreSQL 16.3, compiled by Visual C++ build 1938, 64-bit
+2024-09-19 16:58:10,912 - INFO - El documento SERVTA01 no trae columnas.
+2024-09-19 16:58:10,961 - INFO - Inferido tipo de dato para 'Factura': character varying(80)
+2024-09-19 16:58:10,961 - INFO - Columna 'Factura' convertida a string
+2024-09-19 16:58:10,969 - INFO - Inferido tipo de dato para 'FechaFactura': DATE
+2024-09-19 16:58:10,974 - INFO - Columna 'FechaFactura' intentada convertir a datetime con formato '%Y-%m-%d'
+2024-09-19 16:58:10,975 - WARNING - Algunos valores en 'FechaFactura' no pudieron ser convertidos y son NaT
+2024-09-19 16:58:10,976 - INFO - Inferido tipo de dato para 'NumeroOT': character varying(80)
+2024-09-19 16:58:10,978 - INFO - Columna 'NumeroOT' convertida a string
+2024-09-19 16:58:10,979 - INFO - Inferido tipo de dato para 'FechaApertura': DATE
+2024-09-19 16:58:10,981 - INFO - Columna 'FechaApertura' intentada convertir a datetime con formato '%Y-%m-%d'
+2024-09-19 16:58:10,981 - WARNING - Algunos valores en 'FechaApertura' no pudieron ser convertidos y son NaT
+2024-09-19 16:58:10,981 - INFO - Inferido tipo de dato para 'FechaEntrega': DATE
+2024-09-19 16:58:10,988 - INFO - Columna 'FechaEntrega' intentada convertir a datetime con formato '%Y-%m-%d'
+2024-09-19 16:58:10,988 - WARNING - Algunos valores en 'FechaEntrega' no pudieron ser convertidos y son NaT
+2024-09-19 16:58:10,989 - INFO - Inferido tipo de dato para 'CodigoOperacion': character varying(80)
+2024-09-19 16:58:10,990 - INFO - Columna 'CodigoOperacion' convertida a string
+2024-09-19 16:58:10,991 - INFO - Inferido tipo de dato para 'Descripcion': character varying(80)
+2024-09-19 16:58:10,993 - INFO - Columna 'Descripcion' convertida a string
+2024-09-19 16:58:10,993 - INFO - Inferido tipo de dato para 'TipoOperacion': character varying(80)
+2024-09-19 16:58:10,993 - INFO - Columna 'TipoOperacion' convertida a string
+2024-09-19 16:58:10,997 - INFO - Inferido tipo de dato para 'CostoMO$': double precision
+2024-09-19 16:58:10,999 - INFO - Columna 'CostoMO$' convertida a double precision
+2024-09-19 16:58:11,001 - INFO - Inferido tipo de dato para 'CostoMateriales$': double precision
+2024-09-19 16:58:11,003 - INFO - Columna 'CostoMateriales$' convertida a double precision
+2024-09-19 16:58:11,004 - INFO - Inferido tipo de dato para 'CostoTOT$': double precision
+2024-09-19 16:58:11,007 - INFO - Columna 'CostoTOT$' convertida a double precision
+2024-09-19 16:58:11,008 - INFO - Inferido tipo de dato para 'CostoPartes$': double precision
+2024-09-19 16:58:11,012 - INFO - Columna 'CostoPartes$' convertida a double precision
+2024-09-19 16:58:11,013 - INFO - Inferido tipo de dato para 'VentaMO$': double precision
+2024-09-19 16:58:11,017 - INFO - Columna 'VentaMO$' convertida a double precision
+2024-09-19 16:58:11,019 - INFO - Inferido tipo de dato para 'VentaMateriales$': double precision
+2024-09-19 16:58:11,022 - INFO - Columna 'VentaMateriales$' convertida a double precision
+2024-09-19 16:58:11,024 - INFO - Inferido tipo de dato para 'VentaTOT$': double precision
+2024-09-19 16:58:11,030 - INFO - Columna 'VentaTOT$' convertida a double precision
+2024-09-19 16:58:11,032 - INFO - Inferido tipo de dato para 'VentaPartes$': double precision
+2024-09-19 16:58:11,036 - INFO - Columna 'VentaPartes$' convertida a double precision
+2024-09-19 16:58:11,038 - INFO - Inferido tipo de dato para 'DescuentoMO$': double precision
+2024-09-19 16:58:11,041 - INFO - Columna 'DescuentoMO$' convertida a double precision
+2024-09-19 16:58:11,043 - INFO - Inferido tipo de dato para 'DescuentoMateriales$': double precision
+2024-09-19 16:58:11,048 - INFO - Columna 'DescuentoMateriales$' convertida a double precision
+2024-09-19 16:58:11,051 - INFO - Inferido tipo de dato para 'DescuentoTOT$': double precision
+2024-09-19 16:58:11,054 - INFO - Columna 'DescuentoTOT$' convertida a double precision
+2024-09-19 16:58:11,056 - INFO - Inferido tipo de dato para 'DescuentoPartes$': double precision
+2024-09-19 16:58:11,059 - INFO - Columna 'DescuentoPartes$' convertida a double precision
+2024-09-19 16:58:11,060 - INFO - Inferido tipo de dato para 'CostoTotal$': double precision
+2024-09-19 16:58:11,064 - INFO - Columna 'CostoTotal$' convertida a double precision
+2024-09-19 16:58:11,065 - INFO - Inferido tipo de dato para 'VentaTotal$': double precision
+2024-09-19 16:58:11,069 - INFO - Columna 'VentaTotal$' convertida a double precision
+2024-09-19 16:58:11,070 - INFO - Inferido tipo de dato para 'Utilidad$': double precision
+2024-09-19 16:58:11,077 - INFO - Columna 'Utilidad$' convertida a double precision
+2024-09-19 16:58:11,079 - INFO - Inferido tipo de dato para 'Margen': double precision
+2024-09-19 16:58:11,083 - INFO - Columna 'Margen' convertida a double precision
+2024-09-19 16:58:11,085 - INFO - Inferido tipo de dato para 'Taller': character varying(80)
+2024-09-19 16:58:11,087 - INFO - Columna 'Taller' convertida a string
+2024-09-19 16:58:11,088 - INFO - Inferido tipo de dato para 'NumeroAsesor': character varying(80)
+2024-09-19 16:58:11,089 - INFO - Columna 'NumeroAsesor' convertida a string
+2024-09-19 16:58:11,090 - INFO - Inferido tipo de dato para 'NombreAsesor': character varying(80)
+2024-09-19 16:58:11,092 - INFO - Columna 'NombreAsesor' convertida a string
+2024-09-19 16:58:11,094 - INFO - Inferido tipo de dato para 'NombreCliente': character varying(80)
+2024-09-19 16:58:11,096 - INFO - Columna 'NombreCliente' convertida a string
+2024-09-19 16:58:11,097 - INFO - Inferido tipo de dato para 'RFC': character varying(80)
+2024-09-19 16:58:11,099 - INFO - Columna 'RFC' convertida a string
+2024-09-19 16:58:11,100 - INFO - Inferido tipo de dato para 'Direccion': character varying(80)
+2024-09-19 16:58:11,102 - INFO - Columna 'Direccion' convertida a string
+2024-09-19 16:58:11,104 - INFO - Inferido tipo de dato para 'Telefono': character varying(80)
+2024-09-19 16:58:11,105 - INFO - Columna 'Telefono' convertida a string
+2024-09-19 16:58:11,106 - INFO - Inferido tipo de dato para 'CP': character varying(80)
+2024-09-19 16:58:11,108 - INFO - Columna 'CP' convertida a string
+2024-09-19 16:58:11,109 - INFO - Inferido tipo de dato para 'Email': character varying(80)
+2024-09-19 16:58:11,110 - INFO - Columna 'Email' convertida a string
+2024-09-19 16:58:11,112 - INFO - Inferido tipo de dato para 'Odometro': character varying(80)
+2024-09-19 16:58:11,113 - INFO - Columna 'Odometro' convertida a string
+2024-09-19 16:58:11,113 - INFO - Inferido tipo de dato para 'Vin': character varying(80)
+2024-09-19 16:58:11,116 - INFO - Columna 'Vin' convertida a string
+2024-09-19 16:58:11,117 - INFO - Inferido tipo de dato para 'Año': character varying(80)
+2024-09-19 16:58:11,119 - INFO - Columna 'Año' convertida a string
+2024-09-19 16:58:11,120 - INFO - Inferido tipo de dato para 'Marca': character varying(80)
+2024-09-19 16:58:11,121 - INFO - Columna 'Marca' convertida a string
+2024-09-19 16:58:11,123 - INFO - Inferido tipo de dato para 'Modelo': character varying(80)
+2024-09-19 16:58:11,125 - INFO - Columna 'Modelo' convertida a string
+2024-09-19 16:58:11,127 - INFO - Inferido tipo de dato para 'Color': character varying(80)
+2024-09-19 16:58:11,128 - INFO - Columna 'Color' convertida a string
+2024-09-19 16:58:11,130 - INFO - Inferido tipo de dato para 'Interior': character varying(80)
+2024-09-19 16:58:11,131 - INFO - Columna 'Interior' convertida a string
+2024-09-19 16:58:11,132 - INFO - Inferido tipo de dato para 'TipoOrden': character varying(80)
+2024-09-19 16:58:11,135 - INFO - Columna 'TipoOrden' convertida a string
+2024-09-19 16:58:11,137 - INFO - Inferido tipo de dato para 'TipoPago': character varying(80)
+2024-09-19 16:58:11,140 - INFO - Columna 'TipoPago' convertida a string
+2024-09-19 16:58:11,182 - INFO - Fórmula aplicada a la columna calculada 'Venta$ (computed)'.
+2024-09-19 16:58:11,183 - INFO - El encabezado de la columna 'Venta$ (computed)' fue cambiado a 'Venta$'.
+2024-09-19 16:58:11,187 - INFO - Fórmula aplicada a la columna calculada 'Costo$ (computed)'.
+2024-09-19 16:58:11,188 - INFO - El encabezado de la columna 'Costo$ (computed)' fue cambiado a 'Costo$'.
+2024-09-19 16:58:11,191 - WARNING - Valores no válidos en la columna de fecha 'FechaFactura' fueron convertidos a NaT.
+2024-09-19 16:58:11,192 - WARNING - Valores no válidos en la columna de fecha 'FechaApertura' fueron convertidos a NaT.
+2024-09-19 16:58:11,197 - INFO - Fórmula aplicada para restar fechas en la columna 'Dias (computed)' (diferencia en días).
+2024-09-19 16:58:11,198 - INFO - El encabezado de la columna 'Dias (computed)' fue cambiado a 'Dias'.
+2024-09-19 16:58:11,200 - INFO - Fórmula 'LimpiaCodigos(Factura)' aplicada a la columna 'Factura' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,204 - INFO - No hay fórmula para la columna 'FechaFactura' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,205 - INFO - No hay fórmula para la columna 'NumeroOT' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,206 - INFO - No hay fórmula para la columna 'FechaApertura' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,207 - INFO - No hay fórmula para la columna 'FechaEntrega' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,208 - INFO - No hay fórmula para la columna 'CodigoOperacion' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,209 - INFO - No hay fórmula para la columna 'Descripcion' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,210 - INFO - No hay fórmula para la columna 'TipoOperacion' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,211 - INFO - No hay fórmula para la columna 'CostoMO$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,211 - INFO - No hay fórmula para la columna 'CostoMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,214 - INFO - No hay fórmula para la columna 'CostoTOT$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,214 - INFO - No hay fórmula para la columna 'CostoPartes$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,215 - INFO - No hay fórmula para la columna 'VentaMO$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,217 - INFO - No hay fórmula para la columna 'VentaMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,217 - INFO - No hay fórmula para la columna 'VentaTOT$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,218 - INFO - No hay fórmula para la columna 'VentaPartes$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,220 - INFO - No hay fórmula para la columna 'DescuentoMO$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,221 - INFO - No hay fórmula para la columna 'DescuentoMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,221 - INFO - No hay fórmula para la columna 'DescuentoTOT$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,223 - INFO - No hay fórmula para la columna 'DescuentoPartes$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,223 - INFO - No hay fórmula para la columna 'CostoTotal$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,224 - INFO - No hay fórmula para la columna 'VentaTotal$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,256 - INFO - Fórmula 'FormulaUtilidad(Utilidad$)' aplicada a la columna 'Utilidad$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,293 - INFO - Fórmula 'FormulaMargen(Margen)' aplicada a la columna 'Margen' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,293 - INFO - No hay fórmula para la columna 'Taller' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,304 - INFO - No hay fórmula para la columna 'NumeroAsesor' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,305 - INFO - No hay fórmula para la columna 'NombreAsesor' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,306 - INFO - No hay fórmula para la columna 'NombreCliente' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,307 - INFO - No hay fórmula para la columna 'RFC' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,309 - INFO - No hay fórmula para la columna 'Direccion' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,310 - INFO - No hay fórmula para la columna 'Telefono' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,311 - INFO - No hay fórmula para la columna 'CP' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,312 - INFO - No hay fórmula para la columna 'Email' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,313 - INFO - No hay fórmula para la columna 'Odometro' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,314 - INFO - No hay fórmula para la columna 'Vin' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,314 - INFO - No hay fórmula para la columna 'Año' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,327 - INFO - Fórmula 'LimpiaTexto(Marca)' aplicada a la columna 'Marca' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,328 - INFO - No hay fórmula para la columna 'Modelo' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,329 - INFO - No hay fórmula para la columna 'Color' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,342 - INFO - Fórmula 'LimpiaTexto(Interior)' aplicada a la columna 'Interior' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,373 - INFO - No hay fórmula para la columna 'TipoOrden' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,373 - INFO - No hay fórmula para la columna 'TipoPago' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,373 - INFO - No hay fórmula para la columna 'Venta$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,373 - INFO - No hay fórmula para la columna 'Costo$' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,373 - INFO - No hay fórmula para la columna 'Dias' en el reporte 'SERVTA01'.
+2024-09-19 16:58:11,412 - INFO - <--------------- Conexion a la base de datos cerrada. --------------->
+2024-09-19 17:02:55,824 - INFO - <--------------- Inicia el proceso --------------->
+2024-09-19 17:02:56,074 - INFO - Archivo descomprimido en C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx
+2024-09-19 17:02:56,079 - INFO - Archivo renombrado de SERVTA01.TXT a SERVTA01.txt
+2024-09-19 17:02:56,265 - INFO - Conexión a la base de datos establecida.
+2024-09-19 17:02:56,267 - INFO - Versión del servidor PostgreSQL: PostgreSQL 16.3, compiled by Visual C++ build 1938, 64-bit
+2024-09-19 17:02:56,318 - INFO - El documento SERVTA01 no trae columnas.
+2024-09-19 17:02:56,390 - INFO - Inferido tipo de dato para 'Factura': character varying(80)
+2024-09-19 17:02:56,391 - INFO - Columna 'Factura' convertida a string
+2024-09-19 17:02:56,392 - INFO - Inferido tipo de dato para 'FechaFactura': DATE
+2024-09-19 17:02:56,396 - INFO - Columna 'FechaFactura' convertida a formato datetime con formato '%Y-%m-%d'
+2024-09-19 17:02:56,397 - INFO - Inferido tipo de dato para 'NumeroOT': character varying(80)
+2024-09-19 17:02:56,399 - INFO - Columna 'NumeroOT' convertida a string
+2024-09-19 17:02:56,399 - INFO - Inferido tipo de dato para 'FechaApertura': DATE
+2024-09-19 17:02:56,403 - INFO - Columna 'FechaApertura' convertida a formato datetime con formato '%Y-%m-%d'
+2024-09-19 17:02:56,404 - INFO - Inferido tipo de dato para 'FechaEntrega': DATE
+2024-09-19 17:02:56,407 - INFO - Columna 'FechaEntrega' convertida a formato datetime con formato '%Y-%m-%d'
+2024-09-19 17:02:56,408 - INFO - Inferido tipo de dato para 'CodigoOperacion': character varying(80)
+2024-09-19 17:02:56,409 - INFO - Columna 'CodigoOperacion' convertida a string
+2024-09-19 17:02:56,410 - INFO - Inferido tipo de dato para 'Descripcion': character varying(80)
+2024-09-19 17:02:56,411 - INFO - Columna 'Descripcion' convertida a string
+2024-09-19 17:02:56,413 - INFO - Inferido tipo de dato para 'TipoOperacion': character varying(80)
+2024-09-19 17:02:56,414 - INFO - Columna 'TipoOperacion' convertida a string
+2024-09-19 17:02:56,415 - INFO - Inferido tipo de dato para 'CostoMO$': double precision
+2024-09-19 17:02:56,418 - INFO - Columna 'CostoMO$' convertida a double precision
+2024-09-19 17:02:56,419 - INFO - Inferido tipo de dato para 'CostoMateriales$': double precision
+2024-09-19 17:02:56,423 - INFO - Columna 'CostoMateriales$' convertida a double precision
+2024-09-19 17:02:56,424 - INFO - Inferido tipo de dato para 'CostoTOT$': double precision
+2024-09-19 17:02:56,427 - INFO - Columna 'CostoTOT$' convertida a double precision
+2024-09-19 17:02:56,428 - INFO - Inferido tipo de dato para 'CostoPartes$': double precision
+2024-09-19 17:02:56,432 - INFO - Columna 'CostoPartes$' convertida a double precision
+2024-09-19 17:02:56,434 - INFO - Inferido tipo de dato para 'VentaMO$': double precision
+2024-09-19 17:02:56,438 - INFO - Columna 'VentaMO$' convertida a double precision
+2024-09-19 17:02:56,439 - INFO - Inferido tipo de dato para 'VentaMateriales$': double precision
+2024-09-19 17:02:56,441 - INFO - Columna 'VentaMateriales$' convertida a double precision
+2024-09-19 17:02:56,442 - INFO - Inferido tipo de dato para 'VentaTOT$': double precision
+2024-09-19 17:02:56,445 - INFO - Columna 'VentaTOT$' convertida a double precision
+2024-09-19 17:02:56,447 - INFO - Inferido tipo de dato para 'VentaPartes$': double precision
+2024-09-19 17:02:56,451 - INFO - Columna 'VentaPartes$' convertida a double precision
+2024-09-19 17:02:56,452 - INFO - Inferido tipo de dato para 'DescuentoMO$': double precision
+2024-09-19 17:02:56,455 - INFO - Columna 'DescuentoMO$' convertida a double precision
+2024-09-19 17:02:56,456 - INFO - Inferido tipo de dato para 'DescuentoMateriales$': double precision
+2024-09-19 17:02:56,459 - INFO - Columna 'DescuentoMateriales$' convertida a double precision
+2024-09-19 17:02:56,459 - INFO - Inferido tipo de dato para 'DescuentoTOT$': double precision
+2024-09-19 17:02:56,463 - INFO - Columna 'DescuentoTOT$' convertida a double precision
+2024-09-19 17:02:56,464 - INFO - Inferido tipo de dato para 'DescuentoPartes$': double precision
+2024-09-19 17:02:56,467 - INFO - Columna 'DescuentoPartes$' convertida a double precision
+2024-09-19 17:02:56,468 - INFO - Inferido tipo de dato para 'CostoTotal$': double precision
+2024-09-19 17:02:56,471 - INFO - Columna 'CostoTotal$' convertida a double precision
+2024-09-19 17:02:56,471 - INFO - Inferido tipo de dato para 'VentaTotal$': double precision
+2024-09-19 17:02:56,475 - INFO - Columna 'VentaTotal$' convertida a double precision
+2024-09-19 17:02:56,477 - INFO - Inferido tipo de dato para 'Utilidad$': double precision
+2024-09-19 17:02:56,481 - INFO - Columna 'Utilidad$' convertida a double precision
+2024-09-19 17:02:56,482 - INFO - Inferido tipo de dato para 'Margen': double precision
+2024-09-19 17:02:56,484 - INFO - Columna 'Margen' convertida a double precision
+2024-09-19 17:02:56,485 - INFO - Inferido tipo de dato para 'Taller': character varying(80)
+2024-09-19 17:02:56,486 - INFO - Columna 'Taller' convertida a string
+2024-09-19 17:02:56,487 - INFO - Inferido tipo de dato para 'NumeroAsesor': character varying(80)
+2024-09-19 17:02:56,488 - INFO - Columna 'NumeroAsesor' convertida a string
+2024-09-19 17:02:56,489 - INFO - Inferido tipo de dato para 'NombreAsesor': character varying(80)
+2024-09-19 17:02:56,491 - INFO - Columna 'NombreAsesor' convertida a string
+2024-09-19 17:02:56,492 - INFO - Inferido tipo de dato para 'NombreCliente': character varying(80)
+2024-09-19 17:02:56,493 - INFO - Columna 'NombreCliente' convertida a string
+2024-09-19 17:02:56,494 - INFO - Inferido tipo de dato para 'RFC': character varying(80)
+2024-09-19 17:02:56,496 - INFO - Columna 'RFC' convertida a string
+2024-09-19 17:02:56,497 - INFO - Inferido tipo de dato para 'Direccion': character varying(80)
+2024-09-19 17:02:56,498 - INFO - Columna 'Direccion' convertida a string
+2024-09-19 17:02:56,500 - INFO - Inferido tipo de dato para 'Telefono': character varying(80)
+2024-09-19 17:02:56,501 - INFO - Columna 'Telefono' convertida a string
+2024-09-19 17:02:56,502 - INFO - Inferido tipo de dato para 'CP': character varying(80)
+2024-09-19 17:02:56,503 - INFO - Columna 'CP' convertida a string
+2024-09-19 17:02:56,504 - INFO - Inferido tipo de dato para 'Email': character varying(80)
+2024-09-19 17:02:56,505 - INFO - Columna 'Email' convertida a string
+2024-09-19 17:02:56,506 - INFO - Inferido tipo de dato para 'Odometro': character varying(80)
+2024-09-19 17:02:56,507 - INFO - Columna 'Odometro' convertida a string
+2024-09-19 17:02:56,508 - INFO - Inferido tipo de dato para 'Vin': character varying(80)
+2024-09-19 17:02:56,509 - INFO - Columna 'Vin' convertida a string
+2024-09-19 17:02:56,511 - INFO - Inferido tipo de dato para 'Año': character varying(80)
+2024-09-19 17:02:56,512 - INFO - Columna 'Año' convertida a string
+2024-09-19 17:02:56,513 - INFO - Inferido tipo de dato para 'Marca': character varying(80)
+2024-09-19 17:02:56,514 - INFO - Columna 'Marca' convertida a string
+2024-09-19 17:02:56,516 - INFO - Inferido tipo de dato para 'Modelo': character varying(80)
+2024-09-19 17:02:56,517 - INFO - Columna 'Modelo' convertida a string
+2024-09-19 17:02:56,518 - INFO - Inferido tipo de dato para 'Color': character varying(80)
+2024-09-19 17:02:56,519 - INFO - Columna 'Color' convertida a string
+2024-09-19 17:02:56,520 - INFO - Inferido tipo de dato para 'Interior': character varying(80)
+2024-09-19 17:02:56,522 - INFO - Columna 'Interior' convertida a string
+2024-09-19 17:02:56,523 - INFO - Inferido tipo de dato para 'TipoOrden': character varying(80)
+2024-09-19 17:02:56,523 - INFO - Columna 'TipoOrden' convertida a string
+2024-09-19 17:02:56,525 - INFO - Inferido tipo de dato para 'TipoPago': character varying(80)
+2024-09-19 17:02:56,528 - INFO - Columna 'TipoPago' convertida a string
+2024-09-19 17:02:56,564 - INFO - Fórmula aplicada a la columna calculada 'Venta$ (computed)'.
+2024-09-19 17:02:56,565 - INFO - El encabezado de la columna 'Venta$ (computed)' fue cambiado a 'Venta$'.
+2024-09-19 17:02:56,569 - INFO - Fórmula aplicada a la columna calculada 'Costo$ (computed)'.
+2024-09-19 17:02:56,569 - INFO - El encabezado de la columna 'Costo$ (computed)' fue cambiado a 'Costo$'.
+2024-09-19 17:02:56,573 - WARNING - Valores no válidos en la columna de fecha 'FechaFactura' fueron convertidos a NaT.
+2024-09-19 17:02:56,574 - WARNING - Valores no válidos en la columna de fecha 'FechaApertura' fueron convertidos a NaT.
+2024-09-19 17:02:56,579 - INFO - Fórmula aplicada para restar fechas en la columna 'Dias (computed)' (diferencia en días).
+2024-09-19 17:02:56,581 - INFO - El encabezado de la columna 'Dias (computed)' fue cambiado a 'Dias'.
+2024-09-19 17:02:56,585 - INFO - Fórmula 'LimpiaCodigos(Factura)' aplicada a la columna 'Factura' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,587 - INFO - No hay fórmula para la columna 'FechaFactura' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,587 - INFO - No hay fórmula para la columna 'NumeroOT' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,589 - INFO - No hay fórmula para la columna 'FechaApertura' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,590 - INFO - No hay fórmula para la columna 'FechaEntrega' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,591 - INFO - No hay fórmula para la columna 'CodigoOperacion' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,592 - INFO - No hay fórmula para la columna 'Descripcion' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,593 - INFO - No hay fórmula para la columna 'TipoOperacion' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,594 - INFO - No hay fórmula para la columna 'CostoMO$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,595 - INFO - No hay fórmula para la columna 'CostoMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,596 - INFO - No hay fórmula para la columna 'CostoTOT$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,597 - INFO - No hay fórmula para la columna 'CostoPartes$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,598 - INFO - No hay fórmula para la columna 'VentaMO$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,599 - INFO - No hay fórmula para la columna 'VentaMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,599 - INFO - No hay fórmula para la columna 'VentaTOT$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,601 - INFO - No hay fórmula para la columna 'VentaPartes$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,602 - INFO - No hay fórmula para la columna 'DescuentoMO$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,603 - INFO - No hay fórmula para la columna 'DescuentoMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,604 - INFO - No hay fórmula para la columna 'DescuentoTOT$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,605 - INFO - No hay fórmula para la columna 'DescuentoPartes$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,606 - INFO - No hay fórmula para la columna 'CostoTotal$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,607 - INFO - No hay fórmula para la columna 'VentaTotal$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,651 - INFO - Fórmula 'FormulaUtilidad(Utilidad$)' aplicada a la columna 'Utilidad$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,699 - INFO - Fórmula 'FormulaMargen(Margen)' aplicada a la columna 'Margen' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,701 - INFO - No hay fórmula para la columna 'Taller' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,702 - INFO - No hay fórmula para la columna 'NumeroAsesor' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,703 - INFO - No hay fórmula para la columna 'NombreAsesor' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,704 - INFO - No hay fórmula para la columna 'NombreCliente' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,705 - INFO - No hay fórmula para la columna 'RFC' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,706 - INFO - No hay fórmula para la columna 'Direccion' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,707 - INFO - No hay fórmula para la columna 'Telefono' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,707 - INFO - No hay fórmula para la columna 'CP' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,708 - INFO - No hay fórmula para la columna 'Email' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,709 - INFO - No hay fórmula para la columna 'Odometro' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,709 - INFO - No hay fórmula para la columna 'Vin' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,711 - INFO - No hay fórmula para la columna 'Año' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,725 - INFO - Fórmula 'LimpiaTexto(Marca)' aplicada a la columna 'Marca' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,727 - INFO - No hay fórmula para la columna 'Modelo' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,728 - INFO - No hay fórmula para la columna 'Color' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,738 - INFO - Fórmula 'LimpiaTexto(Interior)' aplicada a la columna 'Interior' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,739 - INFO - No hay fórmula para la columna 'TipoOrden' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,741 - INFO - No hay fórmula para la columna 'TipoPago' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,741 - INFO - No hay fórmula para la columna 'Venta$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,742 - INFO - No hay fórmula para la columna 'Costo$' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,743 - INFO - No hay fórmula para la columna 'Dias' en el reporte 'SERVTA01'.
+2024-09-19 17:02:56,779 - INFO - <--------------- Conexion a la base de datos cerrada. --------------->
+2024-09-19 17:03:05,107 - INFO - <--------------- Inicia el proceso --------------->
+2024-09-19 17:03:05,338 - INFO - Archivo descomprimido en C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx
+2024-09-19 17:03:05,346 - INFO - Archivo renombrado de SERVTA01.TXT a SERVTA01.txt
+2024-09-19 17:03:05,526 - INFO - Conexión a la base de datos establecida.
+2024-09-19 17:03:05,528 - INFO - Versión del servidor PostgreSQL: PostgreSQL 16.3, compiled by Visual C++ build 1938, 64-bit
+2024-09-19 17:03:05,583 - INFO - El documento SERVTA01 no trae columnas.
+2024-09-19 17:03:05,638 - INFO - Inferido tipo de dato para 'Factura': character varying(80)
+2024-09-19 17:03:05,638 - INFO - Columna 'Factura' convertida a string
+2024-09-19 17:03:05,639 - INFO - Inferido tipo de dato para 'FechaFactura': DATE
+2024-09-19 17:03:05,643 - INFO - Columna 'FechaFactura' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 17:03:05,644 - INFO - Inferido tipo de dato para 'NumeroOT': character varying(80)
+2024-09-19 17:03:05,645 - INFO - Columna 'NumeroOT' convertida a string
+2024-09-19 17:03:05,646 - INFO - Inferido tipo de dato para 'FechaApertura': DATE
+2024-09-19 17:03:05,649 - INFO - Columna 'FechaApertura' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 17:03:05,652 - INFO - Inferido tipo de dato para 'FechaEntrega': DATE
+2024-09-19 17:03:05,654 - INFO - Columna 'FechaEntrega' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 17:03:05,655 - INFO - Inferido tipo de dato para 'CodigoOperacion': character varying(80)
+2024-09-19 17:03:05,655 - INFO - Columna 'CodigoOperacion' convertida a string
+2024-09-19 17:03:05,655 - INFO - Inferido tipo de dato para 'Descripcion': character varying(80)
+2024-09-19 17:03:05,657 - INFO - Columna 'Descripcion' convertida a string
+2024-09-19 17:03:05,658 - INFO - Inferido tipo de dato para 'TipoOperacion': character varying(80)
+2024-09-19 17:03:05,658 - INFO - Columna 'TipoOperacion' convertida a string
+2024-09-19 17:03:05,659 - INFO - Inferido tipo de dato para 'CostoMO$': double precision
+2024-09-19 17:03:05,661 - INFO - Columna 'CostoMO$' convertida a double precision
+2024-09-19 17:03:05,662 - INFO - Inferido tipo de dato para 'CostoMateriales$': double precision
+2024-09-19 17:03:05,665 - INFO - Columna 'CostoMateriales$' convertida a double precision
+2024-09-19 17:03:05,665 - INFO - Inferido tipo de dato para 'CostoTOT$': double precision
+2024-09-19 17:03:05,667 - INFO - Columna 'CostoTOT$' convertida a double precision
+2024-09-19 17:03:05,668 - INFO - Inferido tipo de dato para 'CostoPartes$': double precision
+2024-09-19 17:03:05,671 - INFO - Columna 'CostoPartes$' convertida a double precision
+2024-09-19 17:03:05,672 - INFO - Inferido tipo de dato para 'VentaMO$': double precision
+2024-09-19 17:03:05,674 - INFO - Columna 'VentaMO$' convertida a double precision
+2024-09-19 17:03:05,676 - INFO - Inferido tipo de dato para 'VentaMateriales$': double precision
+2024-09-19 17:03:05,679 - INFO - Columna 'VentaMateriales$' convertida a double precision
+2024-09-19 17:03:05,680 - INFO - Inferido tipo de dato para 'VentaTOT$': double precision
+2024-09-19 17:03:05,682 - INFO - Columna 'VentaTOT$' convertida a double precision
+2024-09-19 17:03:05,683 - INFO - Inferido tipo de dato para 'VentaPartes$': double precision
+2024-09-19 17:03:05,685 - INFO - Columna 'VentaPartes$' convertida a double precision
+2024-09-19 17:03:05,686 - INFO - Inferido tipo de dato para 'DescuentoMO$': double precision
+2024-09-19 17:03:05,689 - INFO - Columna 'DescuentoMO$' convertida a double precision
+2024-09-19 17:03:05,689 - INFO - Inferido tipo de dato para 'DescuentoMateriales$': double precision
+2024-09-19 17:03:05,694 - INFO - Columna 'DescuentoMateriales$' convertida a double precision
+2024-09-19 17:03:05,695 - INFO - Inferido tipo de dato para 'DescuentoTOT$': double precision
+2024-09-19 17:03:05,699 - INFO - Columna 'DescuentoTOT$' convertida a double precision
+2024-09-19 17:03:05,701 - INFO - Inferido tipo de dato para 'DescuentoPartes$': double precision
+2024-09-19 17:03:05,703 - INFO - Columna 'DescuentoPartes$' convertida a double precision
+2024-09-19 17:03:05,704 - INFO - Inferido tipo de dato para 'CostoTotal$': double precision
+2024-09-19 17:03:05,707 - INFO - Columna 'CostoTotal$' convertida a double precision
+2024-09-19 17:03:05,708 - INFO - Inferido tipo de dato para 'VentaTotal$': double precision
+2024-09-19 17:03:05,711 - INFO - Columna 'VentaTotal$' convertida a double precision
+2024-09-19 17:03:05,713 - INFO - Inferido tipo de dato para 'Utilidad$': double precision
+2024-09-19 17:03:05,717 - INFO - Columna 'Utilidad$' convertida a double precision
+2024-09-19 17:03:05,718 - INFO - Inferido tipo de dato para 'Margen': double precision
+2024-09-19 17:03:05,722 - INFO - Columna 'Margen' convertida a double precision
+2024-09-19 17:03:05,722 - INFO - Inferido tipo de dato para 'Taller': character varying(80)
+2024-09-19 17:03:05,722 - INFO - Columna 'Taller' convertida a string
+2024-09-19 17:03:05,723 - INFO - Inferido tipo de dato para 'NumeroAsesor': character varying(80)
+2024-09-19 17:03:05,724 - INFO - Columna 'NumeroAsesor' convertida a string
+2024-09-19 17:03:05,726 - INFO - Inferido tipo de dato para 'NombreAsesor': character varying(80)
+2024-09-19 17:03:05,728 - INFO - Columna 'NombreAsesor' convertida a string
+2024-09-19 17:03:05,728 - INFO - Inferido tipo de dato para 'NombreCliente': character varying(80)
+2024-09-19 17:03:05,729 - INFO - Columna 'NombreCliente' convertida a string
+2024-09-19 17:03:05,730 - INFO - Inferido tipo de dato para 'RFC': character varying(80)
+2024-09-19 17:03:05,730 - INFO - Columna 'RFC' convertida a string
+2024-09-19 17:03:05,731 - INFO - Inferido tipo de dato para 'Direccion': character varying(80)
+2024-09-19 17:03:05,733 - INFO - Columna 'Direccion' convertida a string
+2024-09-19 17:03:05,734 - INFO - Inferido tipo de dato para 'Telefono': character varying(80)
+2024-09-19 17:03:05,735 - INFO - Columna 'Telefono' convertida a string
+2024-09-19 17:03:05,736 - INFO - Inferido tipo de dato para 'CP': character varying(80)
+2024-09-19 17:03:05,737 - INFO - Columna 'CP' convertida a string
+2024-09-19 17:03:05,738 - INFO - Inferido tipo de dato para 'Email': character varying(80)
+2024-09-19 17:03:05,739 - INFO - Columna 'Email' convertida a string
+2024-09-19 17:03:05,739 - INFO - Inferido tipo de dato para 'Odometro': character varying(80)
+2024-09-19 17:03:05,740 - INFO - Columna 'Odometro' convertida a string
+2024-09-19 17:03:05,741 - INFO - Inferido tipo de dato para 'Vin': character varying(80)
+2024-09-19 17:03:05,743 - INFO - Columna 'Vin' convertida a string
+2024-09-19 17:03:05,744 - INFO - Inferido tipo de dato para 'Año': character varying(80)
+2024-09-19 17:03:05,745 - INFO - Columna 'Año' convertida a string
+2024-09-19 17:03:05,746 - INFO - Inferido tipo de dato para 'Marca': character varying(80)
+2024-09-19 17:03:05,748 - INFO - Columna 'Marca' convertida a string
+2024-09-19 17:03:05,748 - INFO - Inferido tipo de dato para 'Modelo': character varying(80)
+2024-09-19 17:03:05,750 - INFO - Columna 'Modelo' convertida a string
+2024-09-19 17:03:05,751 - INFO - Inferido tipo de dato para 'Color': character varying(80)
+2024-09-19 17:03:05,751 - INFO - Columna 'Color' convertida a string
+2024-09-19 17:03:05,753 - INFO - Inferido tipo de dato para 'Interior': character varying(80)
+2024-09-19 17:03:05,754 - INFO - Columna 'Interior' convertida a string
+2024-09-19 17:03:05,755 - INFO - Inferido tipo de dato para 'TipoOrden': character varying(80)
+2024-09-19 17:03:05,756 - INFO - Columna 'TipoOrden' convertida a string
+2024-09-19 17:03:05,757 - INFO - Inferido tipo de dato para 'TipoPago': character varying(80)
+2024-09-19 17:03:05,761 - INFO - Columna 'TipoPago' convertida a string
+2024-09-19 17:03:05,803 - INFO - Fórmula aplicada a la columna calculada 'Venta$ (computed)'.
+2024-09-19 17:03:05,804 - INFO - El encabezado de la columna 'Venta$ (computed)' fue cambiado a 'Venta$'.
+2024-09-19 17:03:05,806 - INFO - Fórmula aplicada a la columna calculada 'Costo$ (computed)'.
+2024-09-19 17:03:05,806 - INFO - El encabezado de la columna 'Costo$ (computed)' fue cambiado a 'Costo$'.
+2024-09-19 17:03:05,820 - INFO - Fórmula aplicada para restar fechas en la columna 'Dias (computed)' (diferencia en días).
+2024-09-19 17:03:05,821 - INFO - El encabezado de la columna 'Dias (computed)' fue cambiado a 'Dias'.
+2024-09-19 17:03:05,826 - INFO - Fórmula 'LimpiaCodigos(Factura)' aplicada a la columna 'Factura' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,827 - INFO - No hay fórmula para la columna 'FechaFactura' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,828 - INFO - No hay fórmula para la columna 'NumeroOT' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,829 - INFO - No hay fórmula para la columna 'FechaApertura' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,830 - INFO - No hay fórmula para la columna 'FechaEntrega' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,832 - INFO - No hay fórmula para la columna 'CodigoOperacion' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,833 - INFO - No hay fórmula para la columna 'Descripcion' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,834 - INFO - No hay fórmula para la columna 'TipoOperacion' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,834 - INFO - No hay fórmula para la columna 'CostoMO$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,835 - INFO - No hay fórmula para la columna 'CostoMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,836 - INFO - No hay fórmula para la columna 'CostoTOT$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,836 - INFO - No hay fórmula para la columna 'CostoPartes$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,837 - INFO - No hay fórmula para la columna 'VentaMO$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,837 - INFO - No hay fórmula para la columna 'VentaMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,838 - INFO - No hay fórmula para la columna 'VentaTOT$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,839 - INFO - No hay fórmula para la columna 'VentaPartes$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,839 - INFO - No hay fórmula para la columna 'DescuentoMO$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,840 - INFO - No hay fórmula para la columna 'DescuentoMateriales$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,840 - INFO - No hay fórmula para la columna 'DescuentoTOT$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,841 - INFO - No hay fórmula para la columna 'DescuentoPartes$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,842 - INFO - No hay fórmula para la columna 'CostoTotal$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,843 - INFO - No hay fórmula para la columna 'VentaTotal$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,893 - INFO - Fórmula 'FormulaUtilidad(Utilidad$)' aplicada a la columna 'Utilidad$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,950 - INFO - Fórmula 'FormulaMargen(Margen)' aplicada a la columna 'Margen' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,951 - INFO - No hay fórmula para la columna 'Taller' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,952 - INFO - No hay fórmula para la columna 'NumeroAsesor' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,952 - INFO - No hay fórmula para la columna 'NombreAsesor' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,954 - INFO - No hay fórmula para la columna 'NombreCliente' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,954 - INFO - No hay fórmula para la columna 'RFC' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,955 - INFO - No hay fórmula para la columna 'Direccion' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,956 - INFO - No hay fórmula para la columna 'Telefono' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,956 - INFO - No hay fórmula para la columna 'CP' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,957 - INFO - No hay fórmula para la columna 'Email' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,958 - INFO - No hay fórmula para la columna 'Odometro' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,958 - INFO - No hay fórmula para la columna 'Vin' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,958 - INFO - No hay fórmula para la columna 'Año' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,974 - INFO - Fórmula 'LimpiaTexto(Marca)' aplicada a la columna 'Marca' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,976 - INFO - No hay fórmula para la columna 'Modelo' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,976 - INFO - No hay fórmula para la columna 'Color' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,987 - INFO - Fórmula 'LimpiaTexto(Interior)' aplicada a la columna 'Interior' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,988 - INFO - No hay fórmula para la columna 'TipoOrden' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,988 - INFO - No hay fórmula para la columna 'TipoPago' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,989 - INFO - No hay fórmula para la columna 'Venta$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,989 - INFO - No hay fórmula para la columna 'Costo$' en el reporte 'SERVTA01'.
+2024-09-19 17:03:05,990 - INFO - No hay fórmula para la columna 'Dias' en el reporte 'SERVTA01'.
+2024-09-19 17:03:06,047 - INFO - DataFrame SERVTC guardado como 3-Sandbx\SERVTC01.txt
+2024-09-19 17:03:06,259 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\SERVTA01.sql.dump
+2024-09-19 17:03:06,324 - INFO - Consulta ejecutada con éxito.
+2024-09-19 17:03:06,365 - INFO - Consulta ejecutada con éxito.
+2024-09-19 17:03:06,487 - INFO - Conexión a la base de datos establecida.
+2024-09-19 17:03:06,493 - INFO - Consulta ALTER TABLE ejecutada con éxito:
+ALTER TABLE SERVTA01
+    ALTER COLUMN FechaFactura DROP NOT NULL,
+    ALTER COLUMN FechaApertura DROP NOT NULL,
+    ALTER COLUMN FechaEntrega DROP NOT NULL;
+
+2024-09-19 17:03:06,885 - INFO - Consulta ejecutada con éxito.
+2024-09-19 17:03:06,904 - INFO - Al menos una columna de SERVTC01 coincide con las columnas esperadas en la configuración.
+2024-09-19 17:03:06,948 - INFO - Inferido tipo de dato para 'FechaFactura': DATE
+2024-09-19 17:03:06,950 - INFO - Columna 'FechaFactura' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 17:03:06,951 - INFO - Inferido tipo de dato para 'FechaApertura': DATE
+2024-09-19 17:03:06,953 - INFO - Columna 'FechaApertura' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 17:03:06,954 - INFO - Inferido tipo de dato para 'FechaEntrega': DATE
+2024-09-19 17:03:06,956 - INFO - Columna 'FechaEntrega' convertida a formato datetime con formato '%d/%m/%Y'
+2024-09-19 17:03:06,957 - INFO - Inferido tipo de dato para 'Factura': character varying(80)
+2024-09-19 17:03:06,957 - INFO - Columna 'Factura' convertida a string
+2024-09-19 17:03:06,958 - INFO - Inferido tipo de dato para 'Taller': character varying(80)
+2024-09-19 17:03:06,958 - INFO - Columna 'Taller' convertida a string
+2024-09-19 17:03:06,959 - INFO - Inferido tipo de dato para 'TipoOrden': character varying(80)
+2024-09-19 17:03:06,960 - INFO - Columna 'TipoOrden' convertida a string
+2024-09-19 17:03:06,961 - INFO - Inferido tipo de dato para 'TipoPago': character varying(80)
+2024-09-19 17:03:06,962 - INFO - Columna 'TipoPago' convertida a string
+2024-09-19 17:03:06,964 - INFO - Inferido tipo de dato para 'NumeroOT': character varying(80)
+2024-09-19 17:03:06,964 - INFO - Columna 'NumeroOT' convertida a string
+2024-09-19 17:03:06,965 - INFO - Inferido tipo de dato para 'NumeroAsesor': character varying(80)
+2024-09-19 17:03:06,966 - INFO - Columna 'NumeroAsesor' convertida a string
+2024-09-19 17:03:06,966 - INFO - Inferido tipo de dato para 'NombreAsesor': character varying(80)
+2024-09-19 17:03:06,967 - INFO - Columna 'NombreAsesor' convertida a string
+2024-09-19 17:03:06,968 - INFO - Inferido tipo de dato para 'RFC': character varying(80)
+2024-09-19 17:03:06,968 - INFO - Columna 'RFC' convertida a string
+2024-09-19 17:03:06,969 - INFO - Inferido tipo de dato para 'NombreCliente': character varying(80)
+2024-09-19 17:03:06,969 - INFO - Columna 'NombreCliente' convertida a string
+2024-09-19 17:03:06,969 - INFO - Inferido tipo de dato para 'Direccion': character varying(80)
+2024-09-19 17:03:06,971 - INFO - Columna 'Direccion' convertida a string
+2024-09-19 17:03:06,972 - INFO - Inferido tipo de dato para 'Telefono': character varying(80)
+2024-09-19 17:03:06,972 - INFO - Columna 'Telefono' convertida a string
+2024-09-19 17:03:06,973 - INFO - Inferido tipo de dato para 'CP': character varying(80)
+2024-09-19 17:03:06,974 - INFO - Columna 'CP' convertida a string
+2024-09-19 17:03:06,974 - INFO - Inferido tipo de dato para 'Email': character varying(80)
+2024-09-19 17:03:06,975 - INFO - Columna 'Email' convertida a string
+2024-09-19 17:03:06,976 - INFO - Inferido tipo de dato para 'Odometro': character varying(80)
+2024-09-19 17:03:06,977 - INFO - Columna 'Odometro' convertida a string
+2024-09-19 17:03:06,978 - INFO - Inferido tipo de dato para 'Vin': character varying(80)
+2024-09-19 17:03:06,978 - INFO - Columna 'Vin' convertida a string
+2024-09-19 17:03:06,979 - INFO - Inferido tipo de dato para 'Año': character varying(80)
+2024-09-19 17:03:06,980 - INFO - Columna 'Año' convertida a string
+2024-09-19 17:03:06,980 - INFO - Inferido tipo de dato para 'Marca': character varying(80)
+2024-09-19 17:03:06,981 - INFO - Columna 'Marca' convertida a string
+2024-09-19 17:03:06,982 - INFO - Inferido tipo de dato para 'Modelo': character varying(80)
+2024-09-19 17:03:06,982 - INFO - Columna 'Modelo' convertida a string
+2024-09-19 17:03:06,983 - INFO - Inferido tipo de dato para 'Color': character varying(80)
+2024-09-19 17:03:06,983 - INFO - Columna 'Color' convertida a string
+2024-09-19 17:03:06,984 - INFO - Inferido tipo de dato para 'Dias': character varying(80)
+2024-09-19 17:03:06,985 - INFO - Columna 'Dias' convertida a string
+2024-09-19 17:03:06,986 - INFO - Inferido tipo de dato para 'Venta$': double precision
+2024-09-19 17:03:06,986 - INFO - Columna 'Venta$' convertida a double precision
+2024-09-19 17:03:06,988 - INFO - Inferido tipo de dato para 'Costo$': double precision
+2024-09-19 17:03:06,988 - INFO - Columna 'Costo$' convertida a double precision
+2024-09-19 17:03:06,989 - INFO - Inferido tipo de dato para 'Utilidad$': double precision
+2024-09-19 17:03:06,989 - INFO - Columna 'Utilidad$' convertida a double precision
+2024-09-19 17:03:06,990 - INFO - Inferido tipo de dato para 'Margen': double precision
+2024-09-19 17:03:06,991 - INFO - Columna 'Margen' convertida a double precision
+2024-09-19 17:03:06,992 - INFO - Inferido tipo de dato para 'VentaMO$': double precision
+2024-09-19 17:03:06,994 - INFO - Columna 'VentaMO$' convertida a double precision
+2024-09-19 17:03:06,995 - INFO - Inferido tipo de dato para 'DescuentoMO$': double precision
+2024-09-19 17:03:06,997 - INFO - Columna 'DescuentoMO$' convertida a double precision
+2024-09-19 17:03:06,998 - INFO - Inferido tipo de dato para 'CostoMO$': double precision
+2024-09-19 17:03:06,999 - INFO - Columna 'CostoMO$' convertida a double precision
+2024-09-19 17:03:07,000 - INFO - Inferido tipo de dato para 'VentaMateriales$': double precision
+2024-09-19 17:03:07,001 - INFO - Columna 'VentaMateriales$' convertida a double precision
+2024-09-19 17:03:07,001 - INFO - Inferido tipo de dato para 'VentaTOT$': double precision
+2024-09-19 17:03:07,002 - INFO - Columna 'VentaTOT$' convertida a double precision
+2024-09-19 17:03:07,003 - INFO - Inferido tipo de dato para 'DecuentoTOT$': double precision
+2024-09-19 17:03:07,004 - INFO - Columna 'DecuentoTOT$' convertida a double precision
+2024-09-19 17:03:07,004 - INFO - Inferido tipo de dato para 'CostoTOT$': double precision
+2024-09-19 17:03:07,005 - INFO - Columna 'CostoTOT$' convertida a double precision
+2024-09-19 17:03:07,006 - INFO - Inferido tipo de dato para 'VentaPartes$': double precision
+2024-09-19 17:03:07,007 - INFO - Columna 'VentaPartes$' convertida a double precision
+2024-09-19 17:03:07,009 - INFO - Inferido tipo de dato para 'DescuentoPartes$': double precision
+2024-09-19 17:03:07,009 - INFO - Columna 'DescuentoPartes$' convertida a double precision
+2024-09-19 17:03:07,011 - INFO - Inferido tipo de dato para 'CostoPartes$': double precision
+2024-09-19 17:03:07,012 - INFO - Columna 'CostoPartes$' convertida a double precision
+2024-09-19 17:03:07,014 - INFO - Inferido tipo de dato para 'VentaTotal$': double precision
+2024-09-19 17:03:07,015 - INFO - Columna 'VentaTotal$' convertida a double precision
+2024-09-19 17:03:07,016 - INFO - Inferido tipo de dato para 'CostoTotal$': double precision
+2024-09-19 17:03:07,017 - INFO - Columna 'CostoTotal$' convertida a double precision
+2024-09-19 17:03:07,045 - INFO - No hay fórmula para la columna 'FechaFactura' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,045 - INFO - No hay fórmula para la columna 'FechaApertura' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,046 - INFO - No hay fórmula para la columna 'FechaEntrega' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,047 - INFO - No hay fórmula para la columna 'Factura' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,048 - INFO - No hay fórmula para la columna 'Taller' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,049 - INFO - No hay fórmula para la columna 'TipoOrden' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,049 - INFO - No hay fórmula para la columna 'TipoPago' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,050 - INFO - No hay fórmula para la columna 'NumeroOT' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,052 - INFO - No hay fórmula para la columna 'NumeroAsesor' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,052 - INFO - No hay fórmula para la columna 'NombreAsesor' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,053 - INFO - No hay fórmula para la columna 'RFC' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,054 - INFO - No hay fórmula para la columna 'NombreCliente' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,054 - INFO - No hay fórmula para la columna 'Direccion' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,055 - INFO - No hay fórmula para la columna 'Telefono' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,056 - INFO - No hay fórmula para la columna 'CP' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,056 - INFO - No hay fórmula para la columna 'Email' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,057 - INFO - No hay fórmula para la columna 'Odometro' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,058 - INFO - No hay fórmula para la columna 'Vin' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,058 - INFO - No hay fórmula para la columna 'Año' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,059 - INFO - No hay fórmula para la columna 'Marca' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,059 - INFO - No hay fórmula para la columna 'Modelo' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,062 - INFO - No hay fórmula para la columna 'Color' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,062 - INFO - No hay fórmula para la columna 'Dias' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,063 - INFO - No hay fórmula para la columna 'Venta$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,064 - INFO - No hay fórmula para la columna 'Costo$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,064 - INFO - No hay fórmula para la columna 'Utilidad$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,065 - INFO - No hay fórmula para la columna 'Margen' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,066 - INFO - No hay fórmula para la columna 'VentaMO$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,066 - INFO - No hay fórmula para la columna 'DescuentoMO$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,067 - INFO - No hay fórmula para la columna 'CostoMO$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,068 - INFO - No hay fórmula para la columna 'VentaMateriales$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,068 - INFO - No hay fórmula para la columna 'VentaTOT$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,069 - INFO - No hay fórmula para la columna 'DecuentoTOT$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,069 - INFO - No hay fórmula para la columna 'CostoTOT$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,069 - INFO - No hay fórmula para la columna 'VentaPartes$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,070 - INFO - No hay fórmula para la columna 'DescuentoPartes$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,071 - INFO - No hay fórmula para la columna 'CostoPartes$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,071 - INFO - No hay fórmula para la columna 'VentaTotal$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,072 - INFO - No hay fórmula para la columna 'CostoTotal$' en el reporte 'SERVTC'.
+2024-09-19 17:03:07,124 - INFO - Archivo SQL dump generado: C:\Users\Aldo Quintal\Documents\GithubPandas\PandasPython\3-Sandbx\SERVTC01.sql.dump
+2024-09-19 17:03:07,147 - INFO - Consulta ejecutada con éxito.
+2024-09-19 17:03:07,151 - INFO - Consulta ejecutada con éxito.
+2024-09-19 17:03:07,226 - INFO - Conexión a la base de datos establecida.
+2024-09-19 17:03:07,234 - INFO - Consulta ALTER TABLE ejecutada con éxito:
+ALTER TABLE SERVTC01
+    ALTER COLUMN FechaFactura DROP NOT NULL,
+    ALTER COLUMN FechaApertura DROP NOT NULL,
+    ALTER COLUMN FechaEntrega DROP NOT NULL;
+
+2024-09-19 17:03:07,272 - INFO - Consulta ejecutada con éxito.
+2024-09-19 17:03:07,274 - INFO - <--------------- Conexion a la base de datos cerrada. --------------->

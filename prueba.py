@@ -98,7 +98,6 @@ def encontrar_zip(carpeta):
 
 
 def extraer_columnas_valores_longitudes(consulta):
-    print(f'Consulta a evaluar en extraer: {consulta}')
     try:
         # Validar que la consulta comience con 'INSERT INTO'
         if not consulta.strip().upper().startswith('INSERT INTO'):
@@ -106,9 +105,7 @@ def extraer_columnas_valores_longitudes(consulta):
         
         # Ajustar para tolerar más espacios y variaciones en la estructura de la consulta
         match_columnas = re.search(r'INSERT INTO\s+\w+\s*\((.*?)\)\s*VALUES', consulta, re.DOTALL)
-        print(f'............... match_ {match_columnas}')
         match_valores = re.search(r'VALUES\s*\((.*?)\)\s*', consulta, re.DOTALL)
-        print(f'March_vaores: {match_valores}')
 
         if not match_columnas or not match_valores:
             raise ValueError("No se pudieron extraer las columnas o valores de la consulta.")
@@ -125,7 +122,6 @@ def extraer_columnas_valores_longitudes(consulta):
         return columnas, valores, longitudes_maximas
     
     except ValueError as e:
-        print(f"Error: {e}")
         return [], [], []  # Retornar listas vacías como valor por defecto
 
 # Función para inferir el tipo de dato de una columna
@@ -225,7 +221,7 @@ def procesar_archivo_zip():
             break
             
     else:
-        print("No se encontraron archivos .zip en el directorio.")
+        logging.error("No se encontraron archivos .zip en el directorio.")
         return
     
     cliente_numero = nombre_zip[0:4].lstrip('0')
@@ -249,12 +245,7 @@ def procesar_archivo_zip():
 
 
     reportes_selec = list(columnas_esperadas.keys())
-    print(f'Reportes : {reportes}')
-    print(f"Configuración de la base de datos: {db_config}")
-    print(f"Columnas esperadas para el cliente {cliente_numero}: {columnas_esperadas}")
-    print(f'Reportes select: {reportes_selec}')
-
-
+    
     if not workng_dir or not sandbx or not reportes or not db_config:
         logging.error("Configuración incompleta en 'config.json'.")
         exit()
@@ -264,7 +255,6 @@ def procesar_archivo_zip():
     # Obtener la información
     try:
         workng = encontrar_zip(workng_dir)
-        print(f'Encontrar el zip : {workng}')
         cliente, sucursal, fecha_actual = extraer_info_zip(workng)
         cliente = cliente.lstrip('0')
     except FileNotFoundError as e:
@@ -309,7 +299,6 @@ def procesar_archivo_zip():
 
     # Renombrar los archivos extraídos
     for archivo in os.listdir(sandbx):
-        print(f'Archivo : {archivo}')
         
         for reporte in reportes:
             if archivo.startswith(reporte):
@@ -332,23 +321,17 @@ def procesar_archivo_zip():
             version_servidor = "Desconocida"
 
         # Iterar sobre cada reporte y realizar las operaciones de creación de tabla e inserción
-        print(reportes)
         for reporte in reportes:
-            print(f'Sucursal: {sucursal}')
-        
+
             for item in reportes_selec:
                 if reporte in item and reporte == ''.join([i for i in item if not i.isdigit()]):
                     reporte = item
                     break
-            print(f'Reporte ? : {reporte}')
             #Tomamos el nombre del dms
             dms_name = obtener_dms_por_reporte(reporte, config_data)
-            print(f'dms_name......: {dms_name}')
 
             nombre_tabla = f"{filtrar_letras(reporte)}{sucursal}"
-            print(f'Nombre tabla: {nombre_tabla}')
             ruta_archivo = os.path.join(sandbx, f'{filtrar_letras(reporte)}{sucursal}.txt')
-            print(f'Ruta_aarchivo: {ruta_archivo}')
 
             # Verificar existencia del archivo TXT
             if not os.path.isfile(ruta_archivo):
@@ -379,7 +362,6 @@ def procesar_archivo_zip():
 
             # Usar encabezados esperados del archivo de configuración
             encabezados_esperados = columnas_esperadas.get(reporte, [])
-            print(f'Encabezados esperados : {encabezados_esperados}')
             headers = encabezados_esperados
             rows = data
             #print(f'rows : ......... {rows}')
@@ -387,9 +369,7 @@ def procesar_archivo_zip():
 
             # Comparar las columnas actuales con las esperadas
             columnas = data[0]
-            print(f'Columnas reporte: {columnas}')
             columnas_esperadas_reporte = set(columnas_esperadas.get(reporte, []))
-            print(f'Columnas esperadas: {columnas_esperadas_reporte}')
             # Verificar si al menos una columna coincide
             if columnas_esperadas_reporte.intersection(columnas):
                 rows = data[1:] 
@@ -399,7 +379,6 @@ def procesar_archivo_zip():
 
             # Asegurarse de que los nombres de las columnas sean únicos agregando sufijos
             headers = renombrar_columnas(headers)
-            print(f'Headers: {headers}')
 
             # Ajustar el número de columnas en las filas
             max_columns = len(headers)
@@ -414,8 +393,6 @@ def procesar_archivo_zip():
             # Paso 1: Filtrar los campos que contienen '(computed)'
             campos_computed = [campo for campo in headers if '(computed)' in campo]
             encabezados2 = [campo for campo in headers if '(computed)' not in campo]
-            print(f'Campos Computed: {campos_computed}')
-            print(f'Encabeza2: {encabezados2}')
 
             # Paso 2: Verificar y ajustar el número de columnas en adjusted_rows
             adjusted_rows = [row[:len(encabezados2)] for row in adjusted_rows]
@@ -429,12 +406,10 @@ def procesar_archivo_zip():
 
             # Paso de la muerte : Infiere tipos de datos 
             df = asignar_tipos_de_datos(df, dms_name, reporte)
-
+            
             # Paso 4: Aplicar las fórmulas para las columnas calculadas (computed)
-            print(f'Campos_computed: {campos_computed}')
             for campo_calculado in campos_computed:
                 formula = obtener_formula(dms_name, reporte, campo_calculado)
-                print(f'Formula campo calculado: {formula}')
                 if formula:
                     try:
                         # Crear una copia de los nombres de las columnas originales
@@ -451,8 +426,6 @@ def procesar_archivo_zip():
                         
                         # Si la fórmula contiene '(computed)', eliminarlo y ajustar la fórmula
                         formula_ajustada = formula_sin_simbolo.replace(' (computed)', '')
-
-                        print(f'Formula ajustada: {formula_ajustada}')
                         
                         # Verificar si la fórmula es Ctod y aplicarla
                         if 'Ctod' in formula_ajustada:
@@ -536,11 +509,9 @@ def procesar_archivo_zip():
                 
             # Obtener los nuevos encabezados después de aplicar las fórmulas y reordenar
             nuevos_encabezados = df.columns.to_list()
-            print(f'Nuevos Encabezados: {nuevos_encabezados}')
             
             # Paso 7: Comprobamos si es un SERVTA
             if re.sub(r'\d+', '', reporte) == 'SERVTA': 
-                print("Hay un SERVTA en el zip ************************************")
                 # Generar el DataFrame SERVTC
                 generar_servtc(df, sucursal, nuevos_encabezados)
                         
@@ -561,7 +532,6 @@ def procesar_archivo_zip():
             
             for a in nuevos_encabezados:
                 tipo_dato = inferir_tipo_dato(a, dms_name, reporte)
-                print(f'Reporte: {reporte} columna : {a} .. {tipo_dato}')
                 create_table_query += f"    {a} {tipo_dato},\n"
             create_table_query = create_table_query.rstrip(',\n') + "\n);"
 
@@ -583,8 +553,6 @@ def procesar_archivo_zip():
             encabezados_datetime = datetime_columns.tolist()
 
             # Mostrar la lista de encabezados de las columnas datetime
-            print(encabezados_datetime)
-            print(f'Reporte ... {reporte}')
             query_alter = generar_query_alter_table(reporte, encabezados_datetime, sucursal)
 
             # Convertir columnas de fecha a formato 'YYYY-MM-DD' antes de la inserción
@@ -621,7 +589,6 @@ def procesar_archivo_zip():
             if conexion:
                 # Verificar si alguna columna excede la longitud permitida antes de insertar
                 longitudes_maximas = obtener_column_lengths(archivo_sql)
-                print(f'Longitudes_maximas _ {longitudes_maximas}')
                 
                 ejecutar_consulta(conexion, drop_query)
                 ejecutar_consulta(conexion, create_table_query)
@@ -696,7 +663,7 @@ def ejecutar_consulta_insert(conexion, consulta, df=None, max_lengths=None, nomb
         logging.info("Consulta ejecutada con éxito.")
     except Error as e:
         logging.error(f"Error al ejecutar la consulta: {e}")
-        logging.error(f"Consulta que falló: {consulta}")
+        #logging.error(f"Consulta que falló: {consulta}") Descomentar si se quiere ver la consulta del error 
         # Realiza un rollback para liberar la transacción
         conexion.rollback()
 
@@ -801,48 +768,6 @@ def extraer_longitudes_maximas(archivo_sql):
     return longitudes_maximas
 
 
-def verificar_longitudes_y_ajustar(fila, column_lengths):
-    """
-    Verifica si alguna columna de la fila excede la longitud máxima permitida y ajusta la fila si es necesario.
-
-    :param fila: Una lista que representa una fila de datos.
-    :param column_lengths: Un diccionario donde las claves son los nombres de las columnas y los valores son las longitudes máximas.
-    :return: Una lista de errores, donde cada error es una cadena que describe la columna que excedió la longitud.
-    """
-    errores = []
-    columnas = list(column_lengths.keys())
-    print(f'Columnas esperadas: {columnas}')
-    print(f'Fila original: {fila}')
-
-    # Verificar si el número de columnas coincide con el número esperado
-    if len(fila) < len(columnas):
-        print("El número de columnas en la fila es menor que el número de columnas esperado.")
-        fila = fila + [''] * (len(columnas) - len(fila))  # Rellenar con valores vacíos para coincidir con las columnas
-        print(f'Fila ajustada con valores vacíos: {fila}')
-    elif len(fila) > len(columnas):
-        print("El número de columnas en la fila es mayor que el número de columnas esperado.")
-        return ["Número de columnas excede el esperado."]
-
-    # Iterar sobre los valores de la fila y los nombres de columnas en paralelo
-    for col_name, valor in zip(columnas, fila):
-        max_length = column_lengths.get(col_name)
-        
-        # Verificar si el valor no es None y si tiene una longitud que se pueda medir
-        if valor is not None and isinstance(valor, str):
-            # Comprobar si la longitud del valor excede la longitud máxima permitida
-            if max_length is not None and len(valor) > max_length:
-                error_msg = f"Error en columna '{col_name}' con valor '{valor}' y longitud máxima {max_length}"
-                errores.append(error_msg)
-                print(error_msg)
-            else:
-                print(f"Revisando columna '{col_name}' con valor '{valor}' y longitud máxima {max_length}")
-        else:
-            print(f"Columna '{col_name}' con valor no verificable (valor: {valor})")
-
-    return errores
-
-
-
 def obtener_column_lengths(archivo_sql):
     """
     Extrae las longitudes de las columnas que están dentro de los paréntesis en un archivo SQL de creación de tablas,
@@ -883,184 +808,8 @@ def obtener_column_lengths(archivo_sql):
 
 
 
-
-def limpiar_column_lengths(column_lengths):
-    """
-    Elimina las claves no deseadas ('DROP', 'CREATE', 'INSERT') del diccionario de longitudes de columnas.
-
-    :param column_lengths: Diccionario con las columnas como claves y sus longitudes máximas como valores.
-    :return: Diccionario limpio sin las claves no deseadas.
-    """
-    # Claves no deseadas
-    claves_no_deseadas = ['DROP', 'CREATE', 'INSERT']
-
-    # Eliminar las claves no deseadas del diccionario
-    for clave in claves_no_deseadas:
-        if clave in column_lengths:
-            del column_lengths[clave]
-
-    return column_lengths
-
-def extraer_datos_insert(archivo_sql):
-    """
-    Extrae los datos de las consultas INSERT INTO desde un archivo .sql.dump y los organiza en una lista de tuplas.
-
-    :param archivo_sql: Ruta al archivo .sql.dump.
-    :return: Lista de tuplas con los datos extraídos.
-    """
-    with open(archivo_sql, 'r', encoding='utf-8') as file:
-        contenido = file.read()
-
-    # Buscar todas las consultas INSERT INTO
-    insert_matches = re.findall(r"INSERT INTO \w+ \([^)]+\) VALUES (.+);", contenido, re.DOTALL)
-
-    # Lista para almacenar los datos extraídos
-    datos = []
-
-    # Procesar cada consulta INSERT INTO encontrada
-    for match in insert_matches:
-        # Eliminar paréntesis iniciales y finales y dividir las filas
-        filas = match.strip().strip('()').split("),(")
-        for fila in filas:
-            # Dividir los valores de la fila y limpiar los espacios en blanco y comillas
-            valores = [val.strip().strip("'") for val in fila.split(",")]
-            datos.append(tuple(valores))
-    
-    return datos
-
-
-def limpiar_y_dividir_datos(datos, column_lengths, columnas_varying_list):
-    """
-    Esta función toma una lista de datos que contiene elementos incorrectamente combinados y los separa correctamente
-    en tuplas, considerando solo las columnas que son de tipo character varying según el diccionario column_lengths.
-
-    :param datos: Lista de datos donde los elementos están mal combinados.
-    :param column_lengths: Un diccionario donde las claves son los nombres de las columnas y los valores son las longitudes máximas.
-    :param columnas_varying_list: Lista de columnas que son de tipo character varying.
-    :return: Lista de tuplas correctamente formadas con solo las columnas de tipo character varying.
-    """
-    # Filtrar columnas que son character varying y no tienen valor None
-    columnas_varying = [col for col in columnas_varying_list if column_lengths.get(col) is not None]
-    num_columnas_varying = len(columnas_varying)
-
-    datos_limpios = []
-    temp = []
-
-    for item in datos:
-        if isinstance(item, str):
-            # Limpia el string y separa en elementos, tratando de quitar los paréntesis y comillas adicionales
-            elementos = item.replace("')", "").replace("('", "").replace("'", "").split(", ")
-            temp.extend(elementos)
-        elif isinstance(item, tuple):
-            temp.extend(list(item))
-
-        # Procesar los datos si ya se tiene el número correcto de columnas
-        while len(temp) >= num_columnas_varying:
-            fila = temp[:num_columnas_varying]
-            datos_limpios.append(tuple(fila))
-            temp = temp[num_columnas_varying:]
-
-    # Verificar si hay elementos residuales no utilizados
-    if temp:
-        print("Advertencia: Quedaron elementos sin procesar, pueden estar mal estructurados:", temp)
-        # Si hay elementos residuales, asegúrate de agregarlos a la última fila correctamente
-        if len(datos_limpios) > 0:
-            ultima_fila = list(datos_limpios[-1]) + temp
-            datos_limpios[-1] = tuple(ultima_fila[:num_columnas_varying])
-
-    return datos_limpios
-
-def obtener_columnas_varying_ordenadas(column_lengths):
-    """
-    Esta función toma un diccionario `column_lengths` y retorna una lista de nombres de columnas
-    que son de tipo character varying (es decir, aquellas que no tienen valor `None`), 
-    manteniendo el orden original.
-
-    :param column_lengths: Diccionario con nombres de columnas y sus longitudes.
-    :return: Lista de nombres de columnas que son de tipo character varying en orden.
-    """
-    columnas_varying_ordenadas = [col for col, length in column_lengths.items() if length is not None]
-    return columnas_varying_ordenadas
-
-
-def clean_and_split_list(raw_list, column_lengths):
-    cleaned_list = []
-
-    for item in raw_list:
-        if isinstance(item, tuple):
-            # Convertir cada elemento del tuple en una cadena y limpiar
-            cleaned_item = [i.strip("()',") for i in item]
-            cleaned_list.extend(cleaned_item)
-        else:
-            # En caso de que no sea tuple (por si acaso), limpiar directamente
-            cleaned_item = item.strip("()',")
-            cleaned_list.append(cleaned_item)
-    
-    # Determinar el número de columnas basado en la longitud del diccionario
-    num_columns = len(column_lengths)
-
-    # Agrupar los elementos en registros con el número de columnas determinado
-    grouped_list = [cleaned_list[i:i + num_columns] for i in range(0, len(cleaned_list), num_columns)]
-    
-    return grouped_list
-
-
-
-
-def ajustar_tamano_columna(conexion, nombre_tabla, columna, nuevo_tamano):
-    """
-    Ajusta el tamaño de una columna en la base de datos para permitir que valores más largos se inserten.
-
-    :param conexion: La conexión a la base de datos PostgreSQL.
-    :param nombre_tabla: El nombre de la tabla donde se encuentra la columna.
-    :param columna: El nombre de la columna cuyo tamaño se desea ajustar.
-    :param nuevo_tamano: El nuevo tamaño máximo para la columna.
-    """
-    try:
-        cursor = conexion.cursor()
-        alter_query = f"ALTER TABLE {nombre_tabla} ALTER COLUMN {columna} TYPE character varying({nuevo_tamano});"
-        cursor.execute(alter_query)
-        conexion.commit()
-        logging.info(f"Tamaño de la columna '{columna}' en la tabla '{nombre_tabla}' ajustado a {nuevo_tamano}.")
-    except Error as e:
-        logging.error(f"Error al ajustar el tamaño de la columna '{columna}' en la tabla '{nombre_tabla}': {e}")
-        conexion.rollback()
-
-def verificar_y_ajustar_columnas(conexion, nombre_tabla, filas, column_lengths):
-    """
-    Verifica y ajusta las columnas que exceden su tamaño máximo permitido, aumentando su tamaño en +10.
-
-    :param conexion: La conexión a la base de datos PostgreSQL.
-    :param nombre_tabla: El nombre de la tabla en la base de datos.
-    :param filas: Lista de filas de datos a verificar.
-    :param column_lengths: Un diccionario con los nombres de las columnas y sus longitudes máximas.
-    """
-    for fila in filas:
-        errores = verificar_longitudes_y_ajustar(fila, column_lengths)
-        if errores:
-            for error in errores:
-                # Extraer el nombre de la columna y el tamaño actual desde el mensaje de error
-                match = re.search(r"Error en columna '(.+?)' con valor '.+?' y longitud máxima (\d+)", error)
-                if match:
-                    columna = match.group(1)
-                    longitud_maxima_str = match.group(2)
-                    
-                    # Validar que la longitud máxima es un número antes de convertirla a entero
-                    if longitud_maxima_str.isdigit():
-                        tamano_actual = int(longitud_maxima_str)
-                        nuevo_tamano = tamano_actual + 50
-                        # Ajustar el tamaño de la columna
-                        ajustar_tamano_columna(conexion, nombre_tabla, columna, nuevo_tamano)
-                    else:
-                        logging.error(f"Error: la longitud máxima '{longitud_maxima_str}' no es un número válido.")
-                else:
-                    logging.error(f"No se pudo extraer correctamente el tamaño de la columna desde el mensaje de error: {error}")
-
-
-
 # Función para limpiar el contenido de una carpeta
 def limpiar_carpeta(carpeta):
-    print(f'Carpeta: {carpeta}')
     for archivo in os.listdir(carpeta):
         ruta_archivo = os.path.join(carpeta, archivo)
         try:
@@ -1248,9 +997,8 @@ def generar_servtc(df_servta, sucursal, nuevos_encabezados, nombre_carpeta='3-Sa
     columnas_a_agrupar_existentes = [col for col in columnas_a_agrupar if col in df_servta.columns]
     columnas_a_sumar_existentes = [col for col in columnas_a_sumar if col in df_servta.columns]
 
-    # Convertir las columnas numéricas a formato numérico
-    for col in columnas_a_sumar_existentes:
-        df_servta[col] = pd.to_numeric(df_servta[col], errors='coerce')
+    # Convertir las columnas numéricas a formato numérico seguro
+    df_servta[columnas_a_sumar_existentes] = df_servta[columnas_a_sumar_existentes].apply(pd.to_numeric, errors='coerce')
 
     # Agrupar por las columnas que existen y sumar las columnas numéricas
     df_servtc = df_servta.groupby(columnas_a_agrupar_existentes)[columnas_a_sumar_existentes].sum().reset_index()
@@ -1261,7 +1009,6 @@ def generar_servtc(df_servta, sucursal, nuevos_encabezados, nombre_carpeta='3-Sa
     # Eliminar cualquier columna extra que pueda contener solo valores vacíos
     df_servtc = df_servtc.loc[:, ~df_servtc.columns.str.contains('^Unnamed')]
 
-    # Hacer "match" con los nuevos encabezados
     # Ajustar el DataFrame para hacer "match" con los nuevos encabezados
     df_servtc.columns = nuevos_encabezados[:len(df_servtc.columns)]  # Ajustar a los nuevos encabezados
 
@@ -1306,13 +1053,15 @@ def asignar_tipos_de_datos(df, dms_name, reporte_name):
                 logging.info(f"Columna '{col}' convertida a string")
                 
             elif 'DATE' in tipo_dato.upper() or 'datetime' in tipo_dato.lower():
-                # Convertir la columna a formato datetime con el formato correcto
-                try:
+                # Verificar si es el reporte SERVTC para usar formato YYYY-MM-DD
+                if reporte_name == "SERVTC":
+                    # Convertir la columna a formato datetime con formato YYYY-MM-DD
+                    df[col] = pd.to_datetime(df[col], format='%Y-%m-%d', errors='coerce')
+                    logging.info(f"Columna '{col}' convertida a formato datetime con formato '%Y-%m-%d' para SERVTC")
+                else:
+                    # Convertir la columna a formato datetime con formato dd/mm/yyyy para otros reportes
                     df[col] = pd.to_datetime(df[col], format='%d/%m/%Y', errors='coerce')
                     logging.info(f"Columna '{col}' convertida a formato datetime con formato '%d/%m/%Y'")
-                except Exception as e:
-                    logging.error(f"Error al convertir la columna '{col}' a datetime: {e}")
-                    df[col] = pd.to_datetime(df[col], errors='coerce')  # Intento sin formato si falla
 
             elif 'double precision' in tipo_dato.lower():  # Manejo para double precision
                 df[col] = pd.to_numeric(df[col], errors='coerce')  # Convertir a numérico de doble precisión
