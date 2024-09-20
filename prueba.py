@@ -368,8 +368,11 @@ def procesar_archivo_zip():
             
 
             # Comparar las columnas actuales con las esperadas
-            columnas = data[0]
-            columnas_esperadas_reporte = set(columnas_esperadas.get(reporte, []))
+            columnas = [col.lower() for col in data[0]]  # Convertir todas las columnas actuales a minúsculas
+
+            # Convertir columnas esperadas a minúsculas
+            columnas_esperadas_reporte = set([col.lower() for col in columnas_esperadas.get(reporte, [])])
+
             # Verificar si al menos una columna coincide
             if columnas_esperadas_reporte.intersection(columnas):
                 rows = data[1:] 
